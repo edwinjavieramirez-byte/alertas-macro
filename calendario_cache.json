@@ -1,5 +1,5 @@
 {
- "descargado": "2026-09-24T21:35:24.999891+00:00",
+ "descargado": "2026-09-24T23:35:32.947001+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -542,6 +542,14 @@
    "country": "CNY",
    "date": "2026-09-24T19:01:00-04:00",
    "impact": "Holiday",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "President Trump Speaks",
+   "country": "USD",
+   "date": "2026-09-24T19:55:00-04:00",
+   "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
