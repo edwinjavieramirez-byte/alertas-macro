@@ -1,5 +1,5 @@
 {
- "descargado": "2026-09-24T01:15:31.369669+00:00",
+ "descargado": "2026-09-24T03:20:32.951621+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -348,7 +348,7 @@
   {
    "title": "NAB Quarterly Business Confidence",
    "country": "AUD",
-   "date": "2026-09-23T22:35:00-04:00",
+   "date": "2026-09-23T23:35:00-04:00",
    "impact": "Low",
    "forecast": "",
    "previous": "-19"
