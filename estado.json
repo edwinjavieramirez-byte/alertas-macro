@@ -1,4 +1,22 @@
 {
  "avisados": [],
- "resumen_enviado": "2026-09-24"
+ "resumen_enviado": "2026-09-24",
+ "mercado": {
+  "escalones": {
+   "US2Y": {
+    "base": 4.895,
+    "n": 0
+   },
+   "US10Y": {
+    "base": 5.114,
+    "n": 0
+   }
+  },
+  "lados": {
+   "US10Y@5.0": "arriba",
+   "US10Y@5.25": "abajo",
+   "USDJPY@155.0": "arriba",
+   "USDJPY@160.0": "abajo"
+  }
+ }
 }
