@@ -1,17 +1,20 @@
 """
-Agente de alertas macro: EUR/USD, USD/JPY e índices USA.  (versión 2)
+Agente de alertas macro: EUR/USD, USD/JPY, GER 40 e índices USA.  (versión 3)
 
 Qué hace cada vez que se ejecuta (cada 5 min):
   1. Calendario económico (Forex Factory): eventos de ALTO impacto de USD, EUR y JPY.
+     (Los datos de Alemania vienen como EUR en Forex Factory: ya están incluidos.)
      Aviso 15 min antes, con análisis de Claude.
   2. Agenda matinal (lunes-viernes, HORA_RESUMEN): eventos del día + foto de mercado.
-  3. Resumen pre-Nueva York (lunes-viernes, HORA_PRE_NY, 15:00 por defecto):
-     bonos US 2A/10A, JGB 10A, DXY, EUR/USD y USD/JPY con su cambio del día.
-  4. Alertas de mercado:
-     - Movimientos fuertes en el día: US 2A ±8 pb, US 10A ±10 pb, JGB 10A ±5 pb
-       (y vuelve a avisar en cada múltiplo: ±16, ±24...).
+  3. Resumen antes de Fráncfort (lunes-viernes, HORA_PRE_FRA, 08:45 por defecto):
+     GER 40, Bund 10A, diferencial con EE. UU. y EUR/USD, antes de la apertura de Xetra (09:00).
+  4. Resumen pre-Nueva York (lunes-viernes, HORA_PRE_NY, 15:00 por defecto):
+     bonos US 2A/10A, Bund 10A, JGB 10A, DXY, EUR/USD, USD/JPY y GER 40 con su cambio del día.
+  5. Alertas de mercado:
+     - Movimientos fuertes en el día: US 2A ±8 pb, US 10A ±10 pb, Bund 10A ±8 pb, JGB 10A ±5 pb,
+       GER 40 ±1 % (y vuelve a avisar en cada múltiplo: 2x, 3x...).
      - Cruces de niveles clave: US 10A 5,00 % y 5,25 %; USD/JPY 155 y 160.
-  5. De 23:00 a 07:00 (Madrid) los mensajes llegan en silencio (sin sonido).
+  6. De 23:00 a 07:00 (Madrid) los mensajes llegan en silencio (sin sonido).
 
 No hace falta tocar este archivo. Lo configurable está en los "Secrets"/"Variables" de GitHub.
 """
@@ -38,6 +41,7 @@ DIVISAS = [d.strip() for d in (os.getenv("DIVISAS") or "USD,EUR,JPY").split(",")
 IMPACTOS = [i.strip() for i in (os.getenv("IMPACTOS") or "High").split(",")]
 MINUTOS_ANTES = int(os.getenv("MINUTOS_ANTES") or 15)
 HORA_RESUMEN = os.getenv("HORA_RESUMEN") or "07:30"      # hora de Madrid
+HORA_PRE_FRA = os.getenv("HORA_PRE_FRA") or "08:45"      # hora de Madrid (Xetra abre a las 09:00)
 HORA_PRE_NY = os.getenv("HORA_PRE_NY") or "15:00"        # hora de Madrid
 SILENCIO = os.getenv("HORAS_SILENCIO") or "23-07"        # sin sonido entre estas horas
 DRY_RUN = os.getenv("DRY_RUN") == "1"                    # 1 = imprime en vez de enviar
@@ -54,14 +58,17 @@ UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit
 BANDERA = {"USD": "🇺🇸", "EUR": "🇪🇺", "JPY": "🇯🇵"}
 
 # Instrumentos de mercado.
-#   tipo "yield": rentabilidad en %, los cambios se miden en puntos básicos (pb)
-#   umbral_pb: aviso si el movimiento del día alcanza ese tamaño (y cada múltiplo)
+#   tipo "yield": rentabilidad en %, los cambios se miden en puntos básicos (pb)  -> umbral_pb
+#   tipo "precio": los cambios se miden en %                                      -> umbral_pct
+#   El aviso salta si el movimiento del día alcanza el umbral (y cada múltiplo).
 #   niveles: aviso cuando el precio cruza el nivel (con un margen para no repetir)
 INSTRUMENTOS = {
     "US2Y":   {"nombre": "Bono EE. UU. 2A",  "tipo": "yield", "cnbc": "US2Y",  "yahoo": "2YY=F",
                "umbral_pb": 8,  "niveles": [], "margen": 0.02},
     "US10Y":  {"nombre": "Bono EE. UU. 10A", "tipo": "yield", "cnbc": "US10Y", "yahoo": "^TNX",
                "umbral_pb": 10, "niveles": [5.00, 5.25], "margen": 0.02},
+    "DE10Y":  {"nombre": "Bund Alemania 10A", "tipo": "yield", "cnbc": "DE10Y-DE", "yahoo": None,
+               "umbral_pb": 8,  "niveles": [], "margen": 0.02},
     "JP10Y":  {"nombre": "Bono Japón 10A",   "tipo": "yield", "cnbc": "JP10Y", "yahoo": None,
                "umbral_pb": 5,  "niveles": [], "margen": 0.02},
     "DXY":    {"nombre": "DXY",              "tipo": "precio", "cnbc": ".DXY",   "yahoo": "DX-Y.NYB",
@@ -70,7 +77,10 @@ INSTRUMENTOS = {
                "dec": 4, "niveles": [], "margen": 0.0010},
     "USDJPY": {"nombre": "USD/JPY",          "tipo": "precio", "cnbc": "JPY=",   "yahoo": "JPY=X",
                "dec": 2, "niveles": [155.0, 160.0], "margen": 0.15},
+    "GER40":  {"nombre": "GER 40 (DAX)",     "tipo": "precio", "cnbc": ".GDAXI", "yahoo": "^GDAXI",
+               "dec": 0, "umbral_pct": 1.0, "niveles": [], "margen": 20},
 }
+ORDEN = ["US2Y", "US10Y", "DE10Y", "JP10Y", "DXY", "EURUSD", "USDJPY", "GER40"]
 
 
 # ----------------------------------------------------------------- utilidades
@@ -258,6 +268,15 @@ def cambio(k, d):
     return (d["ultimo"] / d["anterior"] - 1) * 100
 
 
+def dato_fresco(d, max_min=45):
+    f = d.get("fecha")
+    if f is None:
+        return True
+    if f.tzinfo is None:
+        f = f.replace(tzinfo=timezone.utc)
+    return ahora_utc() - f <= timedelta(minutes=max_min)
+
+
 def linea_mercado(k, d):
     i = INSTRUMENTOS[k]
     c = cambio(k, d)
@@ -269,28 +288,24 @@ def linea_mercado(k, d):
         txt = f'{i["nombre"]}: {d["ultimo"]:.{i["dec"]}f}'
         if c is not None:
             txt += f" ({c:+.2f} %)"
+    # Mercado cerrado (p. ej. el DAX de contado antes de las 09:00): el dato es el último cierre
+    if not d["fuente"].startswith("MoF") and not dato_fresco(d, 90):
+        txt += " · cierre anterior"
     return txt
 
 
 def bloque_mercado(datos):
-    orden = ["US2Y", "US10Y", "JP10Y", "DXY", "EURUSD", "USDJPY"]
-    lineas = [linea_mercado(k, datos[k]) for k in orden if k in datos]
+    lineas = [linea_mercado(k, datos[k]) for k in ORDEN if k in datos]
     if "US2Y" in datos and "US10Y" in datos:
         pendiente = (datos["US10Y"]["ultimo"] - datos["US2Y"]["ultimo"]) * 100
         lineas.append(f"Pendiente 2A-10A EE. UU.: {pendiente:+.0f} pb")
+    if "US10Y" in datos and "DE10Y" in datos:
+        dif = (datos["US10Y"]["ultimo"] - datos["DE10Y"]["ultimo"]) * 100
+        lineas.append(f"Diferencial 10A EE. UU.-Alemania: {dif:.0f} pb")
     if "US10Y" in datos and "JP10Y" in datos:
         dif = (datos["US10Y"]["ultimo"] - datos["JP10Y"]["ultimo"]) * 100
         lineas.append(f"Diferencial 10A EE. UU.-Japón: {dif:.0f} pb")
     return "\n".join(lineas)
-
-
-def dato_fresco(d, max_min=45):
-    f = d.get("fecha")
-    if f is None:
-        return True
-    if f.tzinfo is None:
-        f = f.replace(tzinfo=timezone.utc)
-    return ahora_utc() - f <= timedelta(minutes=max_min)
 
 
 def alertas_mercado(datos, estado):
@@ -301,17 +316,23 @@ def alertas_mercado(datos, estado):
         i = INSTRUMENTOS[k]
         if d["fuente"].startswith("MoF") or not dato_fresco(d):
             continue                                   # dato de cierre o antiguo: no genera alertas
+        es_yield = i["tipo"] == "yield"
         # a) Movimiento fuerte del día (por escalones: 1x, 2x, 3x el umbral)
+        umbral = i.get("umbral_pb") if es_yield else i.get("umbral_pct")
         c = cambio(k, d)
-        if i.get("umbral_pb") and c is not None:
-            n = int(math.copysign(math.floor(abs(c) / i["umbral_pb"]), c)) if abs(c) >= i["umbral_pb"] else 0
+        if umbral and c is not None:
+            n = int(math.copysign(math.floor(abs(c) / umbral), c)) if abs(c) >= umbral else 0
             previo = mem["escalones"].get(k, {})
             if previo.get("base") != d["anterior"]:
                 previo = {"base": d["anterior"], "n": 0}          # nueva sesión: reinicio
             if n != 0 and (abs(n) > abs(previo["n"]) or (n > 0) != (previo["n"] > 0)):
                 direccion = "sube" if c > 0 else "baja"
-                alertas.append(f'{i["nombre"]} {direccion} {abs(c):.1f} pb en el día '
-                               f'(ahora {d["ultimo"]:.3f} %).')
+                if es_yield:
+                    alertas.append(f'{i["nombre"]} {direccion} {abs(c):.1f} pb en el día '
+                                   f'(ahora {d["ultimo"]:.3f} %).')
+                else:
+                    alertas.append(f'{i["nombre"]} {direccion} {abs(c):.2f} % en el día '
+                                   f'(ahora {d["ultimo"]:.{i["dec"]}f}).')
             if abs(n) >= abs(previo["n"]) or (n != 0 and (n > 0) != (previo["n"] > 0)):
                 previo["n"] = n
             mem["escalones"][k] = previo
@@ -330,23 +351,26 @@ def alertas_mercado(datos, estado):
                 continue                                        # dentro del margen: sin cambios
             mem["lados"][clave] = lado
             if anterior and anterior != lado:
-                if i["tipo"] == "yield":
+                if es_yield:
                     fmt, ahora_txt = f"{nivel:.2f} %", f'{d["ultimo"]:.3f} %'
                 else:
-                    fmt, ahora_txt = f"{nivel:.2f}", f'{d["ultimo"]:.{i["dec"]}f}'
+                    fmt, ahora_txt = f"{nivel:.{i['dec']}f}", f'{d["ultimo"]:.{i["dec"]}f}'
                 verbo = "supera" if lado == "arriba" else "pierde"
                 alertas.append(f'{i["nombre"]} {verbo} el nivel {fmt} (ahora {ahora_txt}).')
     return alertas
 
 
 # ----------------------------------------------------------------- Claude
-PROMPT_SISTEMA = """Eres un analista macro que asiste a traders intradía (M5-M15) de EUR/USD y USD/JPY
+PROMPT_SISTEMA = """Eres un analista macro que asiste a traders intradía (M5-M15) de EUR/USD, USD/JPY y GER 40 (DAX)
 que también siguen los índices americanos (NASDAQ 100 y S&P 500).
 Escribes en español, directo, sin relleno y sin inventar cifras ni noticias: usa solo los datos que se te dan.
 Si no sabes la causa de un movimiento, no la inventes: describe lo que implica, no por qué ha pasado.
 Nunca des una orden de compra/venta; describe escenarios y riesgos.
 Ten en cuenta que la relación bonos-dólar no siempre se cumple: si las rentabilidades suben por miedo
 (inflación, deuda, petróleo) el dólar puede caer; menciónalo si el DXY no acompaña.
+Para el GER 40: suele moverse con el sentimiento de riesgo global (futuros USA) y lo presionan subidas fuertes
+del Bund; un euro muy fuerte perjudica a los exportadores alemanes. Son tendencias, no reglas fijas.
+Si un dato aparece marcado como "cierre anterior", es el último cierre, no el precio actual: no lo trates como movimiento de hoy.
 Texto plano, sin markdown, sin asteriscos ni almohadillas."""
 
 
@@ -395,10 +419,11 @@ def mensaje_alerta(grupo, mercado_txt=""):
 Escribe una alerta breve (máx. 120 palabras) con este formato exacto:
 Qué es: una frase sobre qué mide y por qué mueve el mercado.
 ("Mejor" = mejor para la economía de esa divisa; ojo con paro y peticiones de subsidio, donde un número más alto es PEOR.)
-Si sale MEJOR de lo previsto: reacción típica de los pares afectados.
-Si sale PEOR de lo previsto: reacción típica de los pares afectados.
+Si sale MEJOR de lo previsto: reacción típica de los pares/índices afectados.
+Si sale PEOR de lo previsto: reacción típica de los pares/índices afectados.
 Cuidado: un riesgo operativo concreto (spread, latigazo inicial, noticias encadenadas, riesgo de intervención del yen, etc.).
-Pares afectados: dato de USD -> EUR/USD, USD/JPY y NASDAQ/S&P 500; dato de EUR -> EUR/USD; dato de JPY -> USD/JPY."""
+Afectados: dato de USD -> EUR/USD, USD/JPY, NASDAQ/S&P 500 y, por contagio, GER 40;
+dato de EUR/Alemania o BCE -> EUR/USD y GER 40; dato de JPY -> USD/JPY."""
     )
 
     texto = f"⚠️ <b>ALERTA MACRO · {hora_local} (en {minutos} min)</b>\n\n{esc(datos)}"
@@ -428,11 +453,32 @@ def mensaje_resumen(eventos_hoy, mercado_txt):
 Mercado ahora (cambio respecto al cierre anterior):
 {mercado_txt or 'sin datos'}
 
-Escribe un briefing matinal (máx. 160 palabras):
+Escribe un briefing matinal (máx. 170 palabras):
 1) Evento clave del día y por qué.
-2) Qué dicen los bonos (EE. UU. y Japón) sobre el sesgo de USD y JPY hoy.
-3) Franjas horarias a vigilar o evitar para EUR/USD, USD/JPY e índices USA.""",
-        max_tokens=650,
+2) Qué dicen los bonos (EE. UU., Alemania y Japón) sobre el sesgo de USD, EUR y JPY hoy.
+3) Franjas horarias a vigilar o evitar para EUR/USD, USD/JPY, GER 40 e índices USA.""",
+        max_tokens=700,
+    )
+    if analisis:
+        texto += f"\n\n{esc(analisis)}"
+    return texto
+
+
+def mensaje_pre_fra(mercado_txt, eventos_resto):
+    texto = f"🇩🇪 <b>Antes de Fráncfort · {ahora_utc().astimezone(TZ):%H:%M}</b>\n\n{esc(mercado_txt)}"
+    agenda = "\n".join(linea_evento(e) for e in eventos_resto) or "Sin eventos de alto impacto el resto del día."
+    texto += f"\n\n<b>Resto del día</b>\n{esc(agenda)}"
+    analisis = preguntar_claude(
+        f"""Faltan unos 15 minutos para la apertura de Xetra (09:00 Madrid). Mercado (cambio respecto al cierre anterior):
+{mercado_txt}
+
+Eventos de alto impacto que quedan hoy:
+{agenda}
+
+En máx. 90 palabras: qué sesgo sugieren el Bund y el diferencial EE. UU.-Alemania para el EUR y el GER 40 en la
+sesión europea, si EUR/USD y DAX apuntan en la misma dirección o no, y qué eventos del día pueden romper ese sesgo.
+Si el GER 40 aparece como "cierre anterior", di que aún no hay precio de hoy y no deduzcas un gap. Si las señales se contradicen, dilo.""",
+        max_tokens=400,
     )
     if analisis:
         texto += f"\n\n{esc(analisis)}"
@@ -450,9 +496,10 @@ def mensaje_pre_ny(mercado_txt, eventos_tarde):
 Eventos de alto impacto que quedan hoy:
 {agenda}
 
-En máx. 90 palabras: qué sesgo sugieren los bonos para USD y JPY en la sesión de NY, si el DXY confirma o
-contradice a los bonos, y qué implica para EUR/USD, USD/JPY y NASDAQ. Si las señales se contradicen, dilo.""",
-        max_tokens=400,
+En máx. 100 palabras: qué sesgo sugieren los bonos para USD y JPY en la sesión de NY, si el DXY confirma o
+contradice a los bonos, y qué implica para EUR/USD, USD/JPY, NASDAQ y el GER 40 (que cierra a las 17:30).
+Si las señales se contradicen, dilo.""",
+        max_tokens=450,
     )
     if analisis:
         texto += f"\n\n{esc(analisis)}"
@@ -469,7 +516,7 @@ def mensaje_alerta_mercado(alertas, mercado_txt):
 Foto completa del mercado:
 {mercado_txt}
 
-En máx. 70 palabras: qué implica para USD, JPY, EUR/USD, USD/JPY e índices USA. No inventes la causa.""",
+En máx. 70 palabras: qué implica para USD, EUR, JPY, EUR/USD, USD/JPY, GER 40 e índices USA. No inventes la causa.""",
         max_tokens=300,
     )
     if analisis:
@@ -528,6 +575,9 @@ def main():
     mercado = obtener_mercado() if laborable else {}
     mercado_txt = bloque_mercado(mercado) if mercado else ""
 
+    def restantes_hoy():
+        return [e for e in eventos if e["hora"] > ahora and e["hora"].astimezone(TZ).date() == local.date()]
+
     # 1) Agenda matinal
     if laborable and estado.get("resumen_enviado") != hoy and \
             (local.hour, local.minute) >= hora_hhmm(HORA_RESUMEN) and local.hour < 12:
@@ -536,15 +586,21 @@ def main():
             estado["resumen_enviado"] = hoy
             print("Resumen matinal enviado")
 
-    # 2) Resumen antes de Nueva York
+    # 2) Resumen antes de Fráncfort (apertura de Xetra)
+    if laborable and mercado and estado.get("prefra_enviado") != hoy and \
+            (local.hour, local.minute) >= hora_hhmm(HORA_PRE_FRA) and local.hour < 11:
+        if enviar_telegram(mensaje_pre_fra(mercado_txt, restantes_hoy())):
+            estado["prefra_enviado"] = hoy
+            print("Resumen pre-Fráncfort enviado")
+
+    # 3) Resumen antes de Nueva York
     if laborable and mercado and estado.get("preny_enviado") != hoy and \
             (local.hour, local.minute) >= hora_hhmm(HORA_PRE_NY) and local.hour < 18:
-        tarde = [e for e in eventos if e["hora"] > ahora and e["hora"].astimezone(TZ).date() == local.date()]
-        if enviar_telegram(mensaje_pre_ny(mercado_txt, tarde)):
+        if enviar_telegram(mensaje_pre_ny(mercado_txt, restantes_hoy())):
             estado["preny_enviado"] = hoy
             print("Resumen pre-NY enviado")
 
-    # 3) Alertas 15 min antes de cada evento (agrupa los que salen a la misma hora)
+    # 4) Alertas 15 min antes de cada evento (agrupa los que salen a la misma hora)
     pendientes = [e for e in eventos
                   if not e["sin_hora"]
                   and e["id"] not in estado["avisados"]
@@ -557,7 +613,7 @@ def main():
             estado["avisados"].extend(e["id"] for e in grupo)
             print(f"Alerta enviada: {[e['titulo'] for e in grupo]}")
 
-    # 4) Alertas de mercado (bonos y niveles)
+    # 5) Alertas de mercado (bonos, GER 40 y niveles)
     if mercado:
         avisos = alertas_mercado(mercado, estado)
         if avisos and enviar_telegram(mensaje_alerta_mercado(avisos, mercado_txt)):
