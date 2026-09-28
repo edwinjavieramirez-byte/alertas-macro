@@ -1,5 +1,5 @@
 {
- "descargado": "2026-09-28T11:20:30.850996+00:00",
+ "descargado": "2026-09-28T13:20:36.316304+00:00",
  "eventos": [
   {
    "title": "Monetary Policy Meeting Minutes",
@@ -594,20 +594,20 @@
    "previous": "47.1"
   },
   {
+   "title": "Gov Board Member Tschudin Speaks",
+   "country": "CHF",
+   "date": "2026-09-30T10:30:00-04:00",
+   "impact": "Low",
+   "forecast": "",
+   "previous": ""
+  },
+  {
    "title": "Crude Oil Inventories",
    "country": "USD",
    "date": "2026-09-30T10:30:00-04:00",
    "impact": "Low",
    "forecast": "",
    "previous": "3.0M"
-  },
-  {
-   "title": "Gov Board Member Tschudin Speaks",
-   "country": "CHF",
-   "date": "2026-09-30T11:00:00-04:00",
-   "impact": "Low",
-   "forecast": "",
-   "previous": ""
   },
   {
    "title": "FOMC Member Barkin Speaks",
