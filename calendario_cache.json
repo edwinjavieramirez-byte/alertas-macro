@@ -1,5 +1,5 @@
 {
- "descargado": "2026-09-30T02:10:29.147437+00:00",
+ "descargado": "2026-09-30T04:15:36.963011+00:00",
  "eventos": [
   {
    "title": "Monetary Policy Meeting Minutes",
@@ -622,6 +622,14 @@
    "country": "USD",
    "date": "2026-09-30T15:25:00-04:00",
    "impact": "Low",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "President Trump Speaks",
+   "country": "USD",
+   "date": "2026-09-30T15:30:00-04:00",
+   "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
