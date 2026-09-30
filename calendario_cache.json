@@ -1,5 +1,5 @@
 {
- "descargado": "2026-09-30T10:20:33.010683+00:00",
+ "descargado": "2026-09-30T12:22:32.820339+00:00",
  "eventos": [
   {
    "title": "Monetary Policy Meeting Minutes",
@@ -653,7 +653,7 @@
    "title": "FOMC Member Kashkari Speaks",
    "country": "USD",
    "date": "2026-09-30T18:00:00-04:00",
-   "impact": "Low",
+   "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
