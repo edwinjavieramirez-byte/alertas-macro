@@ -1,5 +1,5 @@
 {
- "descargado": "2026-09-30T00:05:29.812357+00:00",
+ "descargado": "2026-09-30T02:10:29.147437+00:00",
  "eventos": [
   {
    "title": "Monetary Policy Meeting Minutes",
@@ -606,7 +606,7 @@
    "country": "USD",
    "date": "2026-09-30T10:30:00-04:00",
    "impact": "Low",
-   "forecast": "-1.9M",
+   "forecast": "-0.7M",
    "previous": "3.0M"
   },
   {
@@ -750,7 +750,7 @@
    "country": "CHF",
    "date": "2026-10-01T03:30:00-04:00",
    "impact": "Low",
-   "forecast": "56.4",
+   "forecast": "56.3",
    "previous": "57.1"
   },
   {
@@ -958,7 +958,7 @@
    "country": "USD",
    "date": "2026-10-01T10:30:00-04:00",
    "impact": "Low",
-   "forecast": "",
+   "forecast": "63B",
    "previous": "53B"
   },
   {
