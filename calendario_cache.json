@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-01T09:00:55.254332+00:00",
+ "descargado": "2026-10-01T11:05:40.098900+00:00",
  "eventos": [
   {
    "title": "Monetary Policy Meeting Minutes",
@@ -818,17 +818,9 @@
    "previous": "52.0"
   },
   {
-   "title": "Unemployment Rate",
-   "country": "EUR",
-   "date": "2026-10-01T05:00:00-04:00",
-   "impact": "Low",
-   "forecast": "6.4%",
-   "previous": "6.4%"
-  },
-  {
    "title": "Spanish 10-y Bond Auction",
    "country": "EUR",
-   "date": "2026-10-01T05:03:00-04:00",
+   "date": "2026-10-01T04:42:00-04:00",
    "impact": "Low",
    "forecast": "",
    "previous": "3.96|1.7"
@@ -836,10 +828,18 @@
   {
    "title": "French 10-y Bond Auction",
    "country": "EUR",
-   "date": "2026-10-01T05:18:00-04:00",
+   "date": "2026-10-01T04:57:00-04:00",
    "impact": "Low",
    "forecast": "",
    "previous": "4.23|2.3"
+  },
+  {
+   "title": "Unemployment Rate",
+   "country": "EUR",
+   "date": "2026-10-01T05:00:00-04:00",
+   "impact": "Low",
+   "forecast": "6.4%",
+   "previous": "6.4%"
   },
   {
    "title": "Challenger Job Cuts y/y",
