@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-01T23:25:23.054145+00:00",
+ "descargado": "2026-10-02T01:25:24.420654+00:00",
  "eventos": [
   {
    "title": "Monetary Policy Meeting Minutes",
@@ -1010,18 +1010,18 @@
    "previous": ""
   },
   {
-   "title": "FOMC Member Logan Speaks",
-   "country": "USD",
-   "date": "2026-10-01T18:45:00-04:00",
-   "impact": "Low",
-   "forecast": "",
-   "previous": ""
-  },
-  {
    "title": "Bank Holiday",
    "country": "CNY",
    "date": "2026-10-01T19:01:00-04:00",
    "impact": "Holiday",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "FOMC Member Logan Speaks",
+   "country": "USD",
+   "date": "2026-10-01T19:20:00-04:00",
+   "impact": "Low",
    "forecast": "",
    "previous": ""
   },
