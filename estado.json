@@ -1,7 +1,10 @@
 {
  "avisados": [
   "USD|Core PCE Price Index m/m|2026-09-30T08:30:00-04:00",
-  "USD|Final GDP q/q|2026-09-30T08:30:00-04:00"
+  "USD|Final GDP q/q|2026-09-30T08:30:00-04:00",
+  "USD|Average Hourly Earnings m/m|2026-10-02T08:30:00-04:00",
+  "USD|Non-Farm Employment Change|2026-10-02T08:30:00-04:00",
+  "USD|Unemployment Rate|2026-10-02T08:30:00-04:00"
  ],
  "resumen_enviado": "2026-10-02",
  "mercado": {
