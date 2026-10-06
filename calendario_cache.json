@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-06T13:50:30.603861+00:00",
+ "descargado": "2026-10-06T15:50:33.690486+00:00",
  "eventos": [
   {
    "title": "OPEC-JMMC Meetings",
@@ -292,7 +292,7 @@
   {
    "title": "RCM/TIPP Economic Optimism",
    "country": "USD",
-   "date": "2026-10-06T10:10:00-04:00",
+   "date": "2026-10-06T10:01:00-04:00",
    "impact": "Low",
    "forecast": "44.5",
    "previous": "45.6"
@@ -308,7 +308,7 @@
   {
    "title": "GDT Price Index",
    "country": "NZD",
-   "date": "2026-10-06T10:50:00-04:00",
+   "date": "2026-10-06T11:50:00-04:00",
    "impact": "Low",
    "forecast": "",
    "previous": "-1.1%"
