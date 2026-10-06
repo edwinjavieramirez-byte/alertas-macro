@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-06T19:55:24.303252+00:00",
+ "descargado": "2026-10-06T21:55:25.542439+00:00",
  "eventos": [
   {
    "title": "OPEC-JMMC Meetings",
@@ -390,7 +390,7 @@
    "country": "USD",
    "date": "2026-10-07T10:30:00-04:00",
    "impact": "Low",
-   "forecast": "2.1M",
+   "forecast": "1.9M",
    "previous": "0.9M"
   },
   {
@@ -414,7 +414,7 @@
    "country": "USD",
    "date": "2026-10-07T15:00:00-04:00",
    "impact": "Low",
-   "forecast": "14.4B",
+   "forecast": "14.5B",
    "previous": "18.1B"
   },
   {
@@ -430,7 +430,7 @@
    "country": "JPY",
    "date": "2026-10-07T19:50:00-04:00",
    "impact": "Low",
-   "forecast": "2.13T",
+   "forecast": "2.14T",
    "previous": "2.52T"
   },
   {
@@ -462,7 +462,7 @@
    "country": "EUR",
    "date": "2026-10-08T02:00:00-04:00",
    "impact": "Low",
-   "forecast": "18.9B",
+   "forecast": "19.0B",
    "previous": "21.3B"
   },
   {
@@ -558,7 +558,7 @@
    "country": "USD",
    "date": "2026-10-08T10:30:00-04:00",
    "impact": "Low",
-   "forecast": "",
+   "forecast": "79B",
    "previous": "64B"
   },
   {
@@ -622,7 +622,7 @@
    "country": "CAD",
    "date": "2026-10-09T08:30:00-04:00",
    "impact": "High",
-   "forecast": "6.2K",
+   "forecast": "6.3K",
    "previous": "-41.7K"
   },
   {
@@ -638,7 +638,7 @@
    "country": "USD",
    "date": "2026-10-09T10:00:00-04:00",
    "impact": "Medium",
-   "forecast": "47.6",
+   "forecast": "47.5",
    "previous": "47.8"
   },
   {
