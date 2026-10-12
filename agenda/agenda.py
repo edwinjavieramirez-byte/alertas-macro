@@ -52,6 +52,13 @@ HISTORICO_FILE = Path(__file__).resolve().parent / "historico.json"
 
 FF_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json"
 CFTC_URL = "https://publicreporting.cftc.gov/resource/gpe5-46if.json"   # Traders in Financial Futures
+FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv"             # Reserva Federal de St. Louis
+# Históricos diarios de la Fed (Yahoo bloquea a GitHub con el error 429). Cierres del día hábil anterior.
+FRED = {"US2Y": "DGS2", "US10Y": "DGS10", "SPX": "SP500", "NDX": "NASDAQ100", "VIX": "VIXCLS",
+        "EURUSD": "DEXUSEU", "USDJPY": "DEXJPUS", "WTI": "DCOILWTICO"}
+# El DXY no está en la Fed: se reconstruye con su fórmula oficial a partir de los tipos de cambio diarios
+DXY_CESTA = {"DEXUSEU": -0.576, "DEXJPUS": 0.136, "DEXUSUK": -0.119, "DEXCAUS": 0.091,
+             "DEXSDUS": 0.042, "DEXSZUS": 0.036}
 UA = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
                     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"}
 
@@ -271,105 +278,136 @@ def _cnbc(simbolos):
     return salida
 
 
-def _yahoo_serie(simbolo, rango, intervalo):
-    """Devuelve (lista de (datetime_utc, fecha_de_mercado_iso, cierre), meta)."""
+def _yahoo_horaria(simbolo):
+    """Serie horaria de los últimos 5 días: lista de (datetime_utc, cierre)."""
     url = f"https://query1.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(simbolo)}"
-    r = requests.get(url, params={"range": rango, "interval": intervalo}, headers=UA, timeout=25)
+    r = requests.get(url, params={"range": "5d", "interval": "60m"}, headers=UA, timeout=20)
     r.raise_for_status()
     res = r.json()["chart"]["result"][0]
-    meta = res.get("meta", {})
-    offset = int(meta.get("gmtoffset") or 0)
-    ts = res.get("timestamp") or []
-    cierres = res["indicators"]["quote"][0].get("close") or []
     puntos = []
-    for t, c in zip(ts, cierres):
+    for t, c in zip(res.get("timestamp") or [], res["indicators"]["quote"][0].get("close") or []):
         c = a_float(c)
-        if c is None:
-            continue
-        if simbolo == "^TNX" and c > 20:
-            c = c / 10
-        fecha_mercado = datetime.fromtimestamp(t + offset, timezone.utc).date().isoformat()
-        puntos.append((datetime.fromtimestamp(t, timezone.utc), fecha_mercado, c))
-    return puntos, meta
+        if c is not None:
+            puntos.append((datetime.fromtimestamp(t, timezone.utc), c / 10 if simbolo == "^TNX" and c > 20 else c))
+    return puntos
+
+
+def _fred(serie, desde):
+    """Serie diaria de la Fed de St. Louis: {fecha_iso: valor}."""
+    r = requests.get(FRED_URL, params={"id": serie, "cosd": desde}, headers=UA, timeout=30)
+    r.raise_for_status()
+    salida = {}
+    for linea in r.text.strip().splitlines()[1:]:
+        partes = linea.split(",")
+        if len(partes) >= 2:
+            v = a_float(partes[1])
+            if v is not None:
+                salida[partes[0][:10]] = v
+    if not salida:
+        raise ValueError("serie vacía")
+    return salida
+
+
+def obtener_historicos():
+    """Descarga los históricos diarios de la Fed y reconstruye el DXY."""
+    hoy = ahora_utc().date()
+    hist = {}
+    for k, serie in FRED.items():
+        desde = (hoy - timedelta(days=5 * 366 if k in ("SPX", "NDX") else 420)).isoformat()
+        try:
+            hist[k] = _fred(serie, desde)
+        except Exception as e:
+            aviso(f"Fed (FRED) sin histórico de {k} ({e})")
+    cesta = {}
+    for serie in DXY_CESTA:
+        try:
+            cesta[serie] = hist["EURUSD"] if serie == "DEXUSEU" and "EURUSD" in hist else \
+                hist["USDJPY"] if serie == "DEXJPUS" and "USDJPY" in hist else \
+                _fred(serie, (hoy - timedelta(days=420)).isoformat())
+        except Exception as e:
+            aviso(f"Fed (FRED) sin {serie} para reconstruir el DXY ({e})")
+    if len(cesta) == len(DXY_CESTA):
+        comunes = set.intersection(*(set(v) for v in cesta.values()))
+        hist["DXY"] = {f: 50.14348112 * math.prod(cesta[s][f] ** w for s, w in DXY_CESTA.items())
+                       for f in comunes}
+    return hist
 
 
 def obtener_mercado(historico, lunes):
-    """Precio actual, cambio del día, de la semana, serie horaria de la semana y datos diarios.
-    Para cada activo se usa UNA sola fuente para precio e histórico (Yahoo si existe; si no, CNBC),
-    para que los cambios semanales sean coherentes."""
+    """Precio actual (CNBC) + histórico diario (cierres propios guardados cada día y, para rellenar,
+    los de la Fed). Calcula cambio del día, de la semana, medias, distancia al máximo y la serie del gráfico."""
     datos = {}
     try:
         cnbc = _cnbc([i["cnbc"] for i in INSTRUMENTOS.values() if i["cnbc"]])
     except Exception as e:
         aviso(f"CNBC no disponible ({e})")
         cnbc = {}
+    fred = obtener_historicos()
+
+    # Serie horaria de Yahoo para los gráficos: si Yahoo bloquea la primera petición, no se insiste
+    horarias, yahoo_ok = {}, True
+    for k, i in INSTRUMENTOS.items():
+        if not (yahoo_ok and i.get("yahoo")):
+            continue
+        try:
+            horarias[k] = _yahoo_horaria(i["yahoo"])
+        except Exception as e:
+            yahoo_ok = False
+            print(f"Yahoo no disponible ({e}): los gráficos usarán cierres diarios")
 
     inicio_semana = datetime.combine(lunes, datetime.min.time(), TZ).astimezone(timezone.utc)
-    hoy_ny = ahora_utc().astimezone(NY)
+    ahora_ny = ahora_utc().astimezone(NY)
+    dia_habil = ahora_ny.date()
+    while dia_habil.weekday() >= 5:
+        dia_habil -= timedelta(days=1)
+
     for k, i in INSTRUMENTOS.items():
         d = {"nombre": i["nombre"], "grupo": i["grupo"], "tipo": i["tipo"], "dec": i["dec"]}
-        diarios, horaria = [], []
-        if i["yahoo"]:
-            try:
-                diarios, meta = _yahoo_serie(i["yahoo"], "5y", "1d")
-                horaria, _ = _yahoo_serie(i["yahoo"], "5d", "60m")
-            except Exception as e:
-                aviso(f"Yahoo sin datos para {k} ({e})")
-        h = historico.setdefault(k, {})
+        propio = historico.setdefault(k, {})
         q = cnbc.get(i["cnbc"]) if i["cnbc"] else None
-        if diarios:
-            ultimo = horaria[-1][2] if horaria and horaria[-1][0] > diarios[-1][0] else diarios[-1][2]
-            d["fuente"] = "Yahoo"
-            for _, f, c in diarios:
-                h[f] = c
-            h[diarios[-1][1]] = ultimo
-        elif q:
-            ultimo = q["ultimo"]
+        f = fred.get(k, {})
+        if q:
+            ultimo, anterior = q["ultimo"], q["anterior"]
+            propio[dia_habil.isoformat()] = ultimo        # cierre propio (la última lectura del día)
             d["fuente"] = "CNBC"
-            if hoy_ny.weekday() < 5 or not h:
-                # cierre aproximado: la última lectura del día (en fin de semana, el último día hábil)
-                dia = hoy_ny.date()
-                while dia.weekday() >= 5:
-                    dia -= timedelta(days=1)
-                h[dia.isoformat()] = ultimo
+        elif f:
+            fs = sorted(f)
+            ultimo, anterior = f[fs[-1]], (f[fs[-2]] if len(fs) > 1 else None)
+            d["fuente"] = "Fed (cierre anterior)"
         else:
             aviso(f"Sin precio para {k}")
             continue
-        for vieja in sorted(h)[:-1300]:
-            del h[vieja]
-        fechas = sorted(h)
-        cierres = [h[f] for f in fechas]
+        for vieja in sorted(propio)[:-400]:
+            del propio[vieja]
+        combinado = dict(f)
+        combinado.update(propio)                           # lo propio manda sobre la Fed
+        fechas = sorted(combinado)
+        cierres = [combinado[x] for x in fechas]
 
-        d["ultimo"] = ultimo
-        d["anterior"] = cierres[-2] if len(cierres) > 1 else None
-        if d["fuente"] == "CNBC" and q.get("anterior") is not None:
-            d["anterior"] = q["anterior"]                   # CNBC trae el cierre oficial de ayer
-        d["fecha_dato"] = fechas[-1]
-        d["cambio_dia"] = cambio(i["tipo"], ultimo, d["anterior"])
-        # cierre de referencia: último cierre ANTES del lunes de la semana mostrada
-        ref = [h[f] for f in fechas if f < lunes.isoformat()]
-        d["cierre_semana_anterior"] = ref[-1] if ref else None
+        d["ultimo"] = redondear(ultimo, 5)
+        d["anterior"] = redondear(anterior, 5)
+        d["cambio_dia"] = cambio(i["tipo"], ultimo, anterior)
+        ref = [combinado[x] for x in fechas if x < lunes.isoformat()]
+        d["cierre_semana_anterior"] = redondear(ref[-1], 5) if ref else None
         d["cambio_semana"] = cambio(i["tipo"], ultimo, d["cierre_semana_anterior"])
-        # semana anterior completa (viernes a viernes)
-        ref2 = [h[f] for f in fechas if f < (lunes - timedelta(days=7)).isoformat()]
+        ref2 = [combinado[x] for x in fechas if x < (lunes - timedelta(days=7)).isoformat()]
         d["cambio_semana_anterior"] = cambio(i["tipo"], d["cierre_semana_anterior"], ref2[-1] if ref2 else None)
         d["sma20"] = redondear(sma(cierres, 20), 5)
         d["sma50"] = redondear(sma(cierres, 50), 5)
         d["sma200"] = redondear(sma(cierres, 200), 5)
-        if diarios and i["grupo"] == "indices" and k != "VIX":
-            maximo = max(c for _, _, c in diarios)
+        if i["grupo"] == "indices" and k != "VIX" and len(cierres) > 200:
+            maximo = max(cierres + [ultimo])
             d["maximo_5a"] = maximo
             d["dist_maximo_pct"] = round((ultimo / maximo - 1) * 100, 2)
-        # serie horaria de la semana mostrada (si aún no ha empezado: los últimos 5 días)
-        serie = [(t, c) for t, _, c in horaria if t >= inicio_semana]
-        d["serie_semana_actual"] = bool(serie)
-        if not serie:
-            serie = [(t, c) for t, _, c in horaria]
-        d["serie"] = [redondear(c, 5) for _, c in serie][-140:]
-        d["diario"] = [[f, redondear(h[f], 5)] for f in fechas[-30:]]
-        d["ultimo"] = redondear(ultimo, 5)
-        d["anterior"] = redondear(d["anterior"], 5)
-        d["cierre_semana_anterior"] = redondear(d["cierre_semana_anterior"], 5)
+        h = horarias.get(k) or []
+        serie = [c for t, c in h if t >= inicio_semana] or [c for _, c in h]
+        if serie:
+            d["serie_tipo"] = "horas"
+        else:
+            serie = cierres[-30:]
+            d["serie_tipo"] = "dias"
+        d["serie"] = [redondear(c, 5) for c in serie][-140:]
+        d["diario"] = [[x, redondear(combinado[x], 5)] for x in fechas[-30:]]
         datos[k] = d
 
     if "US10Y" in datos and "DE10Y" in datos:
@@ -591,11 +629,12 @@ def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea=""):
         if busquedas:
             cuerpo["tools"] = [{"type": "web_search_20250305", "name": "web_search", "max_uses": busquedas}]
         uso = {"entrada": 0, "salida": 0, "busquedas": 0}
+        partes, motivo = [], None
         try:
-            for _ in range(4):        # pause_turn: una búsqueda larga puede pausarse y hay que reanudarla
+            for _ in range(5):        # pause_turn: una búsqueda larga puede pausarse y hay que reanudarla
                 r = requests.post("https://api.anthropic.com/v1/messages", headers={
                     "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01",
-                    "content-type": "application/json"}, json=cuerpo, timeout=180)
+                    "content-type": "application/json"}, json=cuerpo, timeout=240)
                 if r.status_code == 400 and "tools" in cuerpo and "web search" in r.text.lower():
                     aviso("La búsqueda web de la API no está habilitada: sigo sin ella")
                     cuerpo.pop("tools", None)
@@ -609,16 +648,23 @@ def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea=""):
                     + (u.get("cache_read_input_tokens") or 0)
                 uso["salida"] += u.get("output_tokens") or 0
                 uso["busquedas"] += (u.get("server_tool_use") or {}).get("web_search_requests") or 0
-                if res.get("stop_reason") == "pause_turn":
+                partes.append("".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text"))
+                motivo = res.get("stop_reason")
+                if motivo == "pause_turn":
                     cuerpo["messages"] = cuerpo["messages"] + [{"role": "assistant", "content": res["content"]}]
                     continue
-                texto = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
-                pe, ps = PRECIOS.get(mod, (2.0, 10.0))
-                usd = uso["entrada"] * pe / 1e6 + uso["salida"] * ps / 1e6 + uso["busquedas"] * PRECIO_BUSQUEDA
-                GASTOS.append({"tarea": tarea, "modelo": mod, **uso, "usd": round(usd, 4)})
-                print(f"Claude ({mod}) · {tarea}: {uso['entrada']} tokens de entrada, {uso['salida']} de salida, "
-                      f"{uso['busquedas']} búsquedas = {usd:.4f} $")
-                return texto.strip()
+                break
+            pe, ps = PRECIOS.get(mod, (2.0, 10.0))
+            usd = uso["entrada"] * pe / 1e6 + uso["salida"] * ps / 1e6 + uso["busquedas"] * PRECIO_BUSQUEDA
+            GASTOS.append({"tarea": tarea, "modelo": mod, **uso, "usd": round(usd, 4)})
+            texto = "".join(partes).strip()
+            print(f"Claude ({mod}) · {tarea}: {uso['entrada']} tokens de entrada, {uso['salida']} de salida, "
+                  f"{uso['busquedas']} búsquedas = {usd:.4f} $ · fin: {motivo} · {len(texto)} caracteres")
+            if motivo == "max_tokens":
+                aviso(f"Claude se quedó sin espacio al escribir ({tarea}); puede salir incompleto")
+            if not texto:
+                aviso(f"Claude no devolvió texto ({tarea}, fin: {motivo})")
+            return texto or None
         except Exception as e:
             aviso(f"Fallo al llamar a Claude con {mod} ({str(e)[:300]})")
             continue
@@ -723,8 +769,20 @@ Responde SOLO con un JSON válido (sin texto antes ni después) con esta estruct
 En "escenarios" incluye solo los 4-7 eventos de impacto alto más importantes. En "si_mayor"/"si_menor" ten en cuenta
 que en paro y peticiones de subsidio un número mayor es PEOR para la economía. Si hay un discurso o evento sin
 previsión numérica, usa "si_mayor" para el tono duro (hawkish) y "si_menor" para el blando (dovish)."""
-    return extraer_json(llamar_claude(prompt, max_tokens=4000, busquedas=7, modelo=MODELO_SEMANAL,
-                                      tarea="tesis semanal"))
+    texto = llamar_claude(prompt, max_tokens=8000, busquedas=5, modelo=MODELO_SEMANAL, tarea="tesis semanal")
+    n = extraer_json(texto)
+    if isinstance(n, dict) and n.get("tesis"):
+        return n
+    if texto:
+        # Si el JSON salió roto o incompleto, un modelo barato lo recompone con lo ya investigado (sin buscar otra vez)
+        aviso("Recomponiendo la tesis con el texto ya investigado")
+        pedido = prompt[prompt.index("Responde SOLO con un JSON"):]
+        n = extraer_json(llamar_claude(f"Información ya investigada para la semana del {lunes}:\n{texto[-30000:]}\n\n"
+                                       f"Con esa información y estos datos:\n{texto_sesgo(datos['sesgo'])}\n\n{pedido}",
+                                       max_tokens=6000, modelo=MODELO_DIARIO, tarea="recomponer tesis"))
+        if isinstance(n, dict) and n.get("tesis"):
+            return n
+    return None
 
 
 def obtener_resultados(eventos):
@@ -883,7 +941,10 @@ def main():
         datos["semana_anterior"] = datos_prev.get("semana_anterior")
 
     # 7) Narrativa semanal (una vez por semana, o si falta / se fuerza)
-    if not SIN_CLAUDE and (datos["narrativa"] is None or FORZAR_SEMANAL):
+    intentos = control.get("tesis_intentos", {})
+    n_int = intentos.get(lunes.isoformat(), 0)
+    if not SIN_CLAUDE and ((datos["narrativa"] is None and n_int < 2) or FORZAR_SEMANAL):
+        control["tesis_intentos"] = {lunes.isoformat(): n_int + 1}     # máx. 2 intentos automáticos por semana
         n = narrativa_semanal(datos, archivo_prev)
         if n:
             datos["narrativa"] = n
