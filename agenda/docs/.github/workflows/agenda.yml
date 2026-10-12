@@ -1,0 +1,62 @@
+name: Agenda macro
+
+on:
+  # Pruebas y actualizaciones a mano: Actions → "Agenda macro" → Run workflow
+  workflow_dispatch:
+    inputs:
+      forzar_semanal:
+        description: "Rehacer tesis y escenarios de la semana (1 = sí)"
+        required: false
+        default: "0"
+  # Cuando se cambia el script o la página, se regenera para comprobarlo
+  push:
+    branches: [main]
+    paths:
+      - "agenda/agenda.py"
+      - ".github/workflows/agenda.yml"
+  schedule:
+    # Horas en UTC (Madrid = UTC+2 en verano, UTC+1 en invierno).
+    - cron: "0 16 * * 0"      # domingo 18:00 Madrid (17:00 en invierno): monta la semana nueva
+    - cron: "45 20 * * 1-5"   # L-V 22:45 Madrid (21:45 en invierno): cierre de Nueva York
+
+concurrency:
+  group: agenda
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Generar datos de la agenda
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AGENDA_MODELO_SEMANAL: ${{ vars.AGENDA_MODELO_SEMANAL }}
+          AGENDA_MODELO_DIARIO: ${{ vars.AGENDA_MODELO_DIARIO }}
+          FORZAR_SEMANAL: ${{ github.event.inputs.forzar_semanal }}
+        run: python agenda/agenda.py
+
+      - name: Guardar datos
+        run: |
+          git config user.name "agenda-bot"
+          git config user.email "agenda-bot@users.noreply.github.com"
+          git add -A docs/ agenda/historico.json
+          if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
+          git commit -m "agenda: datos $(date -u +%Y-%m-%dT%H:%M)" -q
+          for i in 1 2 3 4 5; do
+            git pull --rebase -q && git push -q && exit 0
+            echo "Reintento $i"; sleep 5
+          done
+          exit 1
