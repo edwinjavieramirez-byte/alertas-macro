@@ -750,6 +750,17 @@ def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea="", e
     return None
 
 
+def limpiar(obj):
+    """Quita las marcas de cita (cite index="..."> que deja la búsqueda web dentro del texto."""
+    if isinstance(obj, str):
+        return re.sub(r"[ \t]{2,}", " ", re.sub(r"</?cite[^>]*>", "", obj)).strip()
+    if isinstance(obj, list):
+        return [limpiar(x) for x in obj]
+    if isinstance(obj, dict):
+        return {k: limpiar(v) for k, v in obj.items()}
+    return obj
+
+
 def extraer_json(texto):
     if not texto:
         return None
@@ -758,7 +769,7 @@ def extraer_json(texto):
         i, j = texto.find(abre), texto.rfind(cierra)
         if i != -1 and j > i:
             try:
-                return json.loads(texto[i:j + 1])
+                return limpiar(json.loads(texto[i:j + 1]))
             except json.JSONDecodeError:
                 continue
     aviso("Claude no devolvió un JSON válido")
@@ -1029,6 +1040,12 @@ def main():
         if n:
             datos["narrativa"] = n
             datos["narrativa"]["generada"] = local.strftime("%d/%m %H:%M")
+            # Claude a veces devuelve el título del evento en vez de su id: se enlaza por el título
+            por_titulo = {e["titulo_en"]: e["id"] for e in calendario}
+            ids = {e["id"] for e in calendario}
+            for esc_ in n.get("escenarios") or []:
+                if esc_.get("id") not in ids and esc_.get("id") in por_titulo:
+                    esc_["id"] = por_titulo[esc_["id"]]
             for e in calendario:
                 es = (n.get("titulos_es") or {}).get(e["titulo_en"])
                 if es and e["titulo"] == e["titulo_en"]:
@@ -1038,7 +1055,7 @@ def main():
     if not SIN_CLAUDE and hoy_ya_publicado and control.get("nota_dia") != hoy.isoformat():
         texto = resumen_del_dia(datos, de_hoy)
         if texto:
-            datos["nota_dia"] = {"texto": texto, "generada": local.strftime("%d/%m %H:%M"), "fecha": hoy.isoformat()}
+            datos["nota_dia"] = {"texto": limpiar(texto), "generada": local.strftime("%d/%m %H:%M"), "fecha": hoy.isoformat()}
             control["nota_dia"] = hoy.isoformat()
 
     # 9) Coste real de la API (se acumula por semana y en total)
