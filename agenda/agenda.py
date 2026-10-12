@@ -29,7 +29,8 @@ from zoneinfo import ZoneInfo
 import requests
 
 # ----------------------------------------------------------------- configuración
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+# .strip(): si la clave se pegó con un espacio o un salto de línea al final, la API la rechaza
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
 MODELO_SEMANAL = os.getenv("AGENDA_MODELO_SEMANAL") or "claude-sonnet-5-5"   # redacta la tesis del domingo
 MODELO_DIARIO = os.getenv("AGENDA_MODELO_DIARIO") or "claude-haiku-5-5"       # resultados y resumen del día
 MODELO_RESPALDO = "claude-haiku-4-5"                                           # si el anterior falla
@@ -133,7 +134,17 @@ DIAS = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Doming
 DIAGNOSTICO = []
 
 
+def ocultar(texto):
+    """Quita cualquier clave de la API de un texto antes de imprimirlo o guardarlo en datos.json,
+    que es público. Así un error nunca puede filtrar la clave."""
+    texto = str(texto)
+    if ANTHROPIC_API_KEY:
+        texto = texto.replace(ANTHROPIC_API_KEY, "[clave oculta]")
+    return re.sub(r"sk-ant-[A-Za-z0-9_\-]{8,}", "[clave oculta]", texto)
+
+
 def aviso(texto):
+    texto = ocultar(texto)
     print("AVISO:", texto)
     DIAGNOSTICO.append(texto)
 
@@ -150,7 +161,7 @@ def guardar_json(path, data, compacto=False):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     texto = json.dumps(data, ensure_ascii=False, separators=(",", ":")) if compacto else \
         json.dumps(data, ensure_ascii=False, indent=1)
-    Path(path).write_text(texto, encoding="utf-8")
+    Path(path).write_text(ocultar(texto), encoding="utf-8")      # última barrera: nunca guardar una clave
 
 
 def ahora_utc():
