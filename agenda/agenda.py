@@ -294,7 +294,7 @@ def _yahoo_horaria(simbolo):
 
 def _fred(serie, desde):
     """Serie diaria de la Fed de St. Louis: {fecha_iso: valor}."""
-    r = requests.get(FRED_URL, params={"id": serie, "cosd": desde}, headers=UA, timeout=30)
+    r = requests.get(FRED_URL, params={"id": serie, "cosd": desde}, headers=UA, timeout=12)
     r.raise_for_status()
     salida = {}
     for linea in r.text.strip().splitlines()[1:]:
@@ -308,29 +308,101 @@ def _fred(serie, desde):
     return salida
 
 
-def obtener_historicos():
-    """Descarga los históricos diarios de la Fed y reconstruye el DXY."""
+def _cnbc_barras(simbolo, desde):
+    """Cierres diarios de CNBC (la misma fuente que el precio actual): {fecha_iso: cierre}."""
+    url = (f"https://ts-api.cnbc.com/harmony/app/bars/{requests.utils.quote(simbolo, safe='')}/1D/"
+           f"{desde:%Y%m%d}000000/{ahora_utc():%Y%m%d}235959/adjusted/EST5EDT.json")
+    r = requests.get(url, headers=UA, timeout=15)
+    r.raise_for_status()
+    barras = ((r.json() or {}).get("barData") or {}).get("priceBars") or []
+    salida = {}
+    for b in barras:
+        t, c = str(b.get("tradeTime") or ""), a_float(b.get("close"))
+        if len(t) >= 8 and c is not None:
+            salida[f"{t[:4]}-{t[4:6]}-{t[6:8]}"] = c
+    if not salida:
+        raise ValueError("sin barras")
+    return salida
+
+
+def _yahoo_diario(sesion, simbolo, crumb):
+    url = f"https://query2.finance.yahoo.com/v8/finance/chart/{requests.utils.quote(simbolo)}"
+    r = sesion.get(url, params={"range": "5y", "interval": "1d", "crumb": crumb}, timeout=15)
+    r.raise_for_status()
+    res = r.json()["chart"]["result"][0]
+    off = int(res.get("meta", {}).get("gmtoffset") or 0)
+    salida = {}
+    for t, c in zip(res.get("timestamp") or [], res["indicators"]["quote"][0].get("close") or []):
+        c = a_float(c)
+        if c is not None:
+            salida[datetime.fromtimestamp(t + off, timezone.utc).date().isoformat()] = \
+                c / 10 if simbolo == "^TNX" and c > 20 else c
+    if not salida:
+        raise ValueError("sin datos")
+    return salida
+
+
+def rellenar_historico(historico):
+    """Solo hace falta UNA vez: si a un activo le faltan días de histórico, se intenta descargar de
+    CNBC, después de Yahoo y por último de la Fed. Cada fuente se abandona al primer fallo para no
+    perder tiempo. Lo descargado se guarda en historico.json y a partir de ahí basta con el cierre
+    propio de cada día."""
+    faltan = [k for k in INSTRUMENTOS if len(historico.get(k, {})) < 210]
+    if not faltan:
+        return
     hoy = ahora_utc().date()
-    hist = {}
-    for k, serie in FRED.items():
-        desde = (hoy - timedelta(days=5 * 366 if k in ("SPX", "NDX") else 420)).isoformat()
+    desde = hoy - timedelta(days=5 * 366)
+
+    def guardar(k, serie, fuente):
+        h = historico.setdefault(k, {})
+        nuevos = 0
+        for f, v in serie.items():
+            if f not in h:
+                h[f] = v
+                nuevos += 1
+        print(f"Histórico {k}: {nuevos} días de {fuente}")
+
+    # 1) CNBC
+    for k in list(faltan):
         try:
-            hist[k] = _fred(serie, desde)
+            guardar(k, _cnbc_barras(INSTRUMENTOS[k]["cnbc"], desde), "CNBC")
+            faltan.remove(k)
         except Exception as e:
-            aviso(f"Fed (FRED) sin histórico de {k} ({e})")
-    cesta = {}
-    for serie in DXY_CESTA:
+            print(f"CNBC sin histórico ({k}: {e}); paso a Yahoo")
+            break
+    # 2) Yahoo, con cookie y "crumb" como un navegador
+    if any(INSTRUMENTOS[k].get("yahoo") for k in faltan):
         try:
-            cesta[serie] = hist["EURUSD"] if serie == "DEXUSEU" and "EURUSD" in hist else \
-                hist["USDJPY"] if serie == "DEXJPUS" and "USDJPY" in hist else \
-                _fred(serie, (hoy - timedelta(days=420)).isoformat())
+            ses = requests.Session()
+            ses.headers.update(UA)
+            ses.get("https://fc.yahoo.com", timeout=10)
+            crumb = ses.get("https://query2.finance.yahoo.com/v1/test/getcrumb", timeout=10).text.strip()
+            for k in list(faltan):
+                if INSTRUMENTOS[k].get("yahoo"):
+                    guardar(k, _yahoo_diario(ses, INSTRUMENTOS[k]["yahoo"], crumb), "Yahoo")
+                    faltan.remove(k)
         except Exception as e:
-            aviso(f"Fed (FRED) sin {serie} para reconstruir el DXY ({e})")
-    if len(cesta) == len(DXY_CESTA):
-        comunes = set.intersection(*(set(v) for v in cesta.values()))
-        hist["DXY"] = {f: 50.14348112 * math.prod(cesta[s][f] ** w for s, w in DXY_CESTA.items())
-                       for f in comunes}
-    return hist
+            print(f"Yahoo sin histórico ({e}); paso a la Fed")
+    # 3) Fed de St. Louis (y DXY reconstruido con su fórmula)
+    if faltan:
+        try:
+            cache = {}
+            for k in list(faltan):
+                if k in FRED:
+                    cache[FRED[k]] = _fred(FRED[k], desde.isoformat())
+                    guardar(k, cache[FRED[k]], "la Fed")
+                    faltan.remove(k)
+            if "DXY" in faltan:
+                cesta = {sid: cache.get(sid) or _fred(sid, (hoy - timedelta(days=420)).isoformat()) for sid in DXY_CESTA}
+                comunes = set.intersection(*(set(v) for v in cesta.values()))
+                guardar("DXY", {f: 50.14348112 * math.prod(cesta[sid][f] ** w for sid, w in DXY_CESTA.items())
+                                for f in comunes}, "la Fed (DXY reconstruido)")
+                faltan.remove("DXY")
+        except Exception as e:
+            print(f"La Fed sin histórico ({e})")
+    if faltan:
+        print("Aún sin histórico suficiente para: " + ", ".join(faltan) +
+              ". Se irá completando con el cierre de cada día; mientras, esos factores del sesgo no cuentan.")
 
 
 def obtener_mercado(historico, lunes):
@@ -342,7 +414,7 @@ def obtener_mercado(historico, lunes):
     except Exception as e:
         aviso(f"CNBC no disponible ({e})")
         cnbc = {}
-    fred = obtener_historicos()
+    rellenar_historico(historico)
 
     # Serie horaria de Yahoo para los gráficos: si Yahoo bloquea la primera petición, no se insiste
     horarias, yahoo_ok = {}, True
@@ -365,19 +437,19 @@ def obtener_mercado(historico, lunes):
         d = {"nombre": i["nombre"], "grupo": i["grupo"], "tipo": i["tipo"], "dec": i["dec"]}
         propio = historico.setdefault(k, {})
         q = cnbc.get(i["cnbc"]) if i["cnbc"] else None
-        f = fred.get(k, {})
+        f = {}
         if q:
             ultimo, anterior = q["ultimo"], q["anterior"]
             propio[dia_habil.isoformat()] = ultimo        # cierre propio (la última lectura del día)
             d["fuente"] = "CNBC"
-        elif f:
-            fs = sorted(f)
-            ultimo, anterior = f[fs[-1]], (f[fs[-2]] if len(fs) > 1 else None)
-            d["fuente"] = "Fed (cierre anterior)"
+        elif len(propio) > 1:
+            fs = sorted(propio)
+            ultimo, anterior = propio[fs[-1]], propio[fs[-2]]
+            d["fuente"] = "histórico (cierre anterior)"
         else:
             aviso(f"Sin precio para {k}")
             continue
-        for vieja in sorted(propio)[:-400]:
+        for vieja in sorted(propio)[:-1300]:
             del propio[vieja]
         combinado = dict(f)
         combinado.update(propio)                           # lo propio manda sobre la Fed
@@ -615,7 +687,7 @@ fijas que se te dan; explícalo y señala si el contexto lo contradice, pero no 
 Horas siempre en hora de Madrid."""
 
 
-def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea=""):
+def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea="", esfuerzo="low"):
     """Devuelve el texto final o None. Con busquedas>0 activa la búsqueda web del servidor.
     Apunta en GASTOS los tokens y búsquedas consumidos para calcular el coste real."""
     if SIN_CLAUDE or not ANTHROPIC_API_KEY:
@@ -626,6 +698,10 @@ def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea=""):
     for mod in modelos:
         cuerpo = {"model": mod, "max_tokens": max_tokens, "system": PROMPT_SISTEMA,
                   "messages": [{"role": "user", "content": prompt}]}
+        if not mod.startswith(("claude-haiku-4", "claude-sonnet-4", "claude-opus-4")):
+            # Los modelos 5.x "piensan" antes de responder y ese pensamiento gasta max_tokens:
+            # con esfuerzo bajo piensan menos y dejan sitio a la respuesta
+            cuerpo["output_config"] = {"effort": esfuerzo}
         if busquedas:
             cuerpo["tools"] = [{"type": "web_search_20250305", "name": "web_search", "max_uses": busquedas}]
         uso = {"entrada": 0, "salida": 0, "busquedas": 0}
@@ -638,6 +714,9 @@ def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea=""):
                 if r.status_code == 400 and "tools" in cuerpo and "web search" in r.text.lower():
                     aviso("La búsqueda web de la API no está habilitada: sigo sin ella")
                     cuerpo.pop("tools", None)
+                    continue
+                if r.status_code == 400 and "output_config" in cuerpo and ("effort" in r.text or "output_config" in r.text):
+                    cuerpo.pop("output_config", None)          # modelo que no admite "effort": se reintenta sin él
                     continue
                 if r.status_code in (400, 404) and "model" in r.text.lower():
                     raise ValueError(f"modelo {mod} no disponible: {r.text[:200]}")
@@ -769,7 +848,8 @@ Responde SOLO con un JSON válido (sin texto antes ni después) con esta estruct
 En "escenarios" incluye solo los 4-7 eventos de impacto alto más importantes. En "si_mayor"/"si_menor" ten en cuenta
 que en paro y peticiones de subsidio un número mayor es PEOR para la economía. Si hay un discurso o evento sin
 previsión numérica, usa "si_mayor" para el tono duro (hawkish) y "si_menor" para el blando (dovish)."""
-    texto = llamar_claude(prompt, max_tokens=8000, busquedas=5, modelo=MODELO_SEMANAL, tarea="tesis semanal")
+    texto = llamar_claude(prompt, max_tokens=16000, busquedas=5, modelo=MODELO_SEMANAL, tarea="tesis semanal",
+                          esfuerzo="medium")
     n = extraer_json(texto)
     if isinstance(n, dict) and n.get("tesis"):
         return n
