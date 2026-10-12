@@ -280,7 +280,7 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
 (function(){
 "use strict";
 const $=s=>document.querySelector(s);
-const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s??"").replace(/<\/?cite[^>]*>/g,"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const DIAS=["Lunes","Martes","Miércoles","Jueves","Viernes"];
 const fmt=(n,d)=>{if(n==null||isNaN(n))return"—";const p=Math.abs(+n).toFixed(d).split(".");return(n<0?"−":"")+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,".")+(p[1]?","+p[1]:"")};
@@ -345,7 +345,8 @@ function agenda(){
   $("#diaTabs").innerHTML=`<button role="tab" type="button" data-d="todos" aria-selected="${diaSel==="todos"}">Semana</button>`+
     dias.map((d,i)=>`<button role="tab" type="button" data-d="${d}" aria-selected="${diaSel===d}">${DIAS[i].slice(0,3)} ${+d.slice(8)}<small>${n(d)||""}</small></button>`).join("");
   $("#diaTabs").onclick=e=>{const b=e.target.closest("button");if(b){diaSel=b.dataset.d;agenda()}};
-  const esc_={};(N.escenarios||[]).forEach(x=>esc_[x.id]=x);
+  // Escenarios: se enlazan por id y, si Claude devolvió el título, por el título del evento
+  const esc_={};(N.escenarios||[]).forEach(x=>{const e=cal.find(c=>c.id===x.id)||cal.find(c=>c.titulo_en===x.id||c.titulo===x.id);if(e)esc_[e.id]=x});
   const otros=N.otros_eventos||[];
   const ver=diaSel==="todos"?dias:[diaSel];let h="";
   ver.forEach(d=>{
