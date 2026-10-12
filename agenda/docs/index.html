@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Agenda Macro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script>try{var t=localStorage.getItem("agenda-macro.estilo");if(t==="onix"||t==="marino"||t==="perla")document.documentElement.setAttribute("data-estilo",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* Mismo sistema visual que la Bitácora de Trading: tres estilos (Ónix y oro · Marino y champán · Perla y verde inglés),
+   cabecera con filete dorado, franja de resumen tipo libro mayor y paneles. */
+:root{--sans:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--r:14px;--r-sm:9px}
+:root,:root[data-estilo="onix"]{
+  color-scheme:dark;
+  --bg:#12110f;--surface:#1b1a17;--surface-2:#22201c;--raised:#2a2722;
+  --ink:#efe9dd;--ink-2:#bfb6a6;--muted:#8c8475;--line:#2d2a25;--line-strong:#433e35;
+  --accent:#c9a85c;--accent-2:#e6cf98;--accent-ink:#17120a;--accent-soft:rgba(201,168,92,.13);
+  --pos:#5aae88;--neg:#cf6a5f;--pos-t:#8acdab;--neg-t:#ee978c;--pos-bg:rgba(90,174,136,.12);--neg-bg:rgba(207,106,95,.13);
+  --warn-t:#e5c27a;--warn-bg:rgba(229,194,122,.12);--info-t:#a3bfe6;--info-bg:rgba(100,140,200,.15);
+  --display:"Cormorant Garamond",Georgia,"Times New Roman",serif;--dw:600;--dt:.005em;
+  --h1:31px;--h2:26px;--h3:19px;--kv:38px;--kv2:27px;
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 14px 40px -18px rgba(0,0,0,.6);
+  --rule:linear-gradient(90deg,transparent,var(--accent) 18%,var(--accent-2) 50%,var(--accent) 82%,transparent);
+}
+:root[data-estilo="marino"]{
+  color-scheme:dark;
+  --bg:#0a1427;--surface:#112039;--surface-2:#172844;--raised:#1c2f50;
+  --ink:#eef2f8;--ink-2:#b9c4d8;--muted:#8594b0;--line:#1f3256;--line-strong:#30497a;
+  --accent:#d8bf8f;--accent-2:#f1e2c2;--accent-ink:#1a1408;--accent-soft:rgba(216,191,143,.13);
+  --pos:#4dbb94;--neg:#e07a72;--pos-t:#83d6b6;--neg-t:#f4a39b;--pos-bg:rgba(77,187,148,.12);--neg-bg:rgba(224,122,114,.13);
+  --warn-t:#ecca86;--warn-bg:rgba(236,202,134,.12);--info-t:#9cc3f0;--info-bg:rgba(90,150,220,.16);
+  --display:"Bodoni Moda",Didot,"Bodoni 72",Georgia,serif;--dw:500;--dt:0;
+  --h1:27px;--h2:22px;--h3:17px;--kv:33px;--kv2:24px;
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 40px -18px rgba(0,0,0,.65);
+  --rule:linear-gradient(90deg,transparent,var(--accent) 18%,var(--accent-2) 50%,var(--accent) 82%,transparent);
+}
+:root[data-estilo="perla"]{
+  color-scheme:light;
+  --bg:#e8eae8;--surface:#fbfbf9;--surface-2:#f1f2f0;--raised:#ffffff;
+  --ink:#13201a;--ink-2:#44514a;--muted:#6f7a74;--line:#dde1dd;--line-strong:#c2c8c3;
+  --accent:#1d4a3a;--accent-2:#a8843e;--accent-ink:#f5f2e8;--accent-soft:rgba(29,74,58,.08);
+  --pos:#1f7a52;--neg:#b23c3c;--pos-t:#17663f;--neg-t:#a02f2f;--pos-bg:rgba(31,122,82,.08);--neg-bg:rgba(178,60,60,.08);
+  --warn-t:#8a5a00;--warn-bg:#f6ecd6;--info-t:#1d5aa6;--info-bg:#e3ecf8;
+  --display:"Manrope",system-ui,sans-serif;--dw:700;--dt:-.025em;
+  --h1:23px;--h2:19px;--h3:15.5px;--kv:30px;--kv2:22px;
+  --shadow:0 1px 2px rgba(19,32,26,.05),0 12px 32px -20px rgba(19,32,26,.25);
+  --rule:linear-gradient(90deg,var(--accent-2),var(--accent-2) 30%,transparent);
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;margin:0;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:24px;padding-block:26px 64px;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{margin:0;text-wrap:balance;font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);line-height:1.15;font-variant-numeric:lining-nums}
+h1{font-size:var(--h1)} h2{font-size:var(--h2)} h3{font-size:var(--h3)}
+p{margin:0}
+.num,.mono{font-variant-numeric:tabular-nums}
+.label{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.01em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:var(--accent)}
+.up{color:var(--pos-t)} .down{color:var(--neg-t)} .flat{color:var(--muted)}
+
+/* Cabecera */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-bottom:18px;position:relative}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--rule);opacity:.7}
+.brand{display:flex;align-items:center;gap:14px;min-width:0}
+.mark{width:46px;height:46px;border-radius:50%;border:1px solid var(--accent);display:grid;place-items:center;flex:none;position:relative;color:var(--accent)}
+.mark::before{content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid var(--accent);opacity:.35}
+.mark span{font-family:var(--display);font-weight:var(--dw);font-size:20px;letter-spacing:.02em;line-height:1}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.themes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;font-size:13px;color:var(--ink-2)}
+.tbtn i{width:22px;height:22px;border-radius:50%;display:block;flex:none;box-shadow:inset 0 0 0 1px rgba(127,127,127,.35)}
+.tbtn[aria-checked="true"]{border-color:var(--accent);color:var(--ink);background:var(--accent-soft)}
+.tbtn:hover{border-color:var(--accent)}
+
+/* Franja de estado */
+.status{display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px;padding:12px 16px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.status .info{flex:1 1 260px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.status .info strong{font-weight:600}
+.status .info span{color:var(--ink-2);font-size:13px}
+.status .meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2)}
+.status .meta b{color:var(--ink);font-weight:700}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.tag.sample{background:var(--warn-bg);color:var(--warn-t)}
+.msg{font-size:13px;padding:10px 12px;border-radius:var(--r-sm)}
+.msg.warn{background:var(--warn-bg);color:var(--warn-t)}
+
+/* Resumen de sesgo (libro mayor) */
+.ledger{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.lg-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.kpi{padding:18px 20px;display:flex;flex-direction:column;gap:6px;min-width:0;position:relative}
+.kpi+.kpi::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:1px;background:var(--line)}
+.kpi .v{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:var(--kv);line-height:1.1;font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.kpi .v small{font-size:.5em;color:var(--muted)}
+.kpi .s{font-size:12.5px;color:var(--ink-2)}
+.meter{position:relative;height:6px;border-radius:3px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.meter i{position:absolute;top:0;bottom:0;border-radius:3px}
+.meter b{position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:var(--line-strong)}
+
+/* Paneles */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px 22px;display:flex;flex-direction:column;gap:16px;min-width:0;box-shadow:var(--shadow)}
+.phead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 16px}
+.phead p{margin:4px 0 0;color:var(--muted);font-size:13px;max-width:70ch}
+.grid2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:22px}
+.lead{color:var(--ink-2);max-width:75ch}
+.titular{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:calc(var(--h2) * .95);line-height:1.2}
+.box{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.box.accent{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+
+/* Pestañas */
+.seg{display:inline-flex;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:5px 13px;border-radius:999px;cursor:pointer;font-size:13px;color:var(--ink-2);font-weight:500}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.seg button small{font-size:11px;opacity:.75;margin-left:4px}
+
+/* Pills */
+.pill{display:inline-block;font-size:11.5px;padding:1px 9px;border-radius:999px;font-weight:600;white-space:nowrap}
+.p-good{background:var(--pos-bg);color:var(--pos-t);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--pos) 35%,transparent)}
+.p-bad{background:var(--neg-bg);color:var(--neg-t);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--neg) 35%,transparent)}
+.p-warn{background:var(--warn-bg);color:var(--warn-t)}
+.p-info{background:var(--info-bg);color:var(--info-t)}
+.p-mute{background:var(--surface-2);color:var(--ink-2);box-shadow:inset 0 0 0 1px var(--line-strong)}
+
+/* Factores */
+.factores{display:flex;flex-direction:column}
+.factor{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+.factor:last-child{border-bottom:0}
+.factor .vt{text-align:center;height:fit-content}
+.factor b{font-weight:700}
+.factor span.d{color:var(--ink-2)}
+
+/* Agenda */
+.ev{display:grid;grid-template-columns:64px minmax(0,1fr);gap:3px 14px;padding:12px 0;border-bottom:1px solid var(--line)}
+.ev:last-child{border-bottom:0}
+.ev .h{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:calc(var(--kv2) * .8);line-height:1.1;font-variant-numeric:lining-nums tabular-nums}
+.ev .h small{display:block;font-family:var(--sans);font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0}
+.ev .cab{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.ev .t{font-weight:700}
+.ccy{font-size:11px;font-weight:600;color:var(--muted);border:1px solid var(--line-strong);border-radius:4px;padding:0 5px}
+.ev .cif{grid-column:2;display:flex;flex-wrap:wrap;gap:2px 18px;font-size:13px;color:var(--ink-2)}
+.ev .cif b{font-weight:700;color:var(--ink)}
+.ev .cif .r.positiva b{color:var(--pos-t)} .ev .cif .r.negativa b{color:var(--neg-t)}
+.ev .com{grid-column:2;font-size:13px;color:var(--ink-2)}
+.ev .esc{grid-column:2;margin-top:6px;display:grid;gap:5px;font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px}
+.ev .esc .pq{color:var(--muted)}
+.ev .esc div{display:grid;grid-template-columns:16px minmax(0,1fr);gap:6px}
+.ev.otro .t{font-weight:500;color:var(--ink-2)}
+.dia{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:var(--h3);padding-top:14px;color:var(--accent)}
+.empty{padding:24px;text-align:center;color:var(--ink-2)}
+
+/* Mercado */
+.mgrid{display:flex;flex-direction:column;gap:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.gtitle{display:block;margin-bottom:8px}
+.mk{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px 9px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.mk .n{font-size:12px;color:var(--muted);font-weight:600}
+.mk .v{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:var(--kv2);line-height:1.15;font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.mk .c{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 10px;font-size:12px;font-weight:600}
+.mk .c span{white-space:nowrap}
+.mk .x{font-size:11.5px;color:var(--muted)}
+.spark{display:block;width:100%;height:42px;margin-top:6px;overflow:visible;touch-action:none}
+.spark .area{fill:var(--accent-soft)}
+.spark .ln{fill:none;stroke:var(--accent);stroke-width:1.75;stroke-linejoin:round}
+.spark .ref{stroke:var(--line-strong);stroke-width:1;stroke-dasharray:3 3}
+.spark .cur{stroke:var(--muted);stroke-width:1}
+.mk .tp{font-size:11.5px;color:var(--muted);min-height:1.2em}
+
+/* Tablas */
+.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:9px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+th{font-size:11.5px;color:var(--muted);font-weight:600;background:var(--surface-2)}
+td.r,th.r{text-align:right}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:0}
+.idx{display:inline-flex;align-items:center;gap:8px}
+.idx i{display:block;width:60px;height:8px;border-radius:4px;background:var(--line-strong);position:relative;overflow:hidden}
+.idx i b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
+.foot{font-size:12px;color:var(--muted)}
+ul.lst{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.wk{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0 22px}
+.wk div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.wk div .num{font-weight:700}
+.claves{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+
+details.help{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+details.help summary{cursor:pointer;font-weight:700}
+details.help div{color:var(--ink-2);max-width:76ch;display:flex;flex-direction:column;gap:8px;padding-top:8px}
+details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--ink)}
+@media (max-width:1000px){.grid2{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.lg-row{grid-template-columns:repeat(2,minmax(0,1fr))}.lg-row .kpi:nth-child(3)::before{display:none}.lg-row .kpi:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:560px){.wrap{padding-inline:16px;gap:18px}.panel{padding:16px}.kpi{padding:14px}.themes .label{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="mark" aria-hidden="true"><span>AM</span></div>
+      <div><h1>Agenda Macro</h1><p>Lo que mueve al dólar, al S&amp;P 500 y al Nasdaq esta semana. Horas de Madrid.</p></div>
+    </div>
+    <div class="themes" role="radiogroup" aria-label="Estilo visual" id="themes">
+      <span class="label">Estilo</span>
+      <button type="button" class="tbtn" role="radio" data-t="onix" aria-checked="false"><i style="background:linear-gradient(135deg,#1b1a17 50%,#c9a85c 50%)"></i>Ónix y oro</button>
+      <button type="button" class="tbtn" role="radio" data-t="marino" aria-checked="false"><i style="background:linear-gradient(135deg,#112039 50%,#d8bf8f 50%)"></i>Marino y champán</button>
+      <button type="button" class="tbtn" role="radio" data-t="perla" aria-checked="false"><i style="background:linear-gradient(135deg,#fbfbf9 50%,#1d4a3a 50%)"></i>Perla y verde inglés</button>
+    </div>
+  </header>
+
+  <section class="status" aria-label="Estado de los datos">
+    <div class="info"><strong id="semana">Cargando…</strong><span id="actualizado"></span></div>
+    <div class="meta" id="meta"></div>
+  </section>
+  <div id="aviso"></div>
+
+  <section class="ledger" aria-label="Sesgo de la semana"><div class="lg-row" id="kpis"></div></section>
+
+  <div class="grid2">
+    <section class="panel">
+      <div class="phead"><h2>Tesis de la semana</h2><p id="tesisFecha"></p></div>
+      <div id="tesis"></div>
+    </section>
+    <section class="panel">
+      <div class="phead"><h2>Por qué ese sesgo</h2><div class="seg" role="tablist" id="sgTabs"></div></div>
+      <div class="factores" id="factores"></div>
+      <p class="foot">Cada factor vota +1, 0 o −1 con reglas fijas. La IA explica el resultado pero no lo cambia.</p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="phead"><h2>Agenda</h2><div class="seg" role="tablist" id="diaTabs"></div></div>
+    <div id="agenda"></div>
+  </section>
+
+  <section class="panel">
+    <div class="phead"><h2>Mercado</h2><p>Cambio del día · cambio desde el cierre del viernes</p></div>
+    <div class="mgrid" id="mercado"></div>
+    <p class="foot">Gráfico: precio por horas de la semana; la línea discontinua es el cierre del viernes. Bonos y diferenciales en puntos básicos (pb). Pasa el dedo o el ratón por el gráfico para ver cada hora.</p>
+  </section>
+
+  <div class="grid2">
+    <section class="panel">
+      <div class="phead"><h2>Fed y BCE</h2></div>
+      <div id="bancos"></div>
+    </section>
+    <section class="panel">
+      <div class="phead"><h2>Riesgos y tu sesión de Nueva York</h2></div>
+      <div id="riesgos"></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <div class="phead"><h2>COT · posicionamiento</h2><p id="cotFecha"></p></div>
+    <div id="cot"></div>
+  </section>
+
+  <section class="panel">
+    <div class="phead"><h2>Semana anterior</h2><p id="antFecha"></p></div>
+    <div id="anterior"></div>
+  </section>
+
+  <details class="help">
+    <summary>Cómo funciona esta página</summary>
+    <div>
+      <p><b>Actualización:</b> GitHub la regenera sola el domingo por la tarde (semana nueva, tesis y escenarios) y de lunes a viernes tras el cierre de Nueva York (precios, COT y, si hubo datos de impacto alto, sus resultados reales y el resumen del día).</p>
+      <p><b>Sesgo del dólar:</b> tendencia del DXY frente a sus medias de 20 y 50 días · DXY en la semana (±0,5 %) · bono a 2 años de EE. UU. (±8 pb) · diferencial 10A EE. UU.-Alemania (±5 pb) · COT del euro (Leveraged Funds, ±10.000 contratos en 4 semanas, con el signo cambiado) · sorpresas de los datos de EE. UU. de la semana. EUR/USD es el mismo cálculo con el signo cambiado.</p>
+      <p><b>Sesgo de S&amp;P 500 y Nasdaq:</b> tendencia frente a las medias de 50 y 200 días · distancia al máximo de 5 años · VIX · bono a 10 años · COT de Asset Managers.</p>
+      <p><b>Etiqueta:</b> +3 o más alcista fuerte · +1 o +2 alcista · 0 neutral · −1 o −2 bajista · −3 o menos bajista fuerte.</p>
+      <p><b>Fuentes:</b> Forex Factory (calendario), Yahoo Finance y CNBC (precios), CFTC (COT), API de Claude con búsqueda web (resultados, FedWatch y textos). Solo con fines informativos: no es una recomendación de inversión.</p>
+      <div id="diag"></div>
+    </div>
+  </details>
+</div>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const MES=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const DIAS=["Lunes","Martes","Miércoles","Jueves","Viernes"];
+const fmt=(n,d)=>{if(n==null||isNaN(n))return"—";const p=Math.abs(+n).toFixed(d).split(".");return(n<0?"−":"")+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,".")+(p[1]?","+p[1]:"")};
+const sgn=(n,d,u)=>n==null||isNaN(n)?"—":(n>0?"+":n<0?"−":"±")+fmt(Math.abs(n),d)+(u||"");
+const cl=n=>n==null||n===0?"flat":n>0?"up":"down";
+const fc=iso=>{const[y,m,d]=iso.split("-").map(Number);return d+" "+MES[m-1]};
+let D=null,N={},sgSel="usd",diaSel=null;
+
+function pillEt(et){const c=/Alcista/.test(et)?"p-good":/Bajista/.test(et)?"p-bad":"p-mute";return`<span class="pill ${c}">${esc(et)}</span>`}
+
+function pintar(datos){
+  D=datos;N=D.narrativa||{};
+  const s=D.semana||{};
+  $("#semana").textContent=s.lunes?"Semana del "+fc(s.lunes)+" al "+fc(s.viernes):"Semana sin datos";
+  $("#actualizado").textContent="Última actualización: "+(D.generado_local||"—")+" (Madrid)";
+  const c=D.coste;
+  $("#meta").innerHTML=(c?`<span>Coste API esta semana <b>${fmt(c.semana_usd,2)} $</b></span><span>Total desde ${fc(c.desde)} <b>${fmt(c.total_usd,2)} $</b></span>`:"")+
+    (D.diagnostico&&D.diagnostico.length?`<span class="tag sample">${D.diagnostico.length} aviso(s): ver «Cómo funciona»</span>`:"");
+  if(D._ejemplo)$("#aviso").innerHTML=`<div class="msg warn">${esc(D._ejemplo)}</div>`;
+  kpis();tesis();factores();agenda();mercado();bancos();cot();anterior();
+  $("#diag").innerHTML=D.diagnostico&&D.diagnostico.length?`<p><b>Avisos de la última actualización:</b></p><ul class="lst">${D.diagnostico.map(d=>"<li>"+esc(d)+"</li>").join("")}</ul>`:"";
+}
+
+/* ---- sesgo ---- */
+const SUJ=[["usd","Dólar (USD)"],["eurusd","EUR/USD"],["spx","S&P 500"],["ndx","Nasdaq 100"]];
+function kpis(){
+  const S=D.sesgo||{};
+  $("#kpis").innerHTML=SUJ.map(([k,t])=>{const x=S[k];if(!x)return`<div class="kpi"><span class="label">${t}</span><span class="v flat">—</span></div>`;
+    const m=Math.max(x.maximo,1),w=Math.min(Math.abs(x.puntuacion)/m,1)*50,col=x.puntuacion>0?"var(--pos)":x.puntuacion<0?"var(--neg)":"var(--muted)";
+    return`<div class="kpi"><span class="label">${t}</span><span class="v ${cl(x.puntuacion)}">${x.puntuacion>0?"+":x.puntuacion<0?"−":""}${Math.abs(x.puntuacion)}<small> / ${x.maximo}</small></span>
+      <div class="meter" role="img" aria-label="${x.puntuacion} de ${m}"><b></b><i style="left:${x.puntuacion>=0?50:50-w}%;width:${w}%;background:${col}"></i></div>
+      <span class="s">${pillEt(x.etiqueta)}${k==="eurusd"?" · espejo del dólar":""}</span></div>`}).join("");
+}
+function factores(){
+  const S=D.sesgo||{};
+  const tabs=[["usd","Dólar"],["spx","S&P 500"],["ndx","Nasdaq"]];
+  $("#sgTabs").innerHTML=tabs.map(([k,t])=>`<button role="tab" type="button" data-k="${k}" aria-selected="${k===sgSel}">${t}</button>`).join("");
+  $("#sgTabs").onclick=e=>{const b=e.target.closest("button");if(b){sgSel=b.dataset.k;factores()}};
+  const x=S[sgSel];
+  if(!x||!x.factores.length){$("#factores").innerHTML=`<div class="empty">Sin datos suficientes.</div>`;return}
+  let h=x.factores.map(f=>`<div class="factor"><span class="vt pill ${f.voto>0?"p-good":f.voto<0?"p-bad":"p-mute"}">${f.voto>0?"+1":f.voto<0?"−1":"0"}</span><span><b>${esc(f.factor)}</b> · <span class="d">${esc(f.detalle)}</span></span></div>`).join("");
+  const lec=sgSel==="usd"?N.lectura_usd:N.lectura_indices;
+  if(lec)h+=`<div class="box" style="margin-top:10px"><span class="label">Lectura</span><span>${esc(lec)}</span></div>`;
+  $("#factores").innerHTML=h;
+}
+function tesis(){
+  const t=N.tesis,nd=D.nota_dia;
+  $("#tesisFecha").textContent=N.generada?"Redactada el "+N.generada:"";
+  let h="";
+  h+=t?`<p class="titular">${esc(t.titular)}</p><p class="lead">${esc(t.texto)}</p>`:`<p class="lead">La tesis se redacta el domingo por la tarde con el calendario de la semana.</p>`;
+  if(nd)h+=`<div class="box accent"><span class="label">Resumen del día · ${esc(nd.generada)}</span><span>${esc(nd.texto)}</span></div>`;
+  $("#tesis").innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">${h}</div>`;
+}
+
+/* ---- agenda ---- */
+function agenda(){
+  const cal=D.calendario||[],s=D.semana||{};
+  const dias=[];if(s.lunes){const b=new Date(s.lunes+"T12:00:00Z");for(let i=0;i<5;i++){const d=new Date(b);d.setUTCDate(b.getUTCDate()+i);dias.push(d.toISOString().slice(0,10))}}
+  const hoy=new Date().toLocaleDateString("sv-SE",{timeZone:"Europe/Madrid"});
+  if(!diaSel)diaSel=dias.includes(hoy)?hoy:"todos";
+  const n=d=>cal.filter(e=>e.fecha===d&&e.impacto==="alto").length;
+  $("#diaTabs").innerHTML=`<button role="tab" type="button" data-d="todos" aria-selected="${diaSel==="todos"}">Semana</button>`+
+    dias.map((d,i)=>`<button role="tab" type="button" data-d="${d}" aria-selected="${diaSel===d}">${DIAS[i].slice(0,3)} ${+d.slice(8)}<small>${n(d)||""}</small></button>`).join("");
+  $("#diaTabs").onclick=e=>{const b=e.target.closest("button");if(b){diaSel=b.dataset.d;agenda()}};
+  const esc_={};(N.escenarios||[]).forEach(x=>esc_[x.id]=x);
+  const otros=N.otros_eventos||[];
+  const ver=diaSel==="todos"?dias:[diaSel];let h="";
+  ver.forEach(d=>{
+    let evs=cal.filter(e=>e.fecha===d);
+    if(diaSel==="todos")evs=evs.filter(e=>e.impacto!=="medio"||esc_[e.id]);
+    const i=dias.indexOf(d),ot=otros.filter(o=>o.dia===DIAS[i]);
+    if(diaSel==="todos")h+=`<div class="dia">${DIAS[i]} ${fc(d)}</div>`;
+    if(!evs.length&&!ot.length){h+=`<div class="empty">Sin datos de impacto alto${diaSel==="todos"?"":" ni medio"} de EE. UU. o la eurozona.</div>`;return}
+    evs.forEach(e=>h+=evento(e,esc_[e.id]));
+    ot.forEach(o=>h+=`<div class="ev otro"><div class="h">${esc(o.hora||"—")}</div><div class="cab"><span class="t">${esc(o.texto)}</span></div></div>`);
+  });
+  if(diaSel==="todos")h+=`<p class="foot" style="padding-top:10px">Vista de semana: datos de impacto alto y los de impacto medio con escenario. Elige un día para verlos todos.</p>`;
+  $("#agenda").innerHTML=h||`<div class="empty">El calendario de la semana aún no está disponible.</div>`;
+}
+function evento(e,s){
+  const sp={positiva:"mejor de lo previsto",negativa:"peor de lo previsto",en_linea:"en línea"}[e.sorpresa]||"";
+  const imp=e.impacto==="alto"?`<span class="pill p-bad">Alto</span>`:e.impacto==="festivo"?`<span class="pill p-mute">Festivo</span>`:`<span class="pill p-warn">Medio</span>`;
+  let h=`<div class="ev"><div class="h">${esc(e.hora||"—")}${e.hora_ny?`<small>NY ${esc(e.hora_ny)}</small>`:""}</div>
+    <div class="cab"><span class="ccy">${esc(e.divisa)}</span><span class="t">${esc(e.titulo)}</span>${imp}${e.ventana_ny?`<span class="pill p-info">Sesión NY</span>`:""}</div>`;
+  if(e.prevision||e.anterior||e.real)h+=`<div class="cif"><span>Previsión <b>${esc(e.prevision||"—")}</b></span><span>Anterior <b>${esc(e.anterior||"—")}</b></span>${e.real?`<span class="r ${esc(e.sorpresa||"")}">Real <b>${esc(e.real)}</b>${sp?" · "+sp:""}</span>`:""}</div>`;
+  if(e.comentario)h+=`<p class="com">${esc(e.comentario)}${e.fuente?` · <a href="${esc(e.fuente)}" target="_blank" rel="noopener">fuente</a>`:""}</p>`;
+  if(s&&!e.real)h+=`<div class="esc">${s.por_que?`<span class="pq">${esc(s.por_que)}</span>`:""}<div><span class="up">▲</span><span><b>Por encima:</b> ${esc(s.si_mayor)}</span></div><div><span class="down">▼</span><span><b>Por debajo:</b> ${esc(s.si_menor)}</span></div></div>`;
+  return h+"</div>";
+}
+
+/* ---- mercado ---- */
+const GR=[["dolar","Dólar"],["tipos","Tipos de interés"],["indices","Índices y volatilidad"],["materias","Materias primas"]];
+function mercado(){
+  const M=D.mercado||{};let h="";
+  GR.forEach(([g,t])=>{const ks=Object.keys(M).filter(k=>M[k].grupo===g);if(!ks.length)return;
+    h+=`<div><span class="gtitle label">${t}</span><div class="tiles">${ks.map(k=>tile(M[k])).join("")}</div></div>`});
+  $("#mercado").innerHTML=h||`<div class="mk"><span class="n">Sin datos de mercado todavía.</span></div>`;
+  document.querySelectorAll("svg.spark").forEach(spark);
+}
+function tile(x){
+  const pb=x.tipo==="yield"||x.tipo==="pb",dec=x.tipo==="pb"?0:x.dec??2,u=pb?" pb":" %",d2=pb?1:2;
+  const val=x.tipo==="pb"?fmt(x.ultimo,0)+" pb":fmt(x.ultimo,dec)+(x.tipo==="yield"?" %":"");
+  let h=`<div class="mk"><span class="n">${esc(x.nombre)}</span><span class="v">${val}</span>
+    <div class="c"><span class="${cl(x.cambio_dia)}">${x.cambio_dia!=null?"día "+sgn(x.cambio_dia,d2,u):""}</span><span class="${cl(x.cambio_semana)}">${x.cambio_semana!=null?"sem. "+sgn(x.cambio_semana,d2,u):""}</span></div>`;
+  if(x.dist_maximo_pct!=null)h+=`<span class="x">${sgn(x.dist_maximo_pct,1," %")} del máximo de 5 años</span>`;
+  if(x.serie&&x.serie.length>2)h+=`<svg class="spark" viewBox="0 0 160 40" preserveAspectRatio="none" data-s="${esc(JSON.stringify(x.serie))}" data-r="${x.cierre_semana_anterior??""}" data-d="${dec}" data-pb="${x.tipo==="yield"?1:0}" role="img" aria-label="Evolución de ${esc(x.nombre)}"></svg><span class="tp"></span>`;
+  return h+"</div>";
+}
+function spark(svg){
+  const s=JSON.parse(svg.dataset.s),ref=svg.dataset.r===""?null:+svg.dataset.r,dec=+svg.dataset.d,pb=svg.dataset.pb==="1";
+  const W=160,H=40,p=3,all=ref!=null?s.concat([ref]):s;let lo=Math.min(...all),hi=Math.max(...all);if(hi===lo){hi+=1;lo-=1}
+  const X=i=>i/(s.length-1)*W,Y=v=>p+(1-(v-lo)/(hi-lo))*(H-2*p);
+  const pts=s.map((v,i)=>X(i).toFixed(1)+","+Y(v).toFixed(1));
+  svg.innerHTML=`<path class="area" opacity=".6" d="M0,${H} L${pts.join(" L")} L${W},${H} Z"></path>`+(ref!=null?`<line class="ref" x1="0" x2="${W}" y1="${Y(ref)}" y2="${Y(ref)}" vector-effect="non-scaling-stroke"></line>`:"")+
+    `<polyline class="ln" points="${pts.join(" ")}" vector-effect="non-scaling-stroke"></polyline><line class="cur" y1="0" y2="${H}" visibility="hidden" vector-effect="non-scaling-stroke"></line>`;
+  const tp=svg.nextElementSibling,cur=svg.querySelector(".cur"),base="último "+fmt(s[s.length-1],dec);tp.textContent=base;
+  const mv=e=>{const r=svg.getBoundingClientRect(),i=Math.max(0,Math.min(s.length-1,Math.round((e.clientX-r.left)/r.width*(s.length-1))));
+    cur.setAttribute("x1",X(i));cur.setAttribute("x2",X(i));cur.setAttribute("visibility","visible");
+    tp.textContent=fmt(s[i],dec)+(ref!=null?" · vs viernes "+(pb?sgn((s[i]-ref)*100,1," pb"):sgn((s[i]/ref-1)*100,2," %")):"")};
+  svg.addEventListener("pointermove",mv);svg.addEventListener("pointerdown",mv);
+  svg.addEventListener("pointerleave",()=>{cur.setAttribute("visibility","hidden");tp.textContent=base});
+}
+
+/* ---- bancos y riesgos ---- */
+function bancos(){
+  const b=N.bancos_centrales||{};
+  $("#bancos").innerHTML=`<div class="box"><span class="label">Reserva Federal</span><span>${esc(b.fed||"Se actualiza el domingo.")}</span></div><div class="box"><span class="label">Banco Central Europeo</span><span>${esc(b.bce||"Se actualiza el domingo.")}</span></div>`;
+  let h="";
+  if(N.ventana_ny)h+=`<div class="box accent"><span class="label">Tu ventana: 14:00–22:00</span><span>${esc(N.ventana_ny)}</span></div>`;
+  if(N.riesgos&&N.riesgos.length)h+=`<div class="box"><span class="label">Riesgos no programados</span><ul class="lst">${N.riesgos.map(r=>"<li>"+esc(r)+"</li>").join("")}</ul></div>`;
+  $("#riesgos").innerHTML=h||`<div class="empty">Se actualiza el domingo.</div>`;
+}
+
+/* ---- COT ---- */
+function idx(v){return v==null?"—":`<span class="idx"><i><b style="width:${v}%"></b></i><span class="num">${v}</span></span>`}
+function cot(){
+  const C=D.cot||{},ks=["EUR","DXY","JPY","ES","NQ"].filter(k=>C[k]);
+  if(!ks.length){$("#cot").innerHTML=`<div class="empty">Sin datos del COT todavía.</div>`;return}
+  $("#cotFecha").textContent="CFTC · datos del martes "+fc(C[ks[0]].fecha);
+  $("#cot").innerHTML=`<div class="tscroll"><table><thead><tr><th>Mercado</th><th class="r">Leveraged Funds</th><th class="r">Δ 1 sem.</th><th class="r">Δ 4 sem.</th><th>Índice 52 sem.</th><th class="r">Asset Managers</th><th class="r">Δ 4 sem.</th><th>Índice 52 sem.</th></tr></thead><tbody>`+
+    ks.map(k=>{const c=C[k];return`<tr><td>${esc(c.nombre)}</td><td class="r num">${sgn(c.lev,0)}</td><td class="r num ${cl(c.lev_cambio_1s)}">${sgn(c.lev_cambio_1s,0)}</td><td class="r num ${cl(c.lev_cambio_4s)}">${sgn(c.lev_cambio_4s,0)}</td><td>${idx(c.lev_indice_52s)}</td><td class="r num">${sgn(c.am,0)}</td><td class="r num ${cl(c.am_cambio_4s)}">${sgn(c.am_cambio_4s,0)}</td><td>${idx(c.am_indice_52s)}</td></tr>`}).join("")+
+    `</tbody></table></div><p class="foot">Contratos netos (largos − cortos). Leveraged Funds: hedge funds y CTA (especulativo). Asset Managers: fondos institucionales. Índice 52 sem.: 0 = la posición más corta del año, 100 = la más larga. Datos del martes publicados el viernes: van con retraso.</p>`;
+}
+
+/* ---- semana anterior ---- */
+function anterior(){
+  const sa=N.semana_anterior,M=D.mercado||{},A=D.semana_anterior||{};
+  if(A.lunes)$("#antFecha").textContent=fc(A.lunes)+" – "+fc(A.viernes);
+  let h="";
+  if(sa){h+=`<p class="titular">${esc(sa.titular)}</p><p class="lead">${esc(sa.resumen)}</p>`;
+    if(sa.claves&&sa.claves.length)h+=`<div class="claves">${sa.claves.map(c=>`<div class="box"><b>${esc(c.titulo)}</b><span style="color:var(--ink-2)">${esc(c.detalle)}</span></div>`).join("")}</div>`}
+  const f=Object.keys(M).filter(k=>M[k].cambio_semana_anterior!=null);
+  if(f.length)h+=`<h3>De viernes a viernes</h3><div class="wk">${f.map(k=>{const x=M[k],pb=x.tipo==="yield";return`<div><span>${esc(x.nombre)}</span><span class="num ${cl(x.cambio_semana_anterior)}">${sgn(x.cambio_semana_anterior,pb?1:2,pb?" pb":" %")}</span></div>`}).join("")}</div>`;
+  const ev=A.calendario||[];
+  if(ev.length)h+=`<h3>Datos de impacto alto</h3><div>${ev.map(e=>evento(e,null)).join("")}</div>`;
+  $("#anterior").innerHTML=h?`<div style="display:flex;flex-direction:column;gap:12px">${h}</div>`:`<div class="empty">Se completa a partir del primer cambio de semana.</div>`;
+}
+
+function fallo(m){$("#semana").textContent="Sin datos";$("#kpis").innerHTML=`<div class="kpi" style="grid-column:1/-1"><span class="s">${esc(m)}</span></div>`}
+/* ---- estilo visual (como en la Bitácora) ---- */
+function setEstilo(t){document.documentElement.setAttribute("data-estilo",t);try{localStorage.setItem("agenda-macro.estilo",t)}catch(e){}
+  document.querySelectorAll("#themes .tbtn").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===t)))}
+setEstilo(document.documentElement.getAttribute("data-estilo")||"onix");
+$("#themes").addEventListener("click",e=>{const b=e.target.closest(".tbtn");if(b)setEstilo(b.dataset.t)});
+if(window.__DATOS__){try{pintar(window.__DATOS__)}catch(e){console.error(e);fallo("No se pudo mostrar la página: "+e.message)}}
+else fetch("datos.json?t="+Date.now()).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{try{pintar(d)}catch(e){console.error(e);fallo("No se pudo mostrar la página: "+e.message)}})
+  .catch(e=>fallo("Todavía no hay datos ("+e.message+"). Se crean con la primera ejecución de «Agenda macro» en la pestaña Actions de GitHub."));
+})();
+</script>
+</body>
+</html>
