@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-14T08:00:57.511917+00:00",
+ "descargado": "2026-10-14T10:05:23.419924+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -282,9 +282,17 @@
    "previous": ""
   },
   {
+   "title": "ECB President Lagarde Speaks",
+   "country": "EUR",
+   "date": "2026-10-14T04:30:00-04:00",
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
    "title": "M2 Money Supply y/y",
    "country": "CNY",
-   "date": "2026-10-14T04:03:00-04:00",
+   "date": "2026-10-14T05:00:00-04:00",
    "impact": "Low",
    "forecast": "7.4%",
    "previous": "7.5%"
@@ -292,18 +300,10 @@
   {
    "title": "New Loans",
    "country": "CNY",
-   "date": "2026-10-14T04:03:00-04:00",
+   "date": "2026-10-14T05:01:00-04:00",
    "impact": "Low",
    "forecast": "1025B",
    "previous": "60B"
-  },
-  {
-   "title": "ECB President Lagarde Speaks",
-   "country": "EUR",
-   "date": "2026-10-14T04:30:00-04:00",
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
   },
   {
    "title": "German 30-y Bond Auction",
