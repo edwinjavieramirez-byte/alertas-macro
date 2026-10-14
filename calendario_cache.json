@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-13T23:55:22.612601+00:00",
+ "descargado": "2026-10-14T01:55:23.456066+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -218,9 +218,17 @@
    "previous": "3.8%"
   },
   {
+   "title": "ECB President Lagarde Speaks",
+   "country": "EUR",
+   "date": "2026-10-13T22:10:00-04:00",
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
+  },
+  {
    "title": "Trade Balance",
    "country": "CNY",
-   "date": "2026-10-13T22:03:00-04:00",
+   "date": "2026-10-13T23:03:00-04:00",
    "impact": "Low",
    "forecast": "790B",
    "previous": "809B"
@@ -228,18 +236,10 @@
   {
    "title": "USD-Denominated Trade Balance",
    "country": "CNY",
-   "date": "2026-10-13T22:04:00-04:00",
+   "date": "2026-10-13T23:04:00-04:00",
    "impact": "Low",
    "forecast": "116.8B",
    "previous": "119.1B"
-  },
-  {
-   "title": "ECB President Lagarde Speaks",
-   "country": "EUR",
-   "date": "2026-10-13T22:10:00-04:00",
-   "impact": "Medium",
-   "forecast": "",
-   "previous": ""
   },
   {
    "title": "MPC Member Breeden Speaks",
@@ -397,6 +397,14 @@
    "title": "Beige Book",
    "country": "USD",
    "date": "2026-10-14T14:00:00-04:00",
+   "impact": "Low",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "FOMC Member Goolsbee Speaks",
+   "country": "USD",
+   "date": "2026-10-14T15:00:00-04:00",
    "impact": "Low",
    "forecast": "",
    "previous": ""
