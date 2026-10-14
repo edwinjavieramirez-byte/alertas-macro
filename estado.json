@@ -17,7 +17,7 @@
   "escalones": {
    "US2Y": {
     "base": 4.793,
-    "n": 0
+    "n": 1
    },
    "US10Y": {
     "base": 5.217,
@@ -38,7 +38,7 @@
   },
   "lados": {
    "US10Y@5.0": "arriba",
-   "US10Y@5.25": "abajo",
+   "US10Y@5.25": "arriba",
    "USDJPY@155.0": "arriba",
    "USDJPY@160.0": "abajo"
   }
