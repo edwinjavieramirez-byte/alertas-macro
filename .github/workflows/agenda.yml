@@ -15,9 +15,12 @@ on:
       - "agenda/agenda.py"
       - ".github/workflows/agenda.yml"
   schedule:
-    # Horas en UTC (Madrid = UTC+2 en verano, UTC+1 en invierno).
-    - cron: "0 16 * * 0"      # domingo 18:00 Madrid (17:00 en invierno): monta la semana nueva
-    - cron: "45 20 * * 1-5"   # L-V 22:45 Madrid (21:45 en invierno): cierre de Nueva York
+    # Horas en UTC (Madrid = UTC+2 en verano, UTC+1 en invierno). GitHub no ajusta el cambio de hora.
+    # Si cambias alguna de estas líneas, cambia también la misma línea en "MODO" más abajo.
+    - cron: "0 16 * * 0"                # domingo 18:00 Madrid (17:00 en invierno): monta la semana nueva
+    - cron: "5,20,35,50 6-20 * * 1-5"   # L-V cada 15 min: resultado real de cada dato de impacto alto
+    - cron: "15 20,21 * * 1-5"          # L-V cierre de Nueva York: el script solo ejecuta la que cae
+                                        # después de las 16:00 de Nueva York (verano e invierno)
 
 concurrency:
   group: agenda
@@ -46,6 +49,9 @@ jobs:
           AGENDA_MODELO_SEMANAL: ${{ vars.AGENDA_MODELO_SEMANAL }}
           AGENDA_MODELO_DIARIO: ${{ vars.AGENDA_MODELO_DIARIO }}
           FORZAR_SEMANAL: ${{ github.event.inputs.forzar_semanal }}
+          # rapido = solo resultados de datos recién publicados · cierre = precios y resumen del día ·
+          # completo = todo (domingo, a mano o al cambiar el script)
+          MODO: ${{ github.event.schedule == '5,20,35,50 6-20 * * 1-5' && 'rapido' || (github.event.schedule == '15 20,21 * * 1-5' && 'cierre' || 'completo') }}
         run: python agenda/agenda.py
 
       - name: Guardar datos
