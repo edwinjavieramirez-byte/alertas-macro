@@ -1,13 +1,17 @@
 """
 Agenda macro semanal de Edwin  ·  genera docs/datos.json para la página web (GitHub Pages).
 
-Se ejecuta desde GitHub Actions (.github/workflows/agenda.yml):
-  - domingo por la tarde: monta la semana nueva (calendario, COT, sesgo, tesis y escenarios)  -> Claude Sonnet
-  - de lunes a viernes, tras el cierre de Nueva York: precios y COT (gratis) y, SOLO si ese día hubo
-    datos de impacto alto, sus resultados reales y el resumen del día                          -> Claude Haiku
+Se ejecuta desde GitHub Actions (.github/workflows/agenda.yml) en tres modos (variable MODO):
+  - "completo" (domingo por la tarde, a mano o al cambiar el script): calendario, precios, sesgo y,
+    si falta, la tesis y los escenarios de la semana                                       -> Claude Sonnet
+  - "rapido" (L-V cada 15 minutos en horario de datos): SOLO si hay un dato de impacto alto ya
+    publicado y sin resultado, lo busca y actualiza la agenda y el sesgo. Si no, sale sin tocar nada
+    (no descarga nada, no llama a la API y no hace commit)                                  -> Claude Haiku
+  - "cierre" (L-V tras el cierre de Nueva York, en verano y en invierno): precios, resultados que
+    falten y resumen del día                                                                -> Claude Haiku
 
 Fuentes:
-  Forex Factory (calendario USD y EUR) · CNBC / Yahoo (precios) · CFTC (COT, informe TFF)
+  Forex Factory (calendario USD y EUR) · CNBC / Yahoo / Fed de St. Louis (precios)
   API de Claude con búsqueda web (resultados reales, contexto Fed y redacción)
 
 No hace falta tocar este archivo. Lo configurable está en Settings → Secrets and variables → Actions:
@@ -41,6 +45,12 @@ PRECIO_BUSQUEDA = 0.01
 GASTOS = []          # lo que cuesta cada llamada de esta ejecución
 FORZAR_SEMANAL = os.getenv("FORZAR_SEMANAL") == "1"      # 1 = rehace tesis y escenarios aunque ya existan
 SIN_CLAUDE = os.getenv("SIN_CLAUDE") == "1"              # 1 = no llama a la API (pruebas)
+MODO = (os.getenv("MODO") or "completo").strip().lower()  # completo | rapido | cierre
+
+# Búsqueda del dato real: el intento n se hace pasados ESPERAS_MIN[n] minutos desde la publicación
+# (la cifra tarda unos minutos en aparecer en la web) y nunca dos intentos con menos de 12 minutos.
+ESPERAS_MIN = [5, 20, 45, 90, 180]
+MIN_ENTRE_INTENTOS = 12
 
 TZ = ZoneInfo("Europe/Madrid")
 NY = ZoneInfo("America/New_York")
@@ -51,7 +61,6 @@ SEMANAS_DIR = DOCS / "semanas"
 HISTORICO_FILE = Path(__file__).resolve().parent / "historico.json"
 
 FF_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json"
-CFTC_URL = "https://publicreporting.cftc.gov/resource/gpe5-46if.json"   # Traders in Financial Futures
 FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv"             # Reserva Federal de St. Louis
 # Históricos diarios de la Fed (Yahoo bloquea a GitHub con el error 429). Cierres del día hábil anterior.
 FRED = {"US2Y": "DGS2", "US10Y": "DGS10", "SPX": "SP500", "NDX": "NASDAQ100", "VIX": "VIXCLS",
@@ -91,14 +100,6 @@ INSTRUMENTOS = {
                "cnbc": "@CL.1", "yahoo": "CL=F"},
 }
 ORDEN = ["DXY", "EURUSD", "USDJPY", "US2Y", "US10Y", "DE10Y", "SPX", "NDX", "VIX", "ORO", "WTI"]
-
-COT_MERCADOS = {
-    "EUR": {"codigo": "099741", "nombre": "Euro FX (CME)"},
-    "DXY": {"codigo": "098662", "nombre": "Índice dólar (ICE)"},
-    "JPY": {"codigo": "097741", "nombre": "Yen japonés (CME)"},
-    "ES":  {"codigo": "13874A", "nombre": "E-mini S&P 500"},
-    "NQ":  {"codigo": "209742", "nombre": "Nasdaq 100 mini"},
-}
 
 # Traducciones fijas de los títulos más habituales de Forex Factory (Claude completa el resto).
 TITULOS_ES = {
@@ -509,56 +510,6 @@ def calcular_diferencial(historico, datos, lunes):
             "serie": [round((us[f] - de[f]) * 100, 1) for f in comunes[-30:]]}
 
 
-# ----------------------------------------------------------------- COT
-def obtener_cot():
-    salida = {}
-    for clave, m in COT_MERCADOS.items():
-        try:
-            r = requests.get(CFTC_URL, params={
-                "cftc_contract_market_code": m["codigo"],
-                "$order": "report_date_as_yyyy_mm_dd DESC",
-                "$limit": 60,
-            }, headers=UA, timeout=30)
-            r.raise_for_status()
-            filas = r.json()
-            if not filas:
-                aviso(f"COT sin filas para {clave} ({m['codigo']})")
-                continue
-            filas = list(reversed(filas))   # de más antigua a más reciente
-            serie = []
-            for f in filas:
-                serie.append({
-                    "fecha": f["report_date_as_yyyy_mm_dd"][:10],
-                    "lev": int(a_float(f.get("lev_money_positions_long")) or 0) - int(a_float(f.get("lev_money_positions_short")) or 0),
-                    "am": int(a_float(f.get("asset_mgr_positions_long")) or 0) - int(a_float(f.get("asset_mgr_positions_short")) or 0),
-                    "dealer": int(a_float(f.get("dealer_positions_long_all")) or 0) - int(a_float(f.get("dealer_positions_short_all")) or 0),
-                    "oi": int(a_float(f.get("open_interest_all")) or 0),
-                })
-            ult = serie[-1]
-            ventana = serie[-52:]
-
-            def indice(campo):
-                vals = [s[campo] for s in ventana]
-                lo, hi = min(vals), max(vals)
-                return None if hi == lo else round((ult[campo] - lo) / (hi - lo) * 100)
-
-            def cambio_n(campo, n):
-                return ult[campo] - serie[-1 - n][campo] if len(serie) > n else None
-
-            salida[clave] = {
-                "nombre": m["nombre"], "fecha": ult["fecha"],
-                "lev": ult["lev"], "am": ult["am"], "dealer": ult["dealer"], "oi": ult["oi"],
-                "lev_cambio_1s": cambio_n("lev", 1), "lev_cambio_4s": cambio_n("lev", 4),
-                "am_cambio_1s": cambio_n("am", 1), "am_cambio_4s": cambio_n("am", 4),
-                "lev_indice_52s": indice("lev"), "am_indice_52s": indice("am"),
-                "serie_lev": [s["lev"] for s in serie[-26:]],
-                "serie_am": [s["am"] for s in serie[-26:]],
-            }
-        except Exception as e:
-            aviso(f"COT {clave} no disponible ({e})")
-    return salida
-
-
 # ----------------------------------------------------------------- sesgo (reglas fijas)
 def miles(n, signo=True):
     t = f"{n:+,.0f}" if signo else f"{n:,.0f}"
@@ -569,7 +520,7 @@ def factor(nombre, voto, detalle):
     return {"factor": nombre, "voto": voto, "detalle": detalle}
 
 
-def sesgo_dolar(m, cot, eventos):
+def sesgo_dolar(m, eventos):
     f = []
     dxy = m.get("DXY")
     if dxy and dxy.get("sma20") and dxy.get("sma50"):
@@ -597,13 +548,6 @@ def sesgo_dolar(m, cot, eventos):
         v = 1 if c >= 5 else -1 if c <= -5 else 0
         f.append(factor("Diferencial 10A EE. UU.-Alemania", v,
                         f"{dif['ultimo']:.0f} pb, {c:+.1f} pb en la semana (umbral ±5 pb). Si se amplía, favorece al USD frente al EUR"))
-    eur = cot.get("EUR")
-    if eur and eur.get("lev_cambio_4s") is not None:
-        c = eur["lev_cambio_4s"]
-        v = -1 if c >= 10000 else 1 if c <= -10000 else 0
-        f.append(factor("COT Euro FX (Leveraged Funds)", v,
-                        f"neto {miles(eur['lev'])} contratos, {miles(c)} en 4 semanas (umbral ±10.000). "
-                        f"Datos del {eur['fecha']}: el COT va con varios días de retraso"))
     usd = [e for e in eventos if e["divisa"] == "USD" and e.get("sorpresa") in ("positiva", "negativa")]
     if usd:
         pos = sum(1 for e in usd if e["sorpresa"] == "positiva")
@@ -613,7 +557,7 @@ def sesgo_dolar(m, cot, eventos):
     return resumir(f, "USD")
 
 
-def sesgo_indice(clave, m, cot):
+def sesgo_indice(clave, m):
     f = []
     x = m.get(clave)
     nombre = INSTRUMENTOS[clave]["nombre"]
@@ -648,14 +592,7 @@ def sesgo_indice(clave, m, cot):
         v = -1 if c >= umbral else 1 if c <= -umbral else 0
         f.append(factor("Bono 10A EE. UU.", v, f"{us10['ultimo']:.3f} %, {c:+.1f} pb en la semana (umbral ±{umbral} pb). "
                                               "Tipos al alza presionan las valoraciones, sobre todo de la tecnología"))
-    c = cot.get("ES" if clave == "SPX" else "NQ")
-    if c and c.get("am_cambio_4s") is not None:
-        ch = c["am_cambio_4s"]
-        umbral = 15000 if clave == "SPX" else 3000
-        v = 1 if ch >= umbral else -1 if ch <= -umbral else 0
-        f.append(factor("COT Asset Managers", v, f"neto {miles(c['am'])}, {miles(ch)} en 4 semanas (datos del {c['fecha']})"))
-    r = resumir(f, nombre)
-    return r
+    return resumir(f, nombre)
 
 
 def etiqueta(total, n):
@@ -676,6 +613,17 @@ def resumir(factores, sujeto):
     total = sum(x["voto"] for x in factores)
     return {"sujeto": sujeto, "puntuacion": total, "maximo": len(factores),
             "etiqueta": etiqueta(total, len(factores)), "factores": factores}
+
+
+def calcular_sesgo(mercado, calendario):
+    s = {"usd": sesgo_dolar(mercado, calendario),
+         "spx": sesgo_indice("SPX", mercado),
+         "ndx": sesgo_indice("NDX", mercado)}
+    # EUR/USD es la inversa del dólar
+    u = s["usd"]
+    s["eurusd"] = {"sujeto": "EUR/USD", "puntuacion": -u["puntuacion"], "maximo": u["maximo"],
+                   "etiqueta": etiqueta(-u["puntuacion"], u["maximo"]), "factores": []}
+    return s
 
 
 # ----------------------------------------------------------------- Claude
@@ -765,7 +713,9 @@ def extraer_json(texto):
     if not texto:
         return None
     texto = re.sub(r"```(?:json)?", "", texto)
-    for abre, cierra in (("{", "}"), ("[", "]")):
+    # Se prueba primero el que aparece antes: una lista con un solo objeto "[{...}]" debe salir como lista
+    pares = sorted((("{", "}"), ("[", "]")), key=lambda p: texto.find(p[0]) if p[0] in texto else len(texto))
+    for abre, cierra in pares:
         i, j = texto.find(abre), texto.rfind(cierra)
         if i != -1 and j > i:
             try:
@@ -807,12 +757,6 @@ def texto_sesgo(s):
                      for k in s)
 
 
-def texto_cot(cot):
-    return "\n".join(f'{c["nombre"]} ({c["fecha"]}): Leveraged Funds neto {c["lev"]:+} (4s {c["lev_cambio_4s"]:+}, índice 52s {c["lev_indice_52s"]}) · '
-                     f'Asset Managers neto {c["am"]:+} (4s {c["am_cambio_4s"]:+}, índice 52s {c["am_indice_52s"]})'
-                     for c in cot.values() if c.get("lev_cambio_4s") is not None and c.get("am_cambio_4s") is not None)
-
-
 def narrativa_semanal(datos, archivo_prev):
     eventos = datos["calendario"]
     prev_eventos = (archivo_prev or {}).get("calendario", [])
@@ -824,9 +768,6 @@ DATOS DE MERCADO (último · cambio de esta semana · cambio de la semana anteri
 
 SESGO CALCULADO POR REGLAS FIJAS:
 {texto_sesgo(datos["sesgo"])}
-
-COT (CFTC, informe TFF):
-{texto_cot(datos["cot"]) or "sin datos"}
 
 CALENDARIO DE LA SEMANA PASADA (con resultados reales si los hay):
 {chr(10).join(linea_evento(e) for e in prev_eventos) or "no disponible: búscalo"}
@@ -876,18 +817,33 @@ previsión numérica, usa "si_mayor" para el tono duro (hawkish) y "si_menor" pa
     return None
 
 
+def pendientes_resultado(eventos, ahora):
+    """Datos de impacto alto ya publicados, sin resultado real, a los que les toca un intento de búsqueda."""
+    salida = []
+    for e in eventos:
+        if e.get("real") is not None or e.get("impacto") != "alto" or not e.get("hora"):
+            continue
+        if not (e.get("prevision") or e.get("anterior")):       # discursos: no hay cifra que buscar
+            continue
+        n = e.get("intentos", 0)
+        if n >= len(ESPERAS_MIN):
+            continue
+        publicado = datetime.fromisoformat(e["utc"])
+        if publicado < ahora - timedelta(days=6) or ahora - publicado < timedelta(minutes=ESPERAS_MIN[n]):
+            continue
+        ultimo = e.get("ultimo_intento")
+        if ultimo and ahora - datetime.fromisoformat(ultimo) < timedelta(minutes=MIN_ENTRE_INTENTOS):
+            continue
+        salida.append(e)
+    return salida[:14]
+
+
 def obtener_resultados(eventos):
     """Busca el dato real de los eventos ya publicados que aún no lo tienen."""
     ahora = ahora_utc()
-    # Solo datos con cifra (los discursos no tienen "resultado" que buscar)
-    pendientes = [e for e in eventos if e.get("real") is None and e["impacto"] == "alto"
-                  and (e.get("prevision") or e.get("anterior"))
-                  and e.get("hora") and datetime.fromisoformat(e["utc"]) < ahora - timedelta(minutes=10)
-                  and datetime.fromisoformat(e["utc"]) > ahora - timedelta(days=6)
-                  and e.get("intentos", 0) < 3]
+    pendientes = pendientes_resultado(eventos, ahora)
     if not pendientes:
         return 0
-    pendientes = pendientes[:14]
     lista = "\n".join(f'{e["id"]} :: {linea_evento(e)}' for e in pendientes)
     prompt = f"""Estos datos macro ya se han publicado (hora de Madrid). Busca en la web el valor REAL publicado de cada uno.
 {lista}
@@ -899,12 +855,16 @@ Responde SOLO con un JSON: una lista de objetos
 "sorpresa" es desde el punto de vista de la economía de esa divisa: mejor de lo previsto = positiva (en paro y
 peticiones de subsidio, un número MAYOR es negativa; en inflación, más alta de lo previsto se considera positiva para
 la divisa porque aleja bajadas de tipos). Si no hay previsión, compara con el anterior. No inventes: si no lo
-encuentras, "real": null."""
+encuentras, "real": null. Si el dato se publicó hace pocos minutos, busca en la web de la fuente oficial
+o en agencias de noticias, no en calendarios que aún no lo hayan actualizado."""
     res = extraer_json(llamar_claude(prompt, max_tokens=2500, busquedas=min(6, len(pendientes) + 1),
                                      modelo=MODELO_DIARIO, tarea="resultados reales"))
+    if isinstance(res, dict):
+        res = [res]
     por_id = {e["id"]: e for e in eventos}
     for e in pendientes:
         e["intentos"] = e.get("intentos", 0) + 1
+        e["ultimo_intento"] = ahora.isoformat()
     n = 0
     if isinstance(res, list):
         for r in res:
@@ -915,7 +875,7 @@ encuentras, "real": null."""
                 e["comentario"] = r.get("comentario")
                 e["fuente"] = r.get("fuente")
                 n += 1
-    print(f"Resultados reales añadidos: {n}")
+    print(f"Resultados reales añadidos: {n} de {len(pendientes)} pendientes")
     return n
 
 
@@ -938,16 +898,85 @@ semana y qué toca vigilar mañana. Sin saludos. No inventes la causa de un movi
     return llamar_claude(prompt, max_tokens=500, modelo=MODELO_DIARIO, tarea="resumen del día")
 
 
+# ----------------------------------------------------------------- coste
+def registrar_coste(control, hoy, lunes):
+    """Acumula el coste real de la API por semana y en total. Devuelve lo que se muestra en la página."""
+    c = control.setdefault("coste", {"desde": hoy.isoformat(), "total_usd": 0.0, "semana": lunes.isoformat(),
+                                     "semana_usd": 0.0, "llamadas": 0})
+    if c.get("semana") != lunes.isoformat():
+        c["semana_anterior_usd"] = round(c.get("semana_usd", 0.0), 4)
+        c["semana"], c["semana_usd"] = lunes.isoformat(), 0.0
+    gasto = sum(g["usd"] for g in GASTOS)
+    c["total_usd"] = round(c.get("total_usd", 0.0) + gasto, 4)
+    c["semana_usd"] = round(c.get("semana_usd", 0.0) + gasto, 4)
+    c["llamadas"] = c.get("llamadas", 0) + len(GASTOS)
+    c["ultima_ejecucion"] = GASTOS
+    print(f"Coste de esta ejecución: {gasto:.4f} $ · semana: {c['semana_usd']:.4f} $ · total: {c['total_usd']:.4f} $")
+    return {k: v for k, v in c.items()}
+
+
+# ----------------------------------------------------------------- modos rápido y cierre
+def modo_rapido(datos_prev, ahora, lunes):
+    """Cada 15 minutos: si hay un dato de impacto alto recién publicado, busca su resultado y lo refleja
+    en la agenda y en el sesgo. Si no hay nada pendiente, no escribe nada (y por tanto no hay commit)."""
+    if (datos_prev.get("semana") or {}).get("lunes") != lunes.isoformat():
+        print("La semana aún no está montada: lo hará la ejecución completa")
+        return
+    calendario = datos_prev.get("calendario") or []
+    pendientes = pendientes_resultado(calendario, ahora)
+    if not pendientes:
+        print("Ningún dato de impacto alto pendiente de resultado: no se toca nada")
+        return
+    print("Pendientes: " + " · ".join(e["titulo_en"] for e in pendientes))
+    if SIN_CLAUDE:
+        return
+    try:
+        obtener_resultados(calendario)
+    except Exception as e:
+        aviso(f"Error obteniendo resultados ({e})")
+    local = ahora.astimezone(TZ)
+    datos = datos_prev
+    datos["sesgo"] = calcular_sesgo(datos.get("mercado") or {}, calendario)
+    datos["generado"] = ahora.isoformat()
+    datos["generado_local"] = local.strftime("%d/%m/%Y %H:%M")
+    control = datos.setdefault("_control", {})
+    datos["coste"] = registrar_coste(control, local.date(), lunes)
+    # Se conservan los avisos del último cierre y se añaden los de esta ejecución
+    datos["diagnostico"] = list(dict.fromkeys((datos.get("diagnostico") or []) + DIAGNOSTICO))[-12:]
+    guardar_json(DATOS_FILE, datos, compacto=True)        # se guarda aunque no encuentre nada: lleva los intentos
+    print("datos.json actualizado con los resultados")
+
+
+def toca_cierre(control, ahora):
+    """GitHub no ajusta el cambio de hora, así que el cierre se programa a las 20:15 y a las 21:15 UTC y
+    solo se ejecuta la primera que cae después de las 16:00 de Nueva York (en verano y en invierno)."""
+    ny = ahora.astimezone(NY)
+    if ny.hour < 16:
+        print(f"Son las {ny:%H:%M} en Nueva York: aún no ha cerrado, esta ejecución no hace nada")
+        return False
+    if control.get("cierre") == ny.date().isoformat():
+        print("El cierre de hoy ya está hecho")
+        return False
+    return True
+
+
 # ----------------------------------------------------------------- principal
 def main():
     ahora = ahora_utc()
     local = ahora.astimezone(TZ)
     hoy = local.date()
     lunes = lunes_de_la_semana(hoy)
+    print(f"Modo: {MODO}")
 
     datos_prev = cargar_json(DATOS_FILE, {})
-    historico = cargar_json(HISTORICO_FILE, {})
+    if MODO == "rapido":
+        modo_rapido(datos_prev, ahora, lunes)
+        return
     control = datos_prev.get("_control", {})
+    if MODO == "cierre" and not toca_cierre(control, ahora):
+        return
+    control.pop("cot_descargado", None)          # restos de la versión con COT
+    historico = cargar_json(HISTORICO_FILE, {})
 
     # ¿Cambio de semana? -> archivar la anterior
     semana_prev = (datos_prev.get("semana") or {}).get("lunes")
@@ -971,56 +1000,45 @@ def main():
             calendario = previos
     else:
         calendario = previos
-    for e in calendario:            # conserva contadores de intentos
+    for e in calendario:            # conserva los contadores de intentos de búsqueda
         p = next((x for x in previos if x["id"] == e["id"]), None)
-        if p and p.get("intentos"):
-            e["intentos"] = p["intentos"]
+        if p:
+            for campo in ("intentos", "ultimo_intento"):
+                if p.get(campo):
+                    e[campo] = p[campo]
 
     # 2) Mercado
-    mercado = obtener_mercado(historico, lunes) or datos_prev.get("mercado", {})
-
-    # 3) COT (cada 12 h como mucho; se publica los viernes)
-    cot = datos_prev.get("cot", {})
-    ult_cot = control.get("cot_descargado")
-    if not cot or not ult_cot or ahora - datetime.fromisoformat(ult_cot) > timedelta(hours=12):
-        nuevo = obtener_cot()
-        if nuevo:
-            cot = nuevo
-            control["cot_descargado"] = ahora.isoformat()
+    mercado = obtener_mercado(historico, lunes)
+    if mercado:
+        precios_local = local.strftime("%d/%m/%Y %H:%M")
+    else:
+        mercado = datos_prev.get("mercado", {})
+        precios_local = datos_prev.get("precios_local")
 
     datos = {
         "generado": ahora.isoformat(),
         "generado_local": local.strftime("%d/%m/%Y %H:%M"),
+        "precios_local": precios_local,
         "semana": {"lunes": lunes.isoformat(), "viernes": (lunes + timedelta(days=4)).isoformat()},
         "calendario": calendario,
         "mercado": mercado,
-        "cot": cot,
         "narrativa": None if nueva_semana else datos_prev.get("narrativa"),
         "nota_dia": None if nueva_semana else datos_prev.get("nota_dia"),
     }
     de_hoy = [e for e in calendario if e["fecha"] == hoy.isoformat() and e["impacto"] == "alto" and e.get("hora")]
     hoy_ya_publicado = bool(de_hoy) and all(datetime.fromisoformat(e["utc"]) < ahora for e in de_hoy)
 
-    # 4) Resultados reales de lo ya publicado (busca solo si hay pendientes)
+    # 3) Resultados reales de lo ya publicado (busca solo si hay pendientes)
     if not SIN_CLAUDE:
         try:
             obtener_resultados(calendario)
         except Exception as e:
             aviso(f"Error obteniendo resultados ({e})")
 
-    # 5) Sesgo por reglas fijas
-    datos["sesgo"] = {
-        "usd": sesgo_dolar(mercado, cot, calendario),
-        "spx": sesgo_indice("SPX", mercado, cot),
-        "ndx": sesgo_indice("NDX", mercado, cot),
-    }
-    # EUR/USD es la inversa del dólar
-    u = datos["sesgo"]["usd"]
-    datos["sesgo"]["eurusd"] = {"sujeto": "EUR/USD", "puntuacion": -u["puntuacion"], "maximo": u["maximo"],
-                                "etiqueta": etiqueta(-u["puntuacion"], u["maximo"]),
-                                "factores": []}
+    # 4) Sesgo por reglas fijas
+    datos["sesgo"] = calcular_sesgo(mercado, calendario)
 
-    # 6) Semana anterior (archivo)
+    # 5) Semana anterior (archivo)
     if archivo_prev:
         datos["semana_anterior"] = {
             "lunes": archivo_prev.get("semana", {}).get("lunes"),
@@ -1031,7 +1049,7 @@ def main():
     else:
         datos["semana_anterior"] = datos_prev.get("semana_anterior")
 
-    # 7) Narrativa semanal (una vez por semana, o si falta / se fuerza)
+    # 6) Narrativa semanal (una vez por semana, o si falta / se fuerza)
     intentos = control.get("tesis_intentos", {})
     n_int = intentos.get(lunes.isoformat(), 0)
     if not SIN_CLAUDE and ((datos["narrativa"] is None and n_int < 2) or FORZAR_SEMANAL):
@@ -1051,27 +1069,18 @@ def main():
                 if es and e["titulo"] == e["titulo_en"]:
                     e["titulo"] = es
 
-    # 8) Resumen del día: solo los días con datos de impacto alto, una vez que ya han salido todos
+    # 7) Resumen del día: solo los días con datos de impacto alto, una vez que ya han salido todos
     if not SIN_CLAUDE and hoy_ya_publicado and control.get("nota_dia") != hoy.isoformat():
         texto = resumen_del_dia(datos, de_hoy)
         if texto:
             datos["nota_dia"] = {"texto": limpiar(texto), "generada": local.strftime("%d/%m %H:%M"), "fecha": hoy.isoformat()}
             control["nota_dia"] = hoy.isoformat()
 
-    # 9) Coste real de la API (se acumula por semana y en total)
-    c = control.setdefault("coste", {"desde": hoy.isoformat(), "total_usd": 0.0, "semana": lunes.isoformat(),
-                                     "semana_usd": 0.0, "llamadas": 0})
-    if c.get("semana") != lunes.isoformat():
-        c["semana_anterior_usd"] = round(c.get("semana_usd", 0.0), 4)
-        c["semana"], c["semana_usd"] = lunes.isoformat(), 0.0
-    gasto = sum(g["usd"] for g in GASTOS)
-    c["total_usd"] = round(c.get("total_usd", 0.0) + gasto, 4)
-    c["semana_usd"] = round(c.get("semana_usd", 0.0) + gasto, 4)
-    c["llamadas"] = c.get("llamadas", 0) + len(GASTOS)
-    c["ultima_ejecucion"] = GASTOS
-    datos["coste"] = {k: v for k, v in c.items()}
-    print(f"Coste de esta ejecución: {gasto:.4f} $ · semana: {c['semana_usd']:.4f} $ · total: {c['total_usd']:.4f} $")
+    # 8) Coste real de la API (se acumula por semana y en total)
+    datos["coste"] = registrar_coste(control, hoy, lunes)
 
+    if MODO == "cierre":
+        control["cierre"] = ahora.astimezone(NY).date().isoformat()
     datos["diagnostico"] = DIAGNOSTICO
     datos["_control"] = control
     guardar_json(DATOS_FILE, datos, compacto=True)
