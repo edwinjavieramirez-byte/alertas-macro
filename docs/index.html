@@ -144,6 +144,7 @@ a{color:var(--accent)}
 .ev .cif{grid-column:2;display:flex;flex-wrap:wrap;gap:2px 18px;font-size:13px;color:var(--ink-2)}
 .ev .cif b{font-weight:700;color:var(--ink)}
 .ev .cif .r.positiva b{color:var(--pos-t)} .ev .cif .r.negativa b{color:var(--neg-t)}
+.ev .cif .r.pend b{color:var(--muted);font-weight:600}
 .ev .com{grid-column:2;font-size:13px;color:var(--ink-2)}
 .ev .esc{grid-column:2;margin-top:6px;display:grid;gap:5px;font-size:13px;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px}
 .ev .esc .pq{color:var(--muted)}
@@ -169,17 +170,6 @@ a{color:var(--accent)}
 .spark .cur{stroke:var(--muted);stroke-width:1}
 .mk .tp{font-size:11.5px;color:var(--muted);min-height:1.2em}
 
-/* Tablas */
-.tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm)}
-table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{padding:9px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
-th{font-size:11.5px;color:var(--muted);font-weight:600;background:var(--surface-2)}
-td.r,th.r{text-align:right}
-tbody tr:hover{background:var(--surface-2)}
-tbody tr:last-child td{border-bottom:0}
-.idx{display:inline-flex;align-items:center;gap:8px}
-.idx i{display:block;width:60px;height:8px;border-radius:4px;background:var(--line-strong);position:relative;overflow:hidden}
-.idx i b{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
 .foot{font-size:12px;color:var(--muted)}
 ul.lst{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .wk{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0 22px}
@@ -235,6 +225,7 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   <section class="panel">
     <div class="phead"><h2>Agenda</h2><div class="seg" role="tablist" id="diaTabs"></div></div>
     <div id="agenda"></div>
+    <p class="foot">El resultado real de los datos de impacto alto aparece unos 15-30 minutos después de publicarse. Recarga la página para verlo.</p>
   </section>
 
   <section class="panel">
@@ -255,11 +246,6 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   </div>
 
   <section class="panel">
-    <div class="phead"><h2>COT · posicionamiento</h2><p id="cotFecha"></p></div>
-    <div id="cot"></div>
-  </section>
-
-  <section class="panel">
     <div class="phead"><h2>Semana anterior</h2><p id="antFecha"></p></div>
     <div id="anterior"></div>
   </section>
@@ -267,11 +253,11 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   <details class="help">
     <summary>Cómo funciona esta página</summary>
     <div>
-      <p><b>Actualización:</b> GitHub la regenera sola el domingo por la tarde (semana nueva, tesis y escenarios) y de lunes a viernes tras el cierre de Nueva York (precios, COT y, si hubo datos de impacto alto, sus resultados reales y el resumen del día).</p>
-      <p><b>Sesgo del dólar:</b> tendencia del DXY frente a sus medias de 20 y 50 días · DXY en la semana (±0,5 %) · bono a 2 años de EE. UU. (±8 pb) · diferencial 10A EE. UU.-Alemania (±5 pb) · COT del euro (Leveraged Funds, ±10.000 contratos en 4 semanas, con el signo cambiado) · sorpresas de los datos de EE. UU. de la semana. EUR/USD es el mismo cálculo con el signo cambiado.</p>
-      <p><b>Sesgo de S&amp;P 500 y Nasdaq:</b> tendencia frente a las medias de 50 y 200 días · distancia al máximo de 5 años · VIX · bono a 10 años · COT de Asset Managers.</p>
+      <p><b>Actualización:</b> GitHub la regenera sola. El domingo por la tarde monta la semana nueva (calendario, tesis y escenarios). De lunes a viernes, cada 15 minutos en horario de datos, comprueba si se ha publicado algún dato de impacto alto y, si es así, añade su resultado real y recalcula el sesgo (tarda unos 15-30 minutos desde la publicación). Tras el cierre de Nueva York actualiza los precios y escribe el resumen del día.</p>
+      <p><b>Sesgo del dólar:</b> tendencia del DXY frente a sus medias de 20 y 50 días · DXY en la semana (±0,5 %) · bono a 2 años de EE. UU. (±8 pb) · diferencial 10A EE. UU.-Alemania (±5 pb) · sorpresas de los datos de EE. UU. de la semana. EUR/USD es el mismo cálculo con el signo cambiado.</p>
+      <p><b>Sesgo de S&amp;P 500 y Nasdaq:</b> tendencia frente a las medias de 50 y 200 días · distancia al máximo de 5 años · VIX · bono a 10 años.</p>
       <p><b>Etiqueta:</b> +3 o más alcista fuerte · +1 o +2 alcista · 0 neutral · −1 o −2 bajista · −3 o menos bajista fuerte.</p>
-      <p><b>Fuentes:</b> Forex Factory (calendario), Yahoo Finance y CNBC (precios), CFTC (COT), API de Claude con búsqueda web (resultados, FedWatch y textos). Solo con fines informativos: no es una recomendación de inversión.</p>
+      <p><b>Fuentes:</b> Forex Factory (calendario), CNBC, Yahoo Finance y la Fed de St. Louis (precios), API de Claude con búsqueda web (resultados, FedWatch y textos). Solo con fines informativos: no es una recomendación de inversión.</p>
       <div id="diag"></div>
     </div>
   </details>
@@ -295,12 +281,13 @@ function pintar(datos){
   D=datos;N=D.narrativa||{};
   const s=D.semana||{};
   $("#semana").textContent=s.lunes?"Semana del "+fc(s.lunes)+" al "+fc(s.viernes):"Semana sin datos";
-  $("#actualizado").textContent="Última actualización: "+(D.generado_local||"—")+" (Madrid)";
+  $("#actualizado").textContent="Última actualización: "+(D.generado_local||"—")+" (Madrid)"+
+    (D.precios_local&&D.precios_local!==D.generado_local?" · precios del "+D.precios_local:"");
   const c=D.coste;
   $("#meta").innerHTML=(c?`<span>Coste API esta semana <b>${fmt(c.semana_usd,2)} $</b></span><span>Total desde ${fc(c.desde)} <b>${fmt(c.total_usd,2)} $</b></span>`:"")+
     (D.diagnostico&&D.diagnostico.length?`<span class="tag sample">${D.diagnostico.length} aviso(s): ver «Cómo funciona»</span>`:"");
   if(D._ejemplo)$("#aviso").innerHTML=`<div class="msg warn">${esc(D._ejemplo)}</div>`;
-  kpis();tesis();factores();agenda();mercado();bancos();cot();anterior();
+  kpis();tesis();factores();agenda();mercado();bancos();anterior();
   $("#diag").innerHTML=D.diagnostico&&D.diagnostico.length?`<p><b>Avisos de la última actualización:</b></p><ul class="lst">${D.diagnostico.map(d=>"<li>"+esc(d)+"</li>").join("")}</ul>`:"";
 }
 
@@ -364,9 +351,12 @@ function agenda(){
 function evento(e,s){
   const sp={positiva:"mejor de lo previsto",negativa:"peor de lo previsto",en_linea:"en línea"}[e.sorpresa]||"";
   const imp=e.impacto==="alto"?`<span class="pill p-bad">Alto</span>`:e.impacto==="festivo"?`<span class="pill p-mute">Festivo</span>`:`<span class="pill p-warn">Medio</span>`;
+  // Dato de impacto alto ya publicado cuyo resultado aún no se ha encontrado
+  const pend=!e.real&&e.impacto==="alto"&&e.utc&&Date.parse(e.utc)<Date.now();
+  const rpend=pend?((e.intentos||0)>=5?"no encontrado":"pendiente"):"";
   let h=`<div class="ev"><div class="h">${esc(e.hora||"—")}${e.hora_ny?`<small>NY ${esc(e.hora_ny)}</small>`:""}</div>
     <div class="cab"><span class="ccy">${esc(e.divisa)}</span><span class="t">${esc(e.titulo)}</span>${imp}${e.ventana_ny?`<span class="pill p-info">Sesión NY</span>`:""}</div>`;
-  if(e.prevision||e.anterior||e.real)h+=`<div class="cif"><span>Previsión <b>${esc(e.prevision||"—")}</b></span><span>Anterior <b>${esc(e.anterior||"—")}</b></span>${e.real?`<span class="r ${esc(e.sorpresa||"")}">Real <b>${esc(e.real)}</b>${sp?" · "+sp:""}</span>`:""}</div>`;
+  if(e.prevision||e.anterior||e.real)h+=`<div class="cif"><span>Previsión <b>${esc(e.prevision||"—")}</b></span><span>Anterior <b>${esc(e.anterior||"—")}</b></span>${e.real?`<span class="r ${esc(e.sorpresa||"")}">Real <b>${esc(e.real)}</b>${sp?" · "+sp:""}</span>`:rpend?`<span class="r pend">Real <b>${rpend}</b></span>`:""}</div>`;
   if(e.comentario)h+=`<p class="com">${esc(e.comentario)}${e.fuente?` · <a href="${esc(e.fuente)}" target="_blank" rel="noopener">fuente</a>`:""}</p>`;
   if(s&&!e.real)h+=`<div class="esc">${s.por_que?`<span class="pq">${esc(s.por_que)}</span>`:""}<div><span class="up">▲</span><span><b>Por encima:</b> ${esc(s.si_mayor)}</span></div><div><span class="down">▼</span><span><b>Por debajo:</b> ${esc(s.si_menor)}</span></div></div>`;
   return h+"</div>";
@@ -413,17 +403,6 @@ function bancos(){
   if(N.ventana_ny)h+=`<div class="box accent"><span class="label">Tu ventana: 14:00–22:00</span><span>${esc(N.ventana_ny)}</span></div>`;
   if(N.riesgos&&N.riesgos.length)h+=`<div class="box"><span class="label">Riesgos no programados</span><ul class="lst">${N.riesgos.map(r=>"<li>"+esc(r)+"</li>").join("")}</ul></div>`;
   $("#riesgos").innerHTML=h||`<div class="empty">Se actualiza el domingo.</div>`;
-}
-
-/* ---- COT ---- */
-function idx(v){return v==null?"—":`<span class="idx"><i><b style="width:${v}%"></b></i><span class="num">${v}</span></span>`}
-function cot(){
-  const C=D.cot||{},ks=["EUR","DXY","JPY","ES","NQ"].filter(k=>C[k]);
-  if(!ks.length){$("#cot").innerHTML=`<div class="empty">Sin datos del COT todavía.</div>`;return}
-  $("#cotFecha").textContent="CFTC · datos del martes "+fc(C[ks[0]].fecha);
-  $("#cot").innerHTML=`<div class="tscroll"><table><thead><tr><th>Mercado</th><th class="r">Leveraged Funds</th><th class="r">Δ 1 sem.</th><th class="r">Δ 4 sem.</th><th>Índice 52 sem.</th><th class="r">Asset Managers</th><th class="r">Δ 4 sem.</th><th>Índice 52 sem.</th></tr></thead><tbody>`+
-    ks.map(k=>{const c=C[k];return`<tr><td>${esc(c.nombre)}</td><td class="r num">${sgn(c.lev,0)}</td><td class="r num ${cl(c.lev_cambio_1s)}">${sgn(c.lev_cambio_1s,0)}</td><td class="r num ${cl(c.lev_cambio_4s)}">${sgn(c.lev_cambio_4s,0)}</td><td>${idx(c.lev_indice_52s)}</td><td class="r num">${sgn(c.am,0)}</td><td class="r num ${cl(c.am_cambio_4s)}">${sgn(c.am_cambio_4s,0)}</td><td>${idx(c.am_indice_52s)}</td></tr>`}).join("")+
-    `</tbody></table></div><p class="foot">Contratos netos (largos − cortos). Leveraged Funds: hedge funds y CTA (especulativo). Asset Managers: fondos institucionales. Índice 52 sem.: 0 = la posición más corta del año, 100 = la más larga. Datos del martes publicados el viernes: van con retraso.</p>`;
 }
 
 /* ---- semana anterior ---- */
