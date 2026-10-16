@@ -90,9 +90,8 @@ a{color:var(--accent)}
 
 /* Resumen de sesgo (libro mayor) */
 .ledger{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
-.lg-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-.kpi{padding:18px 20px;display:flex;flex-direction:column;gap:6px;min-width:0;position:relative}
-.kpi+.kpi::before{content:"";position:absolute;left:0;top:16px;bottom:16px;width:1px;background:var(--line)}
+.lg-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line)}
+.kpi{padding:18px 20px;display:flex;flex-direction:column;gap:6px;min-width:0;position:relative;background:var(--surface)}
 .kpi .v{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:var(--kv);line-height:1.1;font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
 .kpi .v small{font-size:.5em;color:var(--muted)}
 .kpi .s{font-size:12.5px;color:var(--ink-2)}
@@ -109,6 +108,8 @@ a{color:var(--accent)}
 .titular{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:calc(var(--h2) * .95);line-height:1.2}
 .box{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
 .box.accent{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 35%,transparent)}
+.box.warn{background:var(--warn-bg);border-color:color-mix(in srgb,var(--warn-t) 35%,transparent);color:var(--warn-t)}
+.box.warn .label{color:var(--warn-t)}
 
 /* Pestañas */
 .seg{display:inline-flex;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
@@ -171,6 +172,61 @@ a{color:var(--accent)}
 .mk .tp{font-size:11.5px;color:var(--muted);min-height:1.2em}
 
 .foot{font-size:12px;color:var(--muted)}
+
+/* Sesión de Nueva York */
+.ses{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px}
+.ses .col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.big{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px}
+.big .v{font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);font-size:var(--kv);line-height:1.05}
+.mini{display:grid;grid-template-columns:96px minmax(0,1fr);gap:4px 12px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+.mini b{font-weight:700}
+.mini span.d{color:var(--ink-2)}
+.rows{display:flex;flex-direction:column}
+.rows div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.rows div:last-child{border-bottom:0}
+.rows div .num{font-weight:700;white-space:nowrap}
+.rng{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.rng .box .num{font-family:var(--display);font-weight:var(--dw);font-size:var(--kv2);line-height:1.1;font-variant-numeric:lining-nums tabular-nums}
+.reac{display:flex;flex-direction:column;gap:2px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.reac:last-child{border-bottom:0}
+.reac .t{font-weight:700}
+.reac .d{color:var(--ink-2)}
+
+/* Correlaciones */
+.cor{display:flex;flex-direction:column}
+.cor-h,.cor-r{display:grid;grid-template-columns:minmax(0,1.6fr) 150px 64px 64px 160px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.cor-h{padding-top:0;font-size:12px;color:var(--muted);font-weight:600}
+.cor-r:last-child{border-bottom:0}
+.cor-r .nm b{display:block;font-weight:700;font-size:13.5px}
+.cor-r .nm span{display:block;font-size:12px;color:var(--muted)}
+.cor-r .nm .pill{display:inline-block;margin-top:5px;white-space:normal;max-width:100%;line-height:1.35;padding:2px 9px}
+.cv{display:flex;flex-direction:column;gap:4px}
+.cv .num{font-family:var(--display);font-weight:var(--dw);font-size:calc(var(--kv2) * .78);line-height:1;font-variant-numeric:lining-nums tabular-nums}
+.cbar{position:relative;height:6px;border-radius:3px;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line)}
+.cbar i{position:absolute;top:0;bottom:0;border-radius:3px}
+.cbar b{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line-strong)}
+.cor-r .sm{font-size:13px;font-weight:600}
+.mlab{display:none}
+.cspark{display:block;width:100%;height:34px;overflow:visible}
+.cspark .z{stroke:var(--line-strong);stroke-width:1;stroke-dasharray:3 3}
+.cspark .ln{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linejoin:round}
+.cspark .band{fill:var(--accent-soft)}
+
+/* Validación */
+.vtools{display:flex;flex-wrap:wrap;gap:8px}
+.vt{width:100%;border-collapse:collapse;font-size:13px}
+.vt th{font-size:12px;color:var(--muted);font-weight:600;text-align:right;padding:0 10px 8px;white-space:nowrap}
+.vt th:first-child,.vt td:first-child{text-align:left;padding-left:0}
+.vt td{text-align:right;padding:9px 10px;border-top:1px solid var(--line);white-space:nowrap}
+.vt td.n{font-weight:700}
+.vt tr.sel td{background:var(--accent-soft)}
+.vt tbody tr{cursor:pointer}
+.vt tbody tr:hover td{background:var(--surface-2)}
+.vt .sub td{font-size:12.5px;color:var(--ink-2);padding-top:6px;padding-bottom:6px;cursor:default;background:transparent!important}
+.vt .sub td:first-child{padding-left:16px}
+.vwrap{overflow-x:auto}
+.vsum{font-size:13.5px;color:var(--ink-2);max-width:80ch}
+.ok{color:var(--pos-t);font-weight:700} .ko{color:var(--neg-t);font-weight:700}
 ul.lst{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
 .wk{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:0 22px}
 .wk div{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
@@ -181,8 +237,11 @@ details.help{background:var(--surface);border:1px solid var(--line);border-radiu
 details.help summary{cursor:pointer;font-weight:700}
 details.help div{color:var(--ink-2);max-width:76ch;display:flex;flex-direction:column;gap:8px;padding-top:8px}
 details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;border-radius:4px;color:var(--ink)}
-@media (max-width:1000px){.grid2{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:900px){.lg-row{grid-template-columns:repeat(2,minmax(0,1fr))}.lg-row .kpi:nth-child(3)::before{display:none}.lg-row .kpi:nth-child(n+3){border-top:1px solid var(--line)}}
+@media (max-width:1000px){.grid2,.ses{grid-template-columns:minmax(0,1fr)}}
+#bancos,#riesgos{display:flex;flex-direction:column;gap:10px}
+@media (max-width:1100px){.lg-row{grid-template-columns:repeat(6,minmax(0,1fr))}.kpi{grid-column:span 2}.kpi:nth-child(n+4){grid-column:span 3}}
+@media (max-width:900px){.cor-h{display:none}.cor-r{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 14px}.cor-r .nm,.cor-r .cspark-c{grid-column:1/-1}.mlab{display:inline}}
+@media (max-width:640px){.lg-row{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi,.kpi:nth-child(n+4){grid-column:auto}.kpi:last-child:nth-child(odd){grid-column:1/-1}}
 @media (max-width:560px){.wrap{padding-inline:16px;gap:18px}.panel{padding:16px}.kpi{padding:14px}.themes .label{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -192,7 +251,7 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   <header class="top">
     <div class="brand">
       <div class="mark" aria-hidden="true"><span>AM</span></div>
-      <div><h1>Agenda Macro</h1><p>Lo que mueve al dólar, al S&amp;P 500 y al Nasdaq esta semana. Horas de Madrid.</p></div>
+      <div><h1>Agenda Macro</h1><p>Lo que mueve al dólar, al yen, al S&amp;P 500 y al Nasdaq esta semana. Horas de Madrid.</p></div>
     </div>
     <div class="themes" role="radiogroup" aria-label="Estilo visual" id="themes">
       <span class="label">Estilo</span>
@@ -209,6 +268,11 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   <div id="aviso"></div>
 
   <section class="ledger" aria-label="Sesgo de la semana"><div class="lg-row" id="kpis"></div></section>
+
+  <section class="panel" aria-label="Tu sesión de Nueva York">
+    <div class="phead"><div><h2>Tu sesión de Nueva York</h2><p id="sesSub"></p></div></div>
+    <div class="ses" id="sesion"></div>
+  </section>
 
   <div class="grid2">
     <section class="panel">
@@ -236,7 +300,7 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
 
   <div class="grid2">
     <section class="panel">
-      <div class="phead"><h2>Fed y BCE</h2></div>
+      <div class="phead"><h2>Fed, BCE y BoJ</h2></div>
       <div id="bancos"></div>
     </section>
     <section class="panel">
@@ -244,6 +308,17 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
       <div id="riesgos"></div>
     </section>
   </div>
+
+  <section class="panel">
+    <div class="phead"><div><h2>Qué manda ahora</h2><p>Correlación de los movimientos diarios de cada activo con su factor en los últimos 20 días (+1 se mueven igual · 0 nada · −1 al revés). Te dice qué factor del sesgo está pesando de verdad esta temporada.</p></div></div>
+    <div class="cor" id="correl"></div>
+    <p class="foot">Cambios diarios: % en precios, puntos básicos en bonos y diferenciales. Por debajo de ±0,3 la relación es débil. El gráfico es la correlación de 20 días a lo largo de los últimos 6 meses.</p>
+  </section>
+
+  <section class="panel">
+    <div class="phead"><div><h2>¿Acierta el sesgo?</h2><p id="valSub"></p></div><div class="vtools"><div class="seg" role="tablist" id="valHz"></div><div class="seg" role="tablist" id="valSrc"></div></div></div>
+    <div id="valid"></div>
+  </section>
 
   <section class="panel">
     <div class="phead"><h2>Semana anterior</h2><p id="antFecha"></p></div>
@@ -255,9 +330,12 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
     <div>
       <p><b>Actualización:</b> GitHub la regenera sola. El domingo por la tarde monta la semana nueva (calendario, tesis y escenarios). De lunes a viernes, cada 15 minutos en horario de datos, comprueba si se ha publicado algún dato de impacto alto y, si es así, añade su resultado real y recalcula el sesgo (tarda unos 15-30 minutos desde la publicación). Tras el cierre de Nueva York actualiza los precios y escribe el resumen del día.</p>
       <p><b>Sesgo del dólar:</b> tendencia del DXY frente a sus medias de 20 y 50 días · DXY en la semana (±0,5 %) · bono a 2 años de EE. UU. (±8 pb) · diferencial 10A EE. UU.-Alemania (±5 pb) · sorpresas de los datos de EE. UU. de la semana. EUR/USD es el mismo cálculo con el signo cambiado.</p>
+      <p><b>Sesgo de USD/JPY</b> (propio, no es el espejo del dólar): tendencia frente a las medias de 20 y 50 días · diferencial 10A EE. UU.-Japón (±5 pb) · bono a 2 años de EE. UU. (±8 pb) · VIX (con miedo se compra yen) · sorpresas de los datos de EE. UU. menos las de Japón. El aviso de intervención no vota: salta por encima del nivel configurado (158 por defecto) o con una subida de más del 2,5 % en la semana.</p>
       <p><b>Sesgo de S&amp;P 500 y Nasdaq:</b> tendencia frente a las medias de 50 y 200 días · distancia al máximo de 5 años · VIX · bono a 10 años.</p>
+      <p><b>Tu sesión de Nueva York:</b> se toman fotos del mercado a horas fijas de Nueva York (apertura de Londres, antes de los datos de las 8:30 NY, apertura de Wall Street y cierre de Londres) y alrededor de cada dato de impacto alto. Justo antes de los datos, Claude Sonnet con búsqueda web redacta el sesgo pre-NY con lo que ha hecho Londres, los diferenciales, los futuros y las noticias de la mañana. El rango esperado no usa IA: sale del régimen de volatilidad de 20 días y del día de la semana, con tu histórico (movimiento de cierre a cierre, no el máximo-mínimo). Al cierre se mide la sesión desde la foto pre-NY y se compara la IA con el sesgo por reglas, con «seguir a Londres» y con «ir contra Londres». Si el sesgo pre-NY se genera tarde (ya publicados los datos), se muestra pero no cuenta en la validación.</p>
+      <p><b>¿Acierta el sesgo?</b> Se aplican las mismas reglas a los 5 años de histórico (sin el factor de datos, del que no hay histórico) y además se guarda en vivo el sesgo del domingo y el de cada cierre. Acierto = el signo del sesgo coincide con el del movimiento. Azar = lo que acertarías apostando en la misma dirección con la frecuencia real de subidas y bajadas. El margen (±) es el ruido esperable por el tamaño de la muestra: una ventaja menor que el margen puede ser casualidad.</p>
       <p><b>Etiqueta:</b> +3 o más alcista fuerte · +1 o +2 alcista · 0 neutral · −1 o −2 bajista · −3 o menos bajista fuerte.</p>
-      <p><b>Fuentes:</b> Forex Factory (calendario), CNBC, Yahoo Finance y la Fed de St. Louis (precios), API de Claude con búsqueda web (resultados, FedWatch y textos). Solo con fines informativos: no es una recomendación de inversión.</p>
+      <p><b>Fuentes:</b> Forex Factory (calendario), CNBC, Yahoo Finance, la Fed de St. Louis y el Ministerio de Finanzas de Japón (precios), API de Claude con búsqueda web (resultados, FedWatch y textos). Solo con fines informativos: no es una recomendación de inversión.</p>
       <div id="diag"></div>
     </div>
   </details>
@@ -273,7 +351,7 @@ const fmt=(n,d)=>{if(n==null||isNaN(n))return"—";const p=Math.abs(+n).toFixed(
 const sgn=(n,d,u)=>n==null||isNaN(n)?"—":(n>0?"+":n<0?"−":"±")+fmt(Math.abs(n),d)+(u||"");
 const cl=n=>n==null||n===0?"flat":n>0?"up":"down";
 const fc=iso=>{const[y,m,d]=iso.split("-").map(Number);return d+" "+MES[m-1]};
-let D=null,N={},sgSel="usd",diaSel=null;
+let D=null,N={},sgSel="usd",diaSel=null,valHz="sesion",valSrc="historico",valSel="usd";
 
 function pillEt(et){const c=/Alcista/.test(et)?"p-good":/Bajista/.test(et)?"p-bad":"p-mute";return`<span class="pill ${c}">${esc(et)}</span>`}
 
@@ -287,29 +365,29 @@ function pintar(datos){
   $("#meta").innerHTML=(c?`<span>Coste API esta semana <b>${fmt(c.semana_usd,2)} $</b></span><span>Total desde ${fc(c.desde)} <b>${fmt(c.total_usd,2)} $</b></span>`:"")+
     (D.diagnostico&&D.diagnostico.length?`<span class="tag sample">${D.diagnostico.length} aviso(s): ver «Cómo funciona»</span>`:"");
   if(D._ejemplo)$("#aviso").innerHTML=`<div class="msg warn">${esc(D._ejemplo)}</div>`;
-  kpis();tesis();factores();agenda();mercado();bancos();anterior();
+  kpis();sesion();tesis();factores();agenda();mercado();bancos();correl();valid();anterior();
   $("#diag").innerHTML=D.diagnostico&&D.diagnostico.length?`<p><b>Avisos de la última actualización:</b></p><ul class="lst">${D.diagnostico.map(d=>"<li>"+esc(d)+"</li>").join("")}</ul>`:"";
 }
 
 /* ---- sesgo ---- */
-const SUJ=[["usd","Dólar (USD)"],["eurusd","EUR/USD"],["spx","S&P 500"],["ndx","Nasdaq 100"]];
+const SUJ=[["usd","Dólar (USD)"],["eurusd","EUR/USD"],["usdjpy","USD/JPY"],["spx","S&P 500"],["ndx","Nasdaq 100"]];
 function kpis(){
   const S=D.sesgo||{};
   $("#kpis").innerHTML=SUJ.map(([k,t])=>{const x=S[k];if(!x)return`<div class="kpi"><span class="label">${t}</span><span class="v flat">—</span></div>`;
     const m=Math.max(x.maximo,1),w=Math.min(Math.abs(x.puntuacion)/m,1)*50,col=x.puntuacion>0?"var(--pos)":x.puntuacion<0?"var(--neg)":"var(--muted)";
     return`<div class="kpi"><span class="label">${t}</span><span class="v ${cl(x.puntuacion)}">${x.puntuacion>0?"+":x.puntuacion<0?"−":""}${Math.abs(x.puntuacion)}<small> / ${x.maximo}</small></span>
       <div class="meter" role="img" aria-label="${x.puntuacion} de ${m}"><b></b><i style="left:${x.puntuacion>=0?50:50-w}%;width:${w}%;background:${col}"></i></div>
-      <span class="s">${pillEt(x.etiqueta)}${k==="eurusd"?" · espejo del dólar":""}</span></div>`}).join("");
+      <span class="s">${pillEt(x.etiqueta)}${k==="eurusd"?" · espejo del dólar":""}${x.aviso?` <span class="pill p-warn" title="${esc(x.aviso)}">Riesgo de intervención</span>`:""}</span></div>`}).join("");
 }
 function factores(){
   const S=D.sesgo||{};
-  const tabs=[["usd","Dólar"],["spx","S&P 500"],["ndx","Nasdaq"]];
+  const tabs=[["usd","Dólar"],["usdjpy","USD/JPY"],["spx","S&P 500"],["ndx","Nasdaq"]];
   $("#sgTabs").innerHTML=tabs.map(([k,t])=>`<button role="tab" type="button" data-k="${k}" aria-selected="${k===sgSel}">${t}</button>`).join("");
   $("#sgTabs").onclick=e=>{const b=e.target.closest("button");if(b){sgSel=b.dataset.k;factores()}};
   const x=S[sgSel];
   if(!x||!x.factores.length){$("#factores").innerHTML=`<div class="empty">Sin datos suficientes.</div>`;return}
-  let h=x.factores.map(f=>`<div class="factor"><span class="vt pill ${f.voto>0?"p-good":f.voto<0?"p-bad":"p-mute"}">${f.voto>0?"+1":f.voto<0?"−1":"0"}</span><span><b>${esc(f.factor)}</b> · <span class="d">${esc(f.detalle)}</span></span></div>`).join("");
-  const lec=sgSel==="usd"?N.lectura_usd:N.lectura_indices;
+  let h=(x.aviso?`<div class="box warn" style="margin-bottom:6px"><span class="label">Aviso (no vota)</span><span>${esc(x.aviso)}</span></div>`:"")+x.factores.map(f=>`<div class="factor"><span class="vt pill ${f.voto>0?"p-good":f.voto<0?"p-bad":"p-mute"}">${f.voto>0?"+1":f.voto<0?"−1":"0"}</span><span><b>${esc(f.factor)}</b> · <span class="d">${esc(f.detalle)}</span></span></div>`).join("");
+  const lec=sgSel==="usd"?N.lectura_usd:sgSel==="usdjpy"?N.lectura_jpy:N.lectura_indices;
   if(lec)h+=`<div class="box" style="margin-top:10px"><span class="label">Lectura</span><span>${esc(lec)}</span></div>`;
   $("#factores").innerHTML=h;
 }
@@ -341,7 +419,7 @@ function agenda(){
     if(diaSel==="todos")evs=evs.filter(e=>e.impacto!=="medio"||esc_[e.id]);
     const i=dias.indexOf(d),ot=otros.filter(o=>o.dia===DIAS[i]);
     if(diaSel==="todos")h+=`<div class="dia">${DIAS[i]} ${fc(d)}</div>`;
-    if(!evs.length&&!ot.length){h+=`<div class="empty">Sin datos de impacto alto${diaSel==="todos"?"":" ni medio"} de EE. UU. o la eurozona.</div>`;return}
+    if(!evs.length&&!ot.length){h+=`<div class="empty">Sin datos de impacto alto${diaSel==="todos"?"":" ni medio"} de EE. UU., la eurozona o Japón.</div>`;return}
     evs.forEach(e=>h+=evento(e,esc_[e.id]));
     ot.forEach(o=>h+=`<div class="ev otro"><div class="h">${esc(o.hora||"—")}</div><div class="cab"><span class="t">${esc(o.texto)}</span></div></div>`);
   });
@@ -398,11 +476,116 @@ function spark(svg){
 /* ---- bancos y riesgos ---- */
 function bancos(){
   const b=N.bancos_centrales||{};
-  $("#bancos").innerHTML=`<div class="box"><span class="label">Reserva Federal</span><span>${esc(b.fed||"Se actualiza el domingo.")}</span></div><div class="box"><span class="label">Banco Central Europeo</span><span>${esc(b.bce||"Se actualiza el domingo.")}</span></div>`;
+  $("#bancos").innerHTML=`<div class="box"><span class="label">Reserva Federal</span><span>${esc(b.fed||"Se actualiza el domingo.")}</span></div><div class="box"><span class="label">Banco Central Europeo</span><span>${esc(b.bce||"Se actualiza el domingo.")}</span></div><div class="box"><span class="label">Banco de Japón</span><span>${esc(b.boj||"Se actualiza el domingo.")}</span></div>`;
   let h="";
   if(N.ventana_ny)h+=`<div class="box accent"><span class="label">Tu ventana: 14:00–22:00</span><span>${esc(N.ventana_ny)}</span></div>`;
   if(N.riesgos&&N.riesgos.length)h+=`<div class="box"><span class="label">Riesgos no programados</span><ul class="lst">${N.riesgos.map(r=>"<li>"+esc(r)+"</li>").join("")}</ul></div>`;
   $("#riesgos").innerHTML=h||`<div class="empty">Se actualiza el domingo.</div>`;
+}
+
+/* ---- sesión de Nueva York ---- */
+const fd=iso=>{const d=new Date(iso+"T12:00:00Z");return["domingo","lunes","martes","miércoles","jueves","viernes","sábado"][d.getUTCDay()]+" "+fc(iso)};
+const pipsTxt=n=>n==null?"—":sgn(n,0," pips");
+function sesgoPill(x){if(!x)return"";const c=x.sesgo==="alcista"?"p-good":x.sesgo==="bajista"?"p-bad":"p-mute";return`<span class="pill ${c}">${esc(x.sesgo[0].toUpperCase()+x.sesgo.slice(1))}</span>`}
+function rango(t,x,dia){if(!x)return"";const reg=x.regimen==="alto"?"p-warn":x.regimen==="bajo"?"p-info":"p-mute";
+  return`<div class="box"><span class="label">${t}${dia?" · "+dia:""}</span><span class="num">≈${fmt(x.esperado_pips,0)} pips</span><span style="font-size:12.5px;color:var(--ink-2)">Normal ${fmt(x.normal_pips,0)} · <span class="pill ${reg}">volatilidad ${({alto:"alta",bajo:"baja",normal:"normal"})[x.regimen]||esc(x.regimen)}</span></span></div>`}
+function sesion(){
+  const I=D.intradia;
+  if(!I){$("#sesSub").textContent="";$("#sesion").innerHTML=`<div class="empty">Se activa con la primera actualización de la versión 5.</div>`;return}
+  const P=I.preny,R=I.resumen,V=I.volatilidad||{};
+  $("#sesSub").textContent="Sesión del "+fd(I.fecha)+(I.cerrada?" · cerrada":"")+" · horas de Madrid";
+  let L="";
+  if(P&&!P.error){const e=P.eurusd||{};
+    L+=`<div class="box accent"><span class="label">Sesgo pre-NY · EUR/USD · ${esc(P.generado)}${P.tardio?' · <span class="pill p-warn">tardío: no cuenta en la validación</span>':""}</span>
+      <div class="big"><span class="v ${e.sesgo==="alcista"?"up":e.sesgo==="bajista"?"down":"flat"}">${esc((e.sesgo||"neutral")[0].toUpperCase()+(e.sesgo||"neutral").slice(1))}</span><span class="pill p-mute">convicción ${esc(e.conviccion||"baja")}</span></div>
+      <span>${esc(e.por_que)}</span>${e.invalida?`<span style="color:var(--ink-2)"><b>Lo invalida:</b> ${esc(e.invalida)}</span>`:""}
+      ${e.claves&&e.claves.length?`<ul class="lst" style="margin-top:4px">${e.claves.map(c=>"<li>"+esc(c)+"</li>").join("")}</ul>`:""}</div>`;
+    [["USD/JPY",P.usdjpy],["Índices",P.indices]].forEach(([t,x])=>{if(x)L+=`<div class="mini"><b>${t}</b><span>${sesgoPill(x)} <span class="label">convicción ${esc(x.conviccion)}</span></span><span></span><span class="d">${esc(x.por_que)}</span></div>`});
+    if(P.volatilidad)L+=`<div class="mini"><b>Volatilidad</b><span class="d">${esc(P.volatilidad)}</span></div>`;
+    if(P.noticias&&P.noticias.length)L+=`<div class="mini"><b>Esta mañana</b><ul class="lst">${P.noticias.map(n=>"<li>"+esc(n)+"</li>").join("")}</ul></div>`;
+  }else if(P&&P.error)L+=`<div class="box warn"><span class="label">Sesgo pre-NY</span><span>No se pudo generar hoy (${esc(P.generado)}). Mira los avisos al pie de la página.</span></div>`;
+  else L+=`<div class="box"><span class="label">Sesgo pre-NY</span><span>${I.cerrada?"Hoy no se generó.":"Se genera hacia las 14:00, antes de los datos de las 14:30, con lo que haya hecho Londres y las noticias de la mañana."}</span></div>`;
+  if(I.resultado){const r=I.resultado,p=P&&!P.error&&P.eurusd?P.eurusd.sesgo:null,mv=r.EURUSD;
+    const ok=p&&p!=="neutral"&&mv!=null&&mv!==0?((p==="alcista")===(mv>0)):null;
+    L+=`<div class="box"><span class="label">Resultado de la sesión (desde la foto pre-NY hasta el cierre)</span><span>EUR/USD <b class="${cl(r.EURUSD_pips)}">${pipsTxt(r.EURUSD_pips)}</b> (${sgn(r.EURUSD,2," %")})${r.USDJPY!=null?` · USD/JPY <b class="${cl(r.USDJPY)}">${sgn(r.USDJPY,2," %")}</b>`:""}${r.SPX!=null?` · S&P 500 <b class="${cl(r.SPX)}">${sgn(r.SPX,2," %")}</b>`:""}</span>${ok===null?"":`<span>Sesgo de la IA: ${ok?'<span class="ok">acertó ✓</span>':'<span class="ko">falló ✗</span>'}${P.tardio?" (tardío, no cuenta)":""}</span>`}</div>`}
+  let Rr=`<div class="rng">${rango("Rango esperado EUR/USD",V.EURUSD)}${rango("USD/JPY",V.USDJPY)}</div>`;
+  if(I.siguiente&&I.siguiente.volatilidad){const S=I.siguiente.volatilidad;Rr+=`<div class="rng">${rango("Próxima sesión · EUR/USD",S.EURUSD,fd(I.siguiente.fecha))}${rango("USD/JPY",S.USDJPY)}</div>`}
+  Rr+=`<p class="foot" style="margin-top:-4px">Movimiento esperado de cierre a cierre según la volatilidad de 20 días y el día de la semana (el máximo-mínimo del día suele ser mayor).</p>`;
+  if(R&&R.items&&R.items.length)Rr+=`<div><span class="label">Antes de tu sesión · ${esc(R.desde)} hasta las ${esc(R.hora)}</span><div class="rows">${R.items.map(x=>`<div><span>${esc(x.nombre)}</span><span class="num ${cl(x.cambio)}">${x.pips!=null?pipsTxt(x.pips)+" · ":""}${sgn(x.cambio,x.unidad==="pb"?1:2," "+x.unidad)}</span></div>`).join("")}</div></div>`;
+  const RE=(I.reacciones||[]);
+  if(RE.length)Rr+=`<div><span class="label">Reacción a los datos (EUR/USD)</span>${RE.map(r=>`<div class="reac"><span class="t">${esc(r.hora)} · ${esc((r.eventos||[]).join(", "))}</span>${r.perdida?`<span class="d">No hubo foto justo antes del dato: no se pudo medir.</span>`:r.reaccion_pips!=null?`<span class="d">A los ${r.min_despues} min: <b class="${cl(r.reaccion_pips)}">${pipsTxt(r.reaccion_pips)}</b>${r.reaccion_2a!=null?` · 2A EE. UU. ${sgn(r.reaccion_2a,1," pb")}`:""}${r.hasta_cierre_pips!=null?` · después, hasta el cierre: <b class="${cl(r.hasta_cierre_pips)}">${pipsTxt(r.hasta_cierre_pips)}</b>`:""}</span>`:`<span class="d">Medida a los ${r.min_despues??"—"} min; el detalle sale al cierre.</span>`}</div>`).join("")}</div>`;
+  if(I.marcas&&I.marcas.length){const NM={europa:"Londres",pre_ny:"pre-NY",apertura_ny:"Wall Street",londres:"cierre de Londres",cierre:"cierre de NY"};
+    Rr+=`<p class="foot">Fotos de hoy: ${I.marcas.map(m=>(NM[m.marca]||m.marca)+" "+esc(m.hora)).join(" · ")}</p>`}
+  $("#sesion").innerHTML=`<div class="col">${L}</div><div class="col">${Rr}</div>`;
+}
+
+/* ---- correlaciones ---- */
+const fc2=n=>n==null?"—":(n>0?"+":n<0?"−":"")+fmt(Math.abs(n),2);
+function cbar(c){if(c==null)return"";const w=Math.min(Math.abs(c),1)*50,col=c>0?"var(--pos)":"var(--neg)";
+  return`<div class="cbar"><b></b><i style="left:${c>=0?50:50-w}%;width:${w}%;background:${col}"></i></div>`}
+function cspark(s){if(!s||s.length<3)return"";const W=160,H=34,v=s.map(x=>x==null?0:x),X=i=>i/(v.length-1)*W,Y=c=>(1-(c+1)/2)*H;
+  const pts=v.map((c,i)=>X(i).toFixed(1)+","+Y(c).toFixed(1)).join(" ");
+  return`<svg class="cspark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Correlación de 20 días en los últimos meses"><rect class="band" x="0" width="${W}" y="${Y(.3)}" height="${Y(-.3)-Y(.3)}" opacity=".5"></rect><line class="z" x1="0" x2="${W}" y1="${Y(0)}" y2="${Y(0)}" vector-effect="non-scaling-stroke"></line><polyline class="ln" points="${pts}" vector-effect="non-scaling-stroke"></polyline></svg>`}
+function correl(){
+  const C=(D.correlaciones||{}).pares||[];
+  if(!C.length){$("#correl").innerHTML=`<div class="empty">Se calculan en la próxima actualización.</div>`;return}
+  const pc={good:"p-good",info:"p-info",warn:"p-warn",mute:"p-mute"};
+  $("#correl").innerHTML=`<div class="cor-h"><span>Activo · factor</span><span>20 días</span><span>60 días</span><span>Hace 1 mes</span><span>Últimos 6 meses</span></div>`+
+    C.map(x=>`<div class="cor-r"><div class="nm"><b>${esc(x.nombre)}</b><span>${esc(x.nota)}</span><span class="pill ${pc[x.nivel]||"p-mute"}">${esc(x.lectura)}</span></div>
+      <div class="cv"><span class="num ${x.c20==null?"flat":""}">${fc2(x.c20)}</span>${cbar(x.c20)}</div>
+      <span class="sm"><span class="label mlab">60 días </span>${fc2(x.c60)}</span><span class="sm"><span class="label mlab">hace 1 mes </span>${fc2(x.c20_hace_1m)}</span>
+      <div class="cspark-c">${cspark(x.serie)}</div></div>`).join("");
+}
+
+/* ---- validación del sesgo ---- */
+const VSUJ=[["usd","Dólar (DXY)"],["eurusd","EUR/USD"],["usdjpy","USD/JPY"],["spx","S&P 500"],["ndx","Nasdaq 100"]];
+const pct1=n=>n==null?"—":fmt(n,1)+" %";
+function ventaja(x){if(!x||!x.senales)return`<span class="flat">—</span>`;const m=100/Math.sqrt(x.senales),v=x.ventaja,sig=Math.abs(v)>m;
+  const c=!sig?"p-mute":v>0?"p-good":"p-bad";return`<span class="pill ${c}" title="Margen por tamaño de muestra: ±${fmt(m,1)} puntos">${sgn(v,1)} pt</span> <span class="label">±${fmt(m,0)}</span>`}
+function valid(){
+  const V=D.validacion||{},src=V[valSrc]||null;
+  $("#valHz").innerHTML=[["sesion","Sesión NY"],["diario","Al día siguiente"],["semanal","En la semana"]].map(([k,t])=>`<button role="tab" type="button" data-k="${k}" aria-selected="${valHz===k}">${t}</button>`).join("");
+  $("#valSrc").innerHTML=[["historico","Histórico"],["vivo","En vivo"]].map(([k,t])=>`<button role="tab" type="button" data-k="${k}" aria-selected="${valSrc===k}">${t}</button>`).join("");
+  $("#valSrc").style.display=valHz==="sesion"?"none":"";
+  if(valHz==="sesion"){validSesion(V.vivo);return}
+  $("#valHz").onclick=e=>{const b=e.target.closest("button");if(b){valHz=b.dataset.k;valid()}};
+  $("#valSrc").onclick=e=>{const b=e.target.closest("button");if(b){valSrc=b.dataset.k;valid()}};
+  const H=V.historico,VV=V.vivo;
+  $("#valSub").textContent=valSrc==="historico"?(H?`Mismas reglas aplicadas a los cierres del ${fc(H.desde)} ${H.desde.slice(0,4)} al ${fc(H.hasta)} ${H.hasta.slice(0,4)}. ${valHz==="diario"?"Sesgo al cierre de cada día frente al movimiento del día siguiente.":"Sesgo del domingo (cierres hasta el viernes) frente al movimiento de lunes a viernes."}`:"")
+    :(VV?`Registro real desde ${VV.desde?fc(VV.desde):"la próxima actualización"}: ${VV.n_semanal||0} semana(s) y ${VV.n_diario||0} día(s) con resultado.`:"");
+  const T=src&&src[valHz];
+  if(!T||!Object.values(T).some(x=>x&&x.periodos)){$("#valid").innerHTML=`<div class="empty">${valSrc==="vivo"?"El registro en vivo acaba de empezar: el sesgo del domingo se guarda cada semana y el de cada cierre, cada día. Los primeros resultados aparecen al terminar la primera semana (o el primer día). Mientras, mira el histórico.":"Sin histórico suficiente todavía."}</div>`;return}
+  let h=`<div class="vwrap"><table class="vt"><thead><tr><th>Sesgo</th><th>Señales</th><th>Acierto</th><th>Azar</th><th>Ventaja</th><th>Mov. medio si alcista</th><th>si bajista</th><th>Sesgo fuerte (±3)</th></tr></thead><tbody>`;
+  VSUJ.forEach(([k,t])=>{const x=T[k];if(!x)return;
+    h+=`<tr data-k="${k}" class="${valSel===k?"sel":""}"><td class="n">${t}</td><td>${x.senales||0}</td><td class="n">${pct1(x.pct)}</td><td>${pct1(x.azar)}</td><td>${ventaja(x)}</td>
+      <td class="${cl(x.mov_alcista)}">${x.mov_alcista!=null?sgn(x.mov_alcista,valHz==="diario"?3:2," %"):"—"}</td><td class="${cl(x.mov_bajista)}">${x.mov_bajista!=null?sgn(x.mov_bajista,valHz==="diario"?3:2," %"):"—"}</td>
+      <td>${x.fuerte&&x.fuerte.senales?pct1(x.fuerte.pct)+` <span class="label">(${x.fuerte.senales})</span>`:"—"}</td></tr>`;
+    if(valSel===k)(x.factores||[]).forEach(f=>{h+=`<tr class="sub"><td>${esc(f.factor)}</td><td>${f.senales||0}</td><td>${pct1(f.pct)}</td><td>${pct1(f.azar)}</td><td>${ventaja(f)}</td><td colspan="3"></td></tr>`});
+  });
+  h+=`</tbody></table></div><p class="foot">Pulsa un sesgo para ver cada factor. «Mov. medio» es lo que se movió de media el activo ${valHz==="diario"?"al día siguiente":"en la semana"} cuando el sesgo era alcista o bajista: si los dos son del mismo signo, el sesgo no separa bien. La ventaja en verde o rojo supera el margen del tamaño de la muestra; en gris puede ser casualidad.${valSrc==="historico"?" El histórico no incluye el factor de datos de la semana.":""}</p>`;
+  if(valSrc==="vivo"&&valHz==="semanal"&&VV&&VV.ultimas_semanas&&VV.ultimas_semanas.length){
+    h+=`<h3>Últimas semanas</h3><div class="vwrap"><table class="vt"><thead><tr><th>Semana</th>${VSUJ.map(([,t])=>`<th>${t}</th>`).join("")}</tr></thead><tbody>`+
+      VV.ultimas_semanas.map(w=>`<tr style="cursor:default"><td class="n">${fc(w.lunes)}</td>${VSUJ.map(([k])=>{const p=(w.sesgo||{})[k],r=(w.resultado||{})[k];
+        if(p==null)return"<td>—</td>";const ps=(p>0?"+":p<0?"−":"")+Math.abs(p);
+        if(r==null)return`<td>${ps} <span class="label">en curso</span></td>`;
+        const ok=p!==0&&(p>0)===(r>0);return`<td>${ps} → <span class="${cl(r)}">${sgn(r,2," %")}</span> ${p===0?"":ok?'<span class="ok">✓</span>':'<span class="ko">✗</span>'}</td>`}).join("")}</tr>`).join("")+`</tbody></table></div>`;
+  }
+  $("#valid").innerHTML=h;
+  $("#valid tbody").onclick=e=>{const r=e.target.closest("tr[data-k]");if(r){valSel=valSel===r.dataset.k?null:r.dataset.k;valid()}};
+}
+
+const MSES=[["ia_eurusd"],["reglas_eurusd"],["londres_eurusd"],["contra_londres_eurusd"],["reaccion"],["ia_usdjpy"],["reglas_usdjpy"],["ia_spx"],["reglas_spx"]];
+function validSesion(VV){
+  const T=(VV||{}).sesion||{},n=(VV||{}).n_sesion||0;
+  $("#valSub").textContent=`Desde la foto pre-NY (≈14:00 Madrid, antes de los datos) hasta el cierre de Nueva York. Solo en vivo: ${n} sesión(es) medidas. La IA tiene que ganar a las referencias sencillas para servir de algo.`;
+  if(!Object.values(T).some(x=>x&&x.periodos)){$("#valid").innerHTML=`<div class="empty">Las primeras sesiones aparecerán tras el primer cierre con sesgo pre-NY. Para tener una idea fiable hacen falta unas 40 sesiones (2 meses).</div>`;return}
+  let h=`<div class="vwrap"><table class="vt"><thead><tr><th>Método</th><th>Señales</th><th>Acierto</th><th>Azar</th><th>Ventaja</th><th>Mov. medio si alcista</th><th>si bajista</th><th>Convicción alta</th></tr></thead><tbody>`;
+  MSES.forEach(([k])=>{const x=T[k];if(!x)return;
+    h+=`<tr style="cursor:default"><td class="n">${esc(x.sujeto)}</td><td>${x.senales||0}</td><td class="n">${pct1(x.pct)}</td><td>${pct1(x.azar)}</td><td>${ventaja(x)}</td>
+      <td class="${cl(x.mov_alcista)}">${x.mov_alcista!=null?sgn(x.mov_alcista,3," %"):"—"}</td><td class="${cl(x.mov_bajista)}">${x.mov_bajista!=null?sgn(x.mov_bajista,3," %"):"—"}</td>
+      <td>${x.fuerte&&x.fuerte.senales?pct1(x.fuerte.pct)+` <span class="label">(${x.fuerte.senales})</span>`:"—"}</td></tr>`});
+  h+=`</tbody></table></div><p class="foot">«Seguir la reacción al dato»: si EUR/USD se movió más de 5 pips en los minutos siguientes al dato, ¿siguió en esa dirección hasta el cierre? Con pocas sesiones el margen (±) es enorme: no saques conclusiones antes de unas 40.</p>`;
+  $("#valid").innerHTML=h;
 }
 
 /* ---- semana anterior ---- */
