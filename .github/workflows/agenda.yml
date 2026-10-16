@@ -48,6 +48,8 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           AGENDA_MODELO_SEMANAL: ${{ vars.AGENDA_MODELO_SEMANAL }}
           AGENDA_MODELO_DIARIO: ${{ vars.AGENDA_MODELO_DIARIO }}
+          # Nivel de USD/JPY a partir del cual se avisa del riesgo de intervención de Japón (por defecto 158)
+          AGENDA_JPY_INTERVENCION: ${{ vars.AGENDA_JPY_INTERVENCION }}
           FORZAR_SEMANAL: ${{ github.event.inputs.forzar_semanal }}
           # rapido = solo resultados de datos recién publicados · cierre = precios y resumen del día ·
           # completo = todo (domingo, a mano o al cambiar el script)
@@ -58,7 +60,7 @@ jobs:
         run: |
           git config user.name "agenda-bot"
           git config user.email "agenda-bot@users.noreply.github.com"
-          git add -A docs/ agenda/historico.json
+          git add -A docs/ agenda/*.json
           if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
           git commit -m "agenda: datos $(date -u +%Y-%m-%dT%H:%M)" -q
           for i in 1 2 3 4 5; do
