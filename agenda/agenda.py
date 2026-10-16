@@ -635,9 +635,10 @@ fijas que se te dan; explícalo y señala si el contexto lo contradice, pero no 
 Horas siempre en hora de Madrid."""
 
 
-def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea="", esfuerzo="low"):
+def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea="", esfuerzo="low", _reintento=False):
     """Devuelve el texto final o None. Con busquedas>0 activa la búsqueda web del servidor.
-    Apunta en GASTOS los tokens y búsquedas consumidos para calcular el coste real."""
+    Apunta en GASTOS los tokens y búsquedas consumidos para calcular el coste real.
+    Si el modelo gasta todo max_tokens pensando y no escribe nada, se reintenta UNA vez con el triple."""
     if SIN_CLAUDE or not ANTHROPIC_API_KEY:
         return None
     modelos = [modelo or MODELO_DIARIO]
@@ -687,6 +688,10 @@ def llamar_claude(prompt, max_tokens=1500, busquedas=0, modelo=None, tarea="", e
             texto = "".join(partes).strip()
             print(f"Claude ({mod}) · {tarea}: {uso['entrada']} tokens de entrada, {uso['salida']} de salida, "
                   f"{uso['busquedas']} búsquedas = {usd:.4f} $ · fin: {motivo} · {len(texto)} caracteres")
+            if not texto and motivo == "max_tokens" and not _reintento:
+                # Se le acabó el espacio pensando antes de escribir: un reintento con el triple de margen
+                print(f"Reintento de {tarea} con {max_tokens * 3} tokens")
+                return llamar_claude(prompt, max_tokens * 3, busquedas, mod, tarea, esfuerzo, _reintento=True)
             if motivo == "max_tokens":
                 aviso(f"Claude se quedó sin espacio al escribir ({tarea}); puede salir incompleto")
             if not texto:
@@ -895,7 +900,8 @@ Tesis de la semana: {((datos.get("narrativa") or {}).get("tesis") or {}).get("te
 Escribe el resumen del día en máx. 90 palabras, texto plano: qué salió (mejor o peor de lo previsto), cómo
 reaccionaron el dólar, EUR/USD y los índices según los datos de mercado, si eso refuerza o debilita la tesis de la
 semana y qué toca vigilar mañana. Sin saludos. No inventes la causa de un movimiento si no está en los datos."""
-    return llamar_claude(prompt, max_tokens=500, modelo=MODELO_DIARIO, tarea="resumen del día")
+    # 2500 y no 500: los modelos 5.x piensan antes de escribir y ese pensamiento cuenta dentro de max_tokens
+    return llamar_claude(prompt, max_tokens=2500, modelo=MODELO_DIARIO, tarea="resumen del día")
 
 
 # ----------------------------------------------------------------- coste
