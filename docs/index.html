@@ -117,6 +117,8 @@ a{color:var(--accent)}
 .seg button:hover{color:var(--ink)}
 .seg button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
 .seg button small{font-size:11px;opacity:.75;margin-left:4px}
+.seg button .nalt{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 4px;margin-left:6px;border-radius:999px;font-size:10.5px;font-weight:700;line-height:1;background:var(--neg-bg);color:var(--neg-t);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--neg) 40%,transparent);vertical-align:1px}
+.seg button[aria-selected="true"] .nalt{background:var(--accent-ink);color:var(--accent);box-shadow:none}
 
 /* Pills */
 .pill{display:inline-block;font-size:11.5px;padding:1px 9px;border-radius:999px;font-weight:600;white-space:nowrap}
@@ -408,7 +410,7 @@ function agenda(){
   if(!diaSel)diaSel=dias.includes(hoy)?hoy:"todos";
   const n=d=>cal.filter(e=>e.fecha===d&&e.impacto==="alto").length;
   $("#diaTabs").innerHTML=`<button role="tab" type="button" data-d="todos" aria-selected="${diaSel==="todos"}">Semana</button>`+
-    dias.map((d,i)=>`<button role="tab" type="button" data-d="${d}" aria-selected="${diaSel===d}">${DIAS[i].slice(0,3)} ${+d.slice(8)}<small>${n(d)||""}</small></button>`).join("");
+    dias.map((d,i)=>`<button role="tab" type="button" data-d="${d}" aria-selected="${diaSel===d}">${DIAS[i].slice(0,3)} ${+d.slice(8)}${n(d)?`<span class="nalt" title="${n(d)} dato(s) de impacto alto" aria-label="${n(d)} dato(s) de impacto alto">${n(d)}</span>`:""}</button>`).join("");
   $("#diaTabs").onclick=e=>{const b=e.target.closest("button");if(b){diaSel=b.dataset.d;agenda()}};
   // Escenarios: se enlazan por id y, si Claude devolvió el título, por el título del evento
   const esc_={};(N.escenarios||[]).forEach(x=>{const e=cal.find(c=>c.id===x.id)||cal.find(c=>c.titulo_en===x.id||c.titulo===x.id);if(e)esc_[e.id]=x});
