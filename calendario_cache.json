@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-16T16:55:26.599766+00:00",
+ "descargado": "2026-10-16T19:00:55.829361+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -844,7 +844,7 @@
   {
    "title": "Federal Budget Balance",
    "country": "USD",
-   "date": "2026-10-16T14:00:00-04:00",
+   "date": "2026-10-16T14:05:00-04:00",
    "impact": "Low",
    "forecast": "-34.7B",
    "previous": "-166.8B"
