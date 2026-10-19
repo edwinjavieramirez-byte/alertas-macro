@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-19T08:35:23.462967+00:00",
+ "descargado": "2026-10-19T10:35:24.716186+00:00",
  "eventos": [
   {
    "title": "IMF Meetings",
@@ -104,14 +104,6 @@
    "impact": "Low",
    "forecast": "-0.3%",
    "previous": "0.4%"
-  },
-  {
-   "title": "Foreign Direct Investment ytd/y",
-   "country": "CNY",
-   "date": "2026-10-19T05:10:00-04:00",
-   "impact": "Low",
-   "forecast": "",
-   "previous": "-5.3%"
   },
   {
    "title": "CPI m/m",
@@ -240,6 +232,14 @@
    "impact": "Low",
    "forecast": "23.6",
    "previous": "25.8"
+  },
+  {
+   "title": "Foreign Direct Investment ytd/y",
+   "country": "CNY",
+   "date": "2026-10-20T05:10:00-04:00",
+   "impact": "Low",
+   "forecast": "",
+   "previous": "-5.3%"
   },
   {
    "title": "10-y Bond Auction",
