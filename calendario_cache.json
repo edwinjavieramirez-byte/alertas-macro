@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-19T16:40:32.868032+00:00",
+ "descargado": "2026-10-19T18:45:31.335537+00:00",
  "eventos": [
   {
    "title": "IMF Meetings",
@@ -278,7 +278,7 @@
    "country": "USD",
    "date": "2026-10-20T10:00:00-04:00",
    "impact": "Low",
-   "forecast": "-0.4%",
+   "forecast": "-0.7%",
    "previous": "0.3%"
   },
   {
@@ -318,7 +318,7 @@
    "country": "JPY",
    "date": "2026-10-20T19:50:00-04:00",
    "impact": "Low",
-   "forecast": "-0.21T",
+   "forecast": "-0.26T",
    "previous": "-0.84T"
   },
   {
