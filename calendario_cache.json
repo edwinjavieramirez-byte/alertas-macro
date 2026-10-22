@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-22T14:20:32.779812+00:00",
+ "descargado": "2026-10-22T16:25:25.491602+00:00",
  "eventos": [
   {
    "title": "IMF Meetings",
@@ -466,6 +466,14 @@
    "previous": "3.1%"
   },
   {
+   "title": "NHPI m/m",
+   "country": "CAD",
+   "date": "2026-10-22T09:55:00-04:00",
+   "impact": "Low",
+   "forecast": "-0.1%",
+   "previous": "-0.1%"
+  },
+  {
    "title": "Consumer Confidence",
    "country": "EUR",
    "date": "2026-10-22T10:00:00-04:00",
@@ -488,14 +496,6 @@
    "impact": "Low",
    "forecast": "80B",
    "previous": "67B"
-  },
-  {
-   "title": "NHPI m/m",
-   "country": "CAD",
-   "date": "2026-10-22T10:59:00-04:00",
-   "impact": "Low",
-   "forecast": "-0.1%",
-   "previous": "-0.1%"
   },
   {
    "title": "Flash Manufacturing PMI",
