@@ -622,7 +622,9 @@ def sesgo_dolar(m, eventos):
         v = 1 if c >= 5 else -1 if c <= -5 else 0
         f.append(factor("Diferencial 10A EE. UU.-Alemania", v,
                         f"{dif['ultimo']:.0f} pb, {c:+.1f} pb en la semana (umbral ±5 pb). Si se amplía, favorece al USD frente al EUR"))
-    usd = [e for e in eventos if e["divisa"] == "USD" and e.get("sorpresa") in ("positiva", "negativa")]
+    # Solo impacto alto: los de impacto medio tienen resultado desde v5.1, pero no cambian el sesgo
+    usd = [e for e in eventos if e["divisa"] == "USD" and e.get("impacto") == "alto"
+           and e.get("sorpresa") in ("positiva", "negativa")]
     if usd:
         pos = sum(1 for e in usd if e["sorpresa"] == "positiva")
         neg = sum(1 for e in usd if e["sorpresa"] == "negativa")
@@ -633,7 +635,8 @@ def sesgo_dolar(m, eventos):
 
 def sorpresas(eventos, divisa):
     """(mejores, peores) de lo previsto entre los datos de esa divisa con resultado."""
-    ev = [e for e in eventos if e["divisa"] == divisa and e.get("sorpresa") in ("positiva", "negativa")]
+    ev = [e for e in eventos if e["divisa"] == divisa and e.get("impacto") == "alto"
+          and e.get("sorpresa") in ("positiva", "negativa")]
     return sum(1 for e in ev if e["sorpresa"] == "positiva"), sum(1 for e in ev if e["sorpresa"] == "negativa")
 
 
@@ -1298,10 +1301,10 @@ previsión numérica, usa "si_mayor" para el tono duro (hawkish) y "si_menor" pa
 
 
 def pendientes_resultado(eventos, ahora):
-    """Datos de impacto alto ya publicados, sin resultado real, a los que les toca un intento de búsqueda."""
+    """Datos de impacto alto y medio ya publicados, sin resultado real, a los que les toca un intento de búsqueda."""
     salida = []
     for e in eventos:
-        if e.get("real") is not None or e.get("impacto") != "alto" or not e.get("hora"):
+        if e.get("real") is not None or e.get("impacto") not in ("alto", "medio") or not e.get("hora"):
             continue
         if not (e.get("prevision") or e.get("anterior")):       # discursos: no hay cifra que buscar
             continue
@@ -1361,7 +1364,7 @@ o en agencias de noticias, no en calendarios que aún no lo hayan actualizado.""
 
 def resumen_del_dia(datos, de_hoy):
     prompt = f"""Hoy es {fecha_es(ahora_utc())} (Madrid), tras el cierre de Nueva York.
-Datos de impacto alto de hoy (con el resultado real si lo hay):
+Datos de hoy de impacto alto y medio (con el resultado real si lo hay):
 {chr(10).join(linea_evento(e) for e in de_hoy)}
 
 Mercado al cierre (último · cambio en la semana):
@@ -1458,8 +1461,10 @@ def marcas_de(sesion):
 
 
 def eventos_reaccion(calendario):
-    """Datos de impacto alto con hora de EE. UU. y la eurozona (los de Japón salen de madrugada)."""
-    return [e for e in calendario if e.get("impacto") == "alto" and e.get("hora") and e["divisa"] in ("USD", "EUR")]
+    """Datos de EE. UU. y la eurozona con hora: los de impacto alto a cualquier hora y los de impacto medio
+    dentro de la sesión de Nueva York (los de Japón salen de madrugada)."""
+    return [e for e in calendario if e.get("hora") and e["divisa"] in ("USD", "EUR") and
+            (e.get("impacto") == "alto" or (e.get("impacto") == "medio" and e.get("ventana_ny")))]
 
 
 def tareas_intradia(intr, calendario, ahora):
@@ -1918,7 +1923,8 @@ def main():
         "narrativa": None if nueva_semana else datos_prev.get("narrativa"),
         "nota_dia": None if nueva_semana else datos_prev.get("nota_dia"),
     }
-    de_hoy = [e for e in calendario if e["fecha"] == hoy.isoformat() and e["impacto"] == "alto" and e.get("hora")]
+    de_hoy = [e for e in calendario if e["fecha"] == hoy.isoformat() and e["impacto"] in ("alto", "medio")
+              and e.get("hora") and e["divisa"] in ("USD", "EUR")]
     hoy_ya_publicado = bool(de_hoy) and all(datetime.fromisoformat(e["utc"]) < ahora for e in de_hoy)
 
     # 3) Resultados reales de lo ya publicado (busca solo si hay pendientes)
@@ -1999,7 +2005,7 @@ def main():
                 if es and e["titulo"] == e["titulo_en"]:
                     e["titulo"] = es
 
-    # 7) Resumen del día: solo los días con datos de impacto alto, una vez que ya han salido todos
+    # 7) Resumen del día: los días con datos de impacto alto o medio, una vez que ya han salido todos
     if not SIN_CLAUDE and hoy_ya_publicado and control.get("nota_dia") != hoy.isoformat():
         texto = resumen_del_dia(datos, de_hoy)
         if texto:
