@@ -1195,6 +1195,8 @@ def texto_mercado(m):
             continue
         u = "pb" if x.get("tipo") in ("yield", "pb") else "%"
         partes = [f'{x["nombre"]}: {x["ultimo"]}']
+        if x.get("cambio_dia") is not None:
+            partes.append(f'día {x["cambio_dia"]:+} {u}')
         if x.get("cambio_semana") is not None:
             partes.append(f'semana {x["cambio_semana"]:+} {u}')
         if x.get("cambio_semana_anterior") is not None:
@@ -1340,7 +1342,8 @@ peticiones de subsidio, un número MAYOR es negativa; en inflación, más alta d
 la divisa porque aleja bajadas de tipos). Si no hay previsión, compara con el anterior. No inventes: si no lo
 encuentras, "real": null. Si el dato se publicó hace pocos minutos, busca en la web de la fuente oficial
 o en agencias de noticias, no en calendarios que aún no lo hayan actualizado."""
-    res = extraer_json(llamar_claude(prompt, max_tokens=2500, busquedas=min(6, len(pendientes) + 1),
+    # 5000: con muchos datos a la vez (8 PMI el 23/10) 2500 se quedaba justo y el JSON podía salir cortado
+    res = extraer_json(llamar_claude(prompt, max_tokens=5000, busquedas=min(6, len(pendientes) + 1),
                                      modelo=MODELO_DIARIO, tarea="resultados reales"))
     if isinstance(res, dict):
         res = [res]
@@ -1362,13 +1365,36 @@ o en agencias de noticias, no en calendarios que aún no lo hayan actualizado.""
     return n
 
 
+def texto_sesion_ny(intr):
+    """La sesión de Nueva York de hoy (desde la foto pre-NY) y la reacción a cada dato, para el resumen."""
+    if not intr or not intr.get("resultado"):
+        return "no disponible"
+    r, lineas = intr["resultado"], []
+    if r.get("EURUSD") is not None:
+        lineas.append(f'Desde las 14:00 hasta el cierre: EUR/USD {r["EURUSD"]:+} % ({r.get("EURUSD_pips"):+} pips)'
+                      + (f', USD/JPY {r["USDJPY"]:+} %' if r.get("USDJPY") is not None else "")
+                      + (f', S&P 500 {r["SPX"]:+} %' if r.get("SPX") is not None else ""))
+    for x in intr.get("reacciones") or []:
+        if x.get("reaccion_pips") is not None:
+            lineas.append(f'{x["hora"]} {", ".join(x.get("eventos") or [])}: EUR/USD {x["reaccion_pips"]:+} pips a los '
+                          f'{x.get("min_despues")} min' + (f', después {x["hasta_cierre_pips"]:+} pips hasta el cierre'
+                                                            if x.get("hasta_cierre_pips") is not None else ""))
+    p = (intr.get("preny") or {}).get("eurusd")
+    if isinstance(p, dict):
+        lineas.append(f'Sesgo pre-NY de EUR/USD: {p.get("sesgo")} (convicción {p.get("conviccion")})')
+    return "\n".join(lineas) or "no disponible"
+
+
 def resumen_del_dia(datos, de_hoy):
     prompt = f"""Hoy es {fecha_es(ahora_utc())} (Madrid), tras el cierre de Nueva York.
 Datos de hoy de impacto alto y medio (con el resultado real si lo hay):
 {chr(10).join(linea_evento(e) for e in de_hoy)}
 
-Mercado al cierre (último · cambio en la semana):
+Mercado al cierre (último · cambio del día · cambio en la semana):
 {texto_mercado(datos["mercado"])}
+
+Sesión de Nueva York de hoy (fotos propias):
+{texto_sesion_ny(datos.get("intradia"))}
 
 Sesgo calculado ahora:
 {texto_sesgo(datos["sesgo"])}
@@ -1377,9 +1403,11 @@ Tesis de la semana: {((datos.get("narrativa") or {}).get("tesis") or {}).get("te
 
 Escribe el resumen del día en máx. 90 palabras, texto plano: qué salió (mejor o peor de lo previsto), cómo
 reaccionaron el dólar, EUR/USD, USD/JPY y los índices según los datos de mercado, si eso refuerza o debilita la tesis de la
-semana y qué toca vigilar mañana. Sin saludos. No inventes la causa de un movimiento si no está en los datos."""
-    # 2500 y no 500: los modelos 5.x piensan antes de escribir y ese pensamiento cuenta dentro de max_tokens
-    return llamar_claude(prompt, max_tokens=2500, modelo=MODELO_DIARIO, tarea="resumen del día")
+semana y qué toca vigilar mañana. Sin saludos. No inventes la causa de un movimiento si no está en los datos.
+No repitas todas las cifras: cita solo las sorpresas que importan."""
+    # 6000: los modelos 5.x piensan antes de escribir y ese pensamiento cuenta dentro de max_tokens. Con 2500 se
+    # cortaba los días con muchos datos (23/10: 8 PMI). Con Haiku cuesta menos de medio céntimo.
+    return llamar_claude(prompt, max_tokens=6000, modelo=MODELO_DIARIO, tarea="resumen del día")
 
 
 # ----------------------------------------------------------------- coste
@@ -2005,12 +2033,14 @@ def main():
                 if es and e["titulo"] == e["titulo_en"]:
                     e["titulo"] = es
 
-    # 7) Resumen del día: los días con datos de impacto alto o medio, una vez que ya han salido todos
-    if not SIN_CLAUDE and hoy_ya_publicado and control.get("nota_dia") != hoy.isoformat():
+    # 7) Resumen del día: los días con datos de impacto alto o medio, solo tras el cierre de Nueva York
+    #    («nota_dia_cierre»: clave nueva en v5.2, así se rehace el resumen del 23/10, que salió a media sesión)
+    tras_cierre = ahora.astimezone(NY).hour >= 16 and ahora.astimezone(NY).date() == hoy
+    if not SIN_CLAUDE and hoy_ya_publicado and tras_cierre and control.get("nota_dia_cierre") != hoy.isoformat():
         texto = resumen_del_dia(datos, de_hoy)
         if texto:
             datos["nota_dia"] = {"texto": limpiar(texto), "generada": local.strftime("%d/%m %H:%M"), "fecha": hoy.isoformat()}
-            control["nota_dia"] = hoy.isoformat()
+            control["nota_dia_cierre"] = hoy.isoformat()
 
     # 8) Coste real de la API (se acumula por semana y en total)
     datos["coste"] = registrar_coste(control, hoy, lunes)
