@@ -291,7 +291,7 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   <section class="panel">
     <div class="phead"><h2>Agenda</h2><div class="seg" role="tablist" id="diaTabs"></div></div>
     <div id="agenda"></div>
-    <p class="foot">El resultado real de los datos de impacto alto aparece unos 15-30 minutos después de publicarse. Recarga la página para verlo.</p>
+    <p class="foot">El resultado real de los datos de impacto alto y medio aparece unos 15-30 minutos después de publicarse. Recarga la página para verlo.</p>
   </section>
 
   <section class="panel">
@@ -330,7 +330,7 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   <details class="help">
     <summary>Cómo funciona esta página</summary>
     <div>
-      <p><b>Actualización:</b> GitHub la regenera sola. El domingo por la tarde monta la semana nueva (calendario, tesis y escenarios). De lunes a viernes, cada 15 minutos en horario de datos, comprueba si se ha publicado algún dato de impacto alto y, si es así, añade su resultado real y recalcula el sesgo (tarda unos 15-30 minutos desde la publicación). Tras el cierre de Nueva York actualiza los precios y escribe el resumen del día.</p>
+      <p><b>Actualización:</b> GitHub la regenera sola. El domingo por la tarde monta la semana nueva (calendario, tesis y escenarios). De lunes a viernes, cada 15 minutos en horario de datos, comprueba si se ha publicado algún dato de impacto alto o medio y, si es así, añade su resultado real (solo los de impacto alto cambian el sesgo) (tarda unos 15-30 minutos desde la publicación). Tras el cierre de Nueva York actualiza los precios y escribe el resumen del día.</p>
       <p><b>Sesgo del dólar:</b> tendencia del DXY frente a sus medias de 20 y 50 días · DXY en la semana (±0,5 %) · bono a 2 años de EE. UU. (±8 pb) · diferencial 10A EE. UU.-Alemania (±5 pb) · sorpresas de los datos de EE. UU. de la semana. EUR/USD es el mismo cálculo con el signo cambiado.</p>
       <p><b>Sesgo de USD/JPY</b> (propio, no es el espejo del dólar): tendencia frente a las medias de 20 y 50 días · diferencial 10A EE. UU.-Japón (±5 pb) · bono a 2 años de EE. UU. (±8 pb) · VIX (con miedo se compra yen) · sorpresas de los datos de EE. UU. menos las de Japón. El aviso de intervención no vota: salta por encima del nivel configurado (158 por defecto) o con una subida de más del 2,5 % en la semana.</p>
       <p><b>Sesgo de S&amp;P 500 y Nasdaq:</b> tendencia frente a las medias de 50 y 200 días · distancia al máximo de 5 años · VIX · bono a 10 años.</p>
@@ -418,21 +418,21 @@ function agenda(){
   const ver=diaSel==="todos"?dias:[diaSel];let h="";
   ver.forEach(d=>{
     let evs=cal.filter(e=>e.fecha===d);
-    if(diaSel==="todos")evs=evs.filter(e=>e.impacto!=="medio"||esc_[e.id]);
+    if(diaSel==="todos"&&evs.some(e=>e.impacto==="alto"))evs=evs.filter(e=>e.impacto!=="medio"||esc_[e.id]);
     const i=dias.indexOf(d),ot=otros.filter(o=>o.dia===DIAS[i]);
     if(diaSel==="todos")h+=`<div class="dia">${DIAS[i]} ${fc(d)}</div>`;
     if(!evs.length&&!ot.length){h+=`<div class="empty">Sin datos de impacto alto${diaSel==="todos"?"":" ni medio"} de EE. UU., la eurozona o Japón.</div>`;return}
     evs.forEach(e=>h+=evento(e,esc_[e.id]));
     ot.forEach(o=>h+=`<div class="ev otro"><div class="h">${esc(o.hora||"—")}</div><div class="cab"><span class="t">${esc(o.texto)}</span></div></div>`);
   });
-  if(diaSel==="todos")h+=`<p class="foot" style="padding-top:10px">Vista de semana: datos de impacto alto y los de impacto medio con escenario. Elige un día para verlos todos.</p>`;
+  if(diaSel==="todos")h+=`<p class="foot" style="padding-top:10px">Vista de semana: datos de impacto alto y los de impacto medio con escenario (o todos los de impacto medio si ese día no hay ninguno alto). Elige un día para verlos todos.</p>`;
   $("#agenda").innerHTML=h||`<div class="empty">El calendario de la semana aún no está disponible.</div>`;
 }
 function evento(e,s){
   const sp={positiva:"mejor de lo previsto",negativa:"peor de lo previsto",en_linea:"en línea"}[e.sorpresa]||"";
   const imp=e.impacto==="alto"?`<span class="pill p-bad">Alto</span>`:e.impacto==="festivo"?`<span class="pill p-mute">Festivo</span>`:`<span class="pill p-warn">Medio</span>`;
   // Dato de impacto alto ya publicado cuyo resultado aún no se ha encontrado
-  const pend=!e.real&&e.impacto==="alto"&&e.utc&&Date.parse(e.utc)<Date.now();
+  const pend=!e.real&&(e.impacto==="alto"||e.impacto==="medio")&&(e.prevision||e.anterior)&&e.utc&&Date.parse(e.utc)<Date.now();
   const rpend=pend?((e.intentos||0)>=5?"no encontrado":"pendiente"):"";
   let h=`<div class="ev"><div class="h">${esc(e.hora||"—")}${e.hora_ny?`<small>NY ${esc(e.hora_ny)}</small>`:""}</div>
     <div class="cab"><span class="ccy">${esc(e.divisa)}</span><span class="t">${esc(e.titulo)}</span>${imp}${e.ventana_ny?`<span class="pill p-info">Sesión NY</span>`:""}</div>`;
