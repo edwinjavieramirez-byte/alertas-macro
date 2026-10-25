@@ -79,6 +79,7 @@ MIN_ENTRE_INTENTOS = 12
 
 TZ = ZoneInfo("Europe/Madrid")
 NY = ZoneInfo("America/New_York")
+LON = ZoneInfo("Europe/London")
 RAIZ = Path(__file__).resolve().parent.parent
 DOCS = RAIZ / "docs"
 DATOS_FILE = DOCS / "datos.json"
@@ -1452,12 +1453,14 @@ INTRADIA_FILE = Path(__file__).resolve().parent / "intradia.json"
 SNAP_INST = ["EURUSD", "DXY", "USDJPY", "US2Y", "US10Y", "DE10Y", "JP10Y", "SPX", "NDX", "VIX"]
 SNAP_EXTRA = {"DE2Y": "DE2Y-DE", "ES": "@SP.1", "NQ": "@ND.1"}
 NOMBRES_SNAP = {"DE2Y": "Bund 2A", "ES": "Futuro S&P 500", "NQ": "Futuro Nasdaq 100"}
-# Marcas horarias en hora de NUEVA YORK (los datos de EE. UU. salen a las 8:30 NY todo el año; Europa y EE. UU.
-# cambian de hora en semanas distintas). Cada marca se toma en la primera ejecución que cae dentro de su ventana.
-MARCAS = [("europa", (3, 0), (3, 50), "Apertura de Londres"),
-          ("pre_ny", (7, 40), (8, 25), "Antes de los datos de Nueva York"),
-          ("apertura_ny", (9, 30), (10, 15), "Apertura de Wall Street"),
-          ("londres", (11, 0), (11, 50), "Cierre de Londres")]
+# Marcas horarias: cada una en la hora REAL de su mercado. Las de Nueva York (pre-NY y apertura de Wall Street)
+# en hora de NY; las de Londres (apertura 8:00 y cierre/fix de las 16:00) en hora de Londres. Europa, Londres y
+# EE. UU. cambian de hora en semanas distintas, así que nunca se expresan unas en la hora de las otras.
+# Cada marca se toma en la primera ejecución que cae dentro de su ventana.
+MARCAS = [("europa", (8, 0), (8, 50), "Apertura de Londres", LON),
+          ("pre_ny", (7, 40), (8, 25), "Antes de los datos de Nueva York", NY),
+          ("apertura_ny", (9, 30), (10, 15), "Apertura de Wall Street", NY),
+          ("londres", (16, 0), (16, 50), "Cierre de Londres", LON)]
 PRENY_LIMITE = (9, 30)     # si la marca pre-NY se pierde, el sesgo se genera igual hasta esta hora (marcado «tardío»)
 UMBRAL_MOV = 0.05          # % mínimo para dar por hecho que Londres o un dato han movido el par (≈5-6 pips en EUR/USD)
 PIP = {"EURUSD": 10000, "USDJPY": 100}
@@ -1518,7 +1521,8 @@ def tareas_intradia(intr, calendario, ahora):
     ny = ahora.astimezone(NY)
     sesion = intr.get("sesiones", {}).get(ny.date().isoformat(), {"snaps": [], "reacciones": {}})
     hechas = marcas_de(sesion)
-    marca = next((n for n, ini, fin, _ in MARCAS if ini <= _hm(ny) < fin and n not in hechas), None)
+    marca = next((n for n, ini, fin, _, zona in MARCAS
+                  if ini <= _hm(ahora.astimezone(zona)) < fin and n not in hechas), None)
     eventos = eventos_reaccion(calendario)
     ultima = max((datetime.fromisoformat(s["t"]) for s in sesion["snaps"]), default=None)
     previa = any(timedelta(0) < datetime.fromisoformat(e["utc"]) - ahora <= timedelta(minutes=25) for e in eventos) \
