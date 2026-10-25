@@ -1,5 +1,5 @@
 """
-Agente de alertas macro: EUR/USD, USD/JPY, GER 40 e índices USA.  (versión 3)
+Agente de alertas macro: EUR/USD, USD/JPY, GER 40 e índices USA.  (versión 3.1)
 
 Qué hace cada vez que se ejecuta (cada 5 min):
   1. Calendario económico (Forex Factory): eventos de ALTO impacto de USD, EUR y JPY.
@@ -8,7 +8,9 @@ Qué hace cada vez que se ejecuta (cada 5 min):
   2. Agenda matinal (lunes-viernes, HORA_RESUMEN): eventos del día + foto de mercado.
   3. Resumen antes de Fráncfort (lunes-viernes, HORA_PRE_FRA, 08:45 por defecto):
      GER 40, Bund 10A, diferencial con EE. UU. y EUR/USD, antes de la apertura de Xetra (09:00).
-  4. Resumen pre-Nueva York (lunes-viernes, HORA_PRE_NY, 15:00 por defecto):
+  4. Resumen pre-Nueva York (lunes-viernes, HORA_PRE_NY, 09:00 HORA DE NUEVA YORK por defecto,
+     es decir, 30 min antes de la apertura de Wall Street; se ajusta solo a los cambios de hora
+     de EE. UU. y Europa, que no coinciden en marzo y octubre/noviembre):
      bonos US 2A/10A, Bund 10A, JGB 10A, DXY, EUR/USD, USD/JPY y GER 40 con su cambio del día.
   5. Alertas de mercado:
      - Movimientos fuertes en el día: US 2A ±8 pb, US 10A ±10 pb, Bund 10A ±8 pb, JGB 10A ±5 pb,
@@ -42,11 +44,12 @@ IMPACTOS = [i.strip() for i in (os.getenv("IMPACTOS") or "High").split(",")]
 MINUTOS_ANTES = int(os.getenv("MINUTOS_ANTES") or 15)
 HORA_RESUMEN = os.getenv("HORA_RESUMEN") or "07:30"      # hora de Madrid
 HORA_PRE_FRA = os.getenv("HORA_PRE_FRA") or "08:45"      # hora de Madrid (Xetra abre a las 09:00)
-HORA_PRE_NY = os.getenv("HORA_PRE_NY") or "15:00"        # hora de Madrid
+HORA_PRE_NY = os.getenv("HORA_PRE_NY") or "09:00"        # hora de NUEVA YORK (Wall Street abre a las 09:30)
 SILENCIO = os.getenv("HORAS_SILENCIO") or "23-07"        # sin sonido entre estas horas
 DRY_RUN = os.getenv("DRY_RUN") == "1"                    # 1 = imprime en vez de enviar
 
 TZ = ZoneInfo("Europe/Madrid")
+TZ_NY = ZoneInfo("America/New_York")
 FEED_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json"
 CACHE_HORAS = 2
 BASE = Path(__file__).parent
@@ -568,6 +571,7 @@ def main():
     eventos = eventos_relevantes(obtener_calendario())
     ahora = ahora_utc()
     local = ahora.astimezone(TZ)
+    ny = ahora.astimezone(TZ_NY)                     # hora de Nueva York (para el resumen pre-NY)
     hoy = local.date().isoformat()
     laborable = local.weekday() < 5
 
@@ -593,9 +597,10 @@ def main():
             estado["prefra_enviado"] = hoy
             print("Resumen pre-Fráncfort enviado")
 
-    # 3) Resumen antes de Nueva York
+    # 3) Resumen antes de Nueva York: se mide en hora de NY, así siempre sale 30 min antes
+    #    de la apertura aunque EE. UU. y Europa cambien la hora en fechas distintas.
     if laborable and mercado and estado.get("preny_enviado") != hoy and \
-            (local.hour, local.minute) >= hora_hhmm(HORA_PRE_NY) and local.hour < 18:
+            (ny.hour, ny.minute) >= hora_hhmm(HORA_PRE_NY) and ny.hour < 12:
         if enviar_telegram(mensaje_pre_ny(mercado_txt, restantes_hoy())):
             estado["preny_enviado"] = hoy
             print("Resumen pre-NY enviado")
