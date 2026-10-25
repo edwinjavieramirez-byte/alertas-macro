@@ -285,8 +285,9 @@ def normalizar_eventos(crudos, previos):
             "dia": DIAS[local.weekday()],
             "hora": None if sin_hora else local.strftime("%H:%M"),
             "hora_ny": None if sin_hora else hora_ny.strftime("%H:%M"),
-            # Ventana operativa de Edwin: sesión de Nueva York (14:00-22:00 Madrid)
-            "ventana_ny": (not sin_hora) and 14 <= local.hour < 22,
+            # Ventana operativa de Edwin: sesión de Nueva York, 8:00-16:00 NY (14:00-22:00 Madrid casi todo el año;
+            # en hora de NY para que no falle las semanas en que solo ha cambiado la hora uno de los dos)
+            "ventana_ny": (not sin_hora) and 8 <= hora_ny.hour < 16,
             "prevision": ev.get("forecast") or None,
             "anterior": ev.get("previous") or None,
             "real": previo.get("real"),
@@ -1174,6 +1175,19 @@ def extraer_json(texto):
     return None
 
 
+def hora_madrid(fecha, h, m=0):
+    """Hora de Madrid ("HH:MM") a la que corresponde una hora de Nueva York en una fecha dada."""
+    return datetime.combine(fecha, datetime.min.time().replace(hour=h, minute=m), NY).astimezone(TZ).strftime("%H:%M")
+
+
+def horario_sesion(fecha):
+    """Tu sesión (8:00-16:00 de Nueva York) y los datos de las 8:30 NY, en hora de Madrid. Normalmente
+    14:00-22:00 y 14:30, pero una o dos semanas al año (Europa y EE. UU. cambian de hora en fechas distintas)
+    todo va una hora antes: 13:00-21:00 y 13:30."""
+    return {"inicio": hora_madrid(fecha, 8), "fin": hora_madrid(fecha, 16), "datos": hora_madrid(fecha, 8, 30),
+            "normal": hora_madrid(fecha, 8, 30) == "14:30"}
+
+
 def fecha_es(t):
     """«jueves 22/10/2026 13:50» (strftime %A sale en inglés en GitHub)."""
     t = t.astimezone(TZ)
@@ -1236,7 +1250,11 @@ def narrativa_semanal(datos, archivo_prev):
     eventos = datos["calendario"]
     prev_eventos = (archivo_prev or {}).get("calendario", [])
     lunes = datos["semana"]["lunes"]
-    prompt = f"""Hoy es {fecha_es(ahora_utc())} (Madrid). Prepara la agenda de la semana del {lunes}.
+    hs = horario_sesion(date.fromisoformat(lunes))
+    aviso_hora = "" if hs["normal"] else (f'\nOJO: esta semana Europa ya ha cambiado de hora y EE. UU. todavía no: la sesión de Nueva '
+                                         f'York va de {hs["inicio"]} a {hs["fin"]} de Madrid y los datos de las 8:30 NY salen a las '
+                                         f'{hs["datos"]}. Dilo en "ventana_ny".')
+    prompt = f"""Hoy es {fecha_es(ahora_utc())} (Madrid). Prepara la agenda de la semana del {lunes}.{aviso_hora}
 
 DATOS DE MERCADO (último · cambio de esta semana · cambio de la semana anterior completa):
 {texto_mercado(datos["mercado"])}
@@ -1278,7 +1296,7 @@ Responde SOLO con un JSON válido (sin texto antes ni después) con esta estruct
  "lectura_usd": "máx. 60 palabras: explica el sesgo del dólar calculado y si el contexto lo confirma o contradice; implicación para EUR/USD",
  "lectura_jpy": "máx. 60 palabras: explica el sesgo de USD/JPY calculado, si el contexto (BoJ, diferencial, riesgo de intervención) lo confirma o contradice",
  "lectura_indices": "máx. 60 palabras: igual para S&P 500 y Nasdaq (¿pueden buscar nuevo máximo o hay riesgo de retroceso?)",
- "ventana_ny": "máx. 50 palabras: qué días y horas de la sesión de Nueva York (14:00-22:00 Madrid) concentran el riesgo",
+ "ventana_ny": "máx. 50 palabras: qué días y horas de la sesión de Nueva York ({hs["inicio"]}-{hs["fin"]} Madrid esta semana) concentran el riesgo",
  "riesgos": ["máx. 4 riesgos no programados, 12 palabras cada uno"],
  "titulos_es": {{"titulo en inglés del calendario": "traducción breve al español"}}
 }}
@@ -1371,7 +1389,7 @@ def texto_sesion_ny(intr):
         return "no disponible"
     r, lineas = intr["resultado"], []
     if r.get("EURUSD") is not None:
-        lineas.append(f'Desde las 14:00 hasta el cierre: EUR/USD {r["EURUSD"]:+} % ({r.get("EURUSD_pips"):+} pips)'
+        lineas.append(f'Desde la foto pre-NY (antes de los datos) hasta el cierre: EUR/USD {r["EURUSD"]:+} % ({r.get("EURUSD_pips"):+} pips)'
                       + (f', USD/JPY {r["USDJPY"]:+} %' if r.get("USDJPY") is not None else "")
                       + (f', S&P 500 {r["SPX"]:+} %' if r.get("SPX") is not None else ""))
     for x in intr.get("reacciones") or []:
@@ -1644,8 +1662,9 @@ def sesgo_preny(datos, sesion, ahora, tardio):
     vol = sesion.get("volatilidad") or {}
     v_txt = "; ".join(f'{k}: régimen {x["regimen"]}, movimiento esperado {x["esperado_pips"]} pips (normal {x["normal_pips"]})'
                       for k, x in vol.items() if isinstance(x, dict)) or "no disponible"
+    hs = horario_sesion(ahora.astimezone(NY).date())
     prompt = f"""Es {fecha_es(ahora)} (hora de Madrid). Edwin opera EUR/USD en la sesión de
-Nueva York (14:00-22:00 Madrid) con metodología ICT. Prepara su sesgo para la sesión de HOY, antes de los datos de las 14:30.
+Nueva York ({hs["inicio"]}-{hs["fin"]} Madrid hoy). Prepara su sesgo para la sesión de HOY, antes de los datos de las {hs["datos"]}.
 
 QUÉ HA PASADO ESTA MAÑANA (Londres):
 {texto_resumen_sesion(resumen_sesion(sesion))}
@@ -1664,7 +1683,7 @@ RANGO ESPERADO HOY (calculado con el histórico, cierre a cierre): {v_txt}
 FIABILIDAD COMPROBADA: los sesgos por reglas no tienen ventaja demostrada a un día. No los repitas como si fueran señal.
 
 Usa la búsqueda web (máx. 4 búsquedas) para: noticias de esta mañana que muevan el dólar o el euro (Fed, BCE, aranceles,
-geopolítica, datos europeos ya publicados), discursos de la Fed/BCE de hoy y el consenso de los datos de las 14:30.
+geopolítica, datos europeos ya publicados), discursos de la Fed/BCE de hoy y el consenso de los datos de las {hs["datos"]}.
 
 Responde SOLO con un JSON válido:
 {{
@@ -1946,6 +1965,7 @@ def main():
         "generado_local": local.strftime("%d/%m/%Y %H:%M"),
         "precios_local": precios_local,
         "semana": {"lunes": lunes.isoformat(), "viernes": (lunes + timedelta(days=4)).isoformat()},
+        "horario": horario_sesion(lunes),
         "calendario": calendario,
         "mercado": mercado,
         "narrativa": None if nueva_semana else datos_prev.get("narrativa"),
