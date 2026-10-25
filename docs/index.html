@@ -552,10 +552,10 @@ function valid(){
   const V=D.validacion||{},src=V[valSrc]||null;
   $("#valHz").innerHTML=[["sesion","Sesión NY"],["diario","Al día siguiente"],["semanal","En la semana"]].map(([k,t])=>`<button role="tab" type="button" data-k="${k}" aria-selected="${valHz===k}">${t}</button>`).join("");
   $("#valSrc").innerHTML=[["historico","Histórico"],["vivo","En vivo"]].map(([k,t])=>`<button role="tab" type="button" data-k="${k}" aria-selected="${valSrc===k}">${t}</button>`).join("");
-  $("#valSrc").style.display=valHz==="sesion"?"none":"";
-  if(valHz==="sesion"){validSesion(V.vivo);return}
   $("#valHz").onclick=e=>{const b=e.target.closest("button");if(b){valHz=b.dataset.k;valid()}};
   $("#valSrc").onclick=e=>{const b=e.target.closest("button");if(b){valSrc=b.dataset.k;valid()}};
+  $("#valSrc").style.display=valHz==="sesion"?"none":"";
+  if(valHz==="sesion"){validSesion(V.vivo);return}
   const H=V.historico,VV=V.vivo;
   $("#valSub").textContent=valSrc==="historico"?(H?`Mismas reglas aplicadas a los cierres del ${fc(H.desde)} ${H.desde.slice(0,4)} al ${fc(H.hasta)} ${H.hasta.slice(0,4)}. ${valHz==="diario"?"Sesgo al cierre de cada día frente al movimiento del día siguiente.":"Sesgo del domingo (cierres hasta el viernes) frente al movimiento de lunes a viernes."}`:"")
     :(VV?`Registro real desde ${VV.desde?fc(VV.desde):"la próxima actualización"}: ${VV.n_semanal||0} semana(s) y ${VV.n_diario||0} día(s) con resultado.`:"");
