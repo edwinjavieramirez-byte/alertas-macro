@@ -330,11 +330,12 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
   <details class="help">
     <summary>Cómo funciona esta página</summary>
     <div>
-      <p><b>Actualización:</b> GitHub la regenera sola. El domingo por la tarde monta la semana nueva (calendario, tesis y escenarios). De lunes a viernes, cada 15 minutos en horario de datos, comprueba si se ha publicado algún dato de impacto alto o medio y, si es así, añade su resultado real (solo los de impacto alto cambian el sesgo) (tarda unos 15-30 minutos desde la publicación). Tras el cierre de Nueva York actualiza los precios y escribe el resumen del día.</p>
+      <p><b>Actualización:</b> GitHub la regenera sola. El domingo por la tarde monta la semana nueva: calendario, tesis, escenarios y el rango esperado del lunes. De lunes a viernes, cada 15 minutos, toma las fotos del mercado de tu sesión, prepara el sesgo pre-NY antes de los datos y añade el resultado real de cada dato de impacto alto o medio unos 15-30 minutos después de publicarse (solo los de impacto alto cambian el sesgo). Tras el cierre de Nueva York actualiza los precios, cierra la sesión (movimiento desde la foto pre-NY y reacción a cada dato) y escribe el resumen del día con el cambio del día y lo que ha pasado en tu sesión.</p>
+      <p><b>Horario:</b> todo se calcula en hora de Nueva York y se muestra en hora de Madrid. Tu sesión es de 8:00 a 16:00 de Nueva York: de 14:00 a 22:00 en Madrid casi todo el año, pero una hora antes (13:00-21:00, datos a las 13:30) las semanas en que Europa ya ha cambiado de hora y EE. UU. todavía no, a finales de octubre y en marzo. Esas semanas sale un aviso arriba.</p>
       <p><b>Sesgo del dólar:</b> tendencia del DXY frente a sus medias de 20 y 50 días · DXY en la semana (±0,5 %) · bono a 2 años de EE. UU. (±8 pb) · diferencial 10A EE. UU.-Alemania (±5 pb) · sorpresas de los datos de EE. UU. de la semana. EUR/USD es el mismo cálculo con el signo cambiado.</p>
       <p><b>Sesgo de USD/JPY</b> (propio, no es el espejo del dólar): tendencia frente a las medias de 20 y 50 días · diferencial 10A EE. UU.-Japón (±5 pb) · bono a 2 años de EE. UU. (±8 pb) · VIX (con miedo se compra yen) · sorpresas de los datos de EE. UU. menos las de Japón. El aviso de intervención no vota: salta por encima del nivel configurado (158 por defecto) o con una subida de más del 2,5 % en la semana.</p>
       <p><b>Sesgo de S&amp;P 500 y Nasdaq:</b> tendencia frente a las medias de 50 y 200 días · distancia al máximo de 5 años · VIX · bono a 10 años.</p>
-      <p><b>Tu sesión de Nueva York:</b> se toman fotos del mercado a horas fijas de Nueva York (apertura de Londres, antes de los datos de las 8:30 NY, apertura de Wall Street y cierre de Londres) y alrededor de cada dato de impacto alto. Justo antes de los datos, Claude Sonnet con búsqueda web redacta el sesgo pre-NY con lo que ha hecho Londres, los diferenciales, los futuros y las noticias de la mañana. El rango esperado no usa IA: sale del régimen de volatilidad de 20 días y del día de la semana, con tu histórico (movimiento de cierre a cierre, no el máximo-mínimo). Al cierre se mide la sesión desde la foto pre-NY y se compara la IA con el sesgo por reglas, con «seguir a Londres» y con «ir contra Londres». Si el sesgo pre-NY se genera tarde (ya publicados los datos), se muestra pero no cuenta en la validación.</p>
+      <p><b>Tu sesión de Nueva York:</b> se toman fotos del mercado a horas fijas de Nueva York (apertura de Londres, antes de los datos de las 8:30 NY, apertura de Wall Street y cierre de Londres) y alrededor de cada dato de impacto alto (y de los de impacto medio que caen en tu sesión). Justo antes de los datos, Claude Sonnet con búsqueda web redacta el sesgo pre-NY con lo que ha hecho Londres, los diferenciales, los futuros y las noticias de la mañana. El rango esperado no usa IA: sale del régimen de volatilidad de 20 días y del día de la semana, con tu histórico (movimiento de cierre a cierre, no el máximo-mínimo). Al cierre se mide la sesión desde la foto pre-NY y se compara la IA con el sesgo por reglas, con «seguir a Londres» y con «ir contra Londres». Si el sesgo pre-NY se genera tarde (ya publicados los datos), se muestra pero no cuenta en la validación.</p>
       <p><b>¿Acierta el sesgo?</b> Se aplican las mismas reglas a los 5 años de histórico (sin el factor de datos, del que no hay histórico) y además se guarda en vivo el sesgo del domingo y el de cada cierre. Acierto = el signo del sesgo coincide con el del movimiento. Azar = lo que acertarías apostando en la misma dirección con la frecuencia real de subidas y bajadas. El margen (±) es el ruido esperable por el tamaño de la muestra: una ventaja menor que el margen puede ser casualidad.</p>
       <p><b>Etiqueta:</b> +3 o más alcista fuerte · +1 o +2 alcista · 0 neutral · −1 o −2 bajista · −3 o menos bajista fuerte.</p>
       <p><b>Fuentes:</b> Forex Factory (calendario), CNBC, Yahoo Finance, la Fed de St. Louis y el Ministerio de Finanzas de Japón (precios), API de Claude con búsqueda web (resultados, FedWatch y textos). Solo con fines informativos: no es una recomendación de inversión.</p>
@@ -353,6 +354,7 @@ const fmt=(n,d)=>{if(n==null||isNaN(n))return"—";const p=Math.abs(+n).toFixed(
 const sgn=(n,d,u)=>n==null||isNaN(n)?"—":(n>0?"+":n<0?"−":"±")+fmt(Math.abs(n),d)+(u||"");
 const cl=n=>n==null||n===0?"flat":n>0?"up":"down";
 const fc=iso=>{const[y,m,d]=iso.split("-").map(Number);return d+" "+MES[m-1]};
+const HS=()=>(D&&D.horario)||{inicio:"14:00",fin:"22:00",datos:"14:30",normal:true};
 let D=null,N={},sgSel="usd",diaSel=null,valHz="sesion",valSrc="historico",valSel="usd";
 
 function pillEt(et){const c=/Alcista/.test(et)?"p-good":/Bajista/.test(et)?"p-bad":"p-mute";return`<span class="pill ${c}">${esc(et)}</span>`}
@@ -366,7 +368,9 @@ function pintar(datos){
   const c=D.coste;
   $("#meta").innerHTML=(c?`<span>Coste API esta semana <b>${fmt(c.semana_usd,2)} $</b></span><span>Total desde ${fc(c.desde)} <b>${fmt(c.total_usd,2)} $</b></span>`:"")+
     (D.diagnostico&&D.diagnostico.length?`<span class="tag sample">${D.diagnostico.length} aviso(s): ver «Cómo funciona»</span>`:"");
-  if(D._ejemplo)$("#aviso").innerHTML=`<div class="msg warn">${esc(D._ejemplo)}</div>`;
+  const hs=HS();
+  $("#aviso").innerHTML=(D._ejemplo?`<div class="msg warn">${esc(D._ejemplo)}</div>`:"")+(hs.normal?"":
+    `<div class="msg warn"><b>Esta semana todo va una hora antes:</b> Europa ya ha cambiado de hora y EE. UU. todavía no. Tu sesión de Nueva York va de ${hs.inicio} a ${hs.fin} y los datos de EE. UU. de las 8:30 NY salen a las <b>${hs.datos}</b> de Madrid. La agenda ya muestra las horas correctas.</div>`);
   kpis();sesion();tesis();factores();agenda();mercado();bancos();correl();valid();anterior();
   $("#diag").innerHTML=D.diagnostico&&D.diagnostico.length?`<p><b>Avisos de la última actualización:</b></p><ul class="lst">${D.diagnostico.map(d=>"<li>"+esc(d)+"</li>").join("")}</ul>`:"";
 }
@@ -480,7 +484,7 @@ function bancos(){
   const b=N.bancos_centrales||{};
   $("#bancos").innerHTML=`<div class="box"><span class="label">Reserva Federal</span><span>${esc(b.fed||"Se actualiza el domingo.")}</span></div><div class="box"><span class="label">Banco Central Europeo</span><span>${esc(b.bce||"Se actualiza el domingo.")}</span></div><div class="box"><span class="label">Banco de Japón</span><span>${esc(b.boj||"Se actualiza el domingo.")}</span></div>`;
   let h="";
-  if(N.ventana_ny)h+=`<div class="box accent"><span class="label">Tu ventana: 14:00–22:00</span><span>${esc(N.ventana_ny)}</span></div>`;
+  if(N.ventana_ny)h+=`<div class="box accent"><span class="label">Tu ventana: ${HS().inicio}–${HS().fin}</span><span>${esc(N.ventana_ny)}</span></div>`;
   if(N.riesgos&&N.riesgos.length)h+=`<div class="box"><span class="label">Riesgos no programados</span><ul class="lst">${N.riesgos.map(r=>"<li>"+esc(r)+"</li>").join("")}</ul></div>`;
   $("#riesgos").innerHTML=h||`<div class="empty">Se actualiza el domingo.</div>`;
 }
@@ -506,7 +510,7 @@ function sesion(){
     if(P.volatilidad)L+=`<div class="mini"><b>Volatilidad</b><span class="d">${esc(P.volatilidad)}</span></div>`;
     if(P.noticias&&P.noticias.length)L+=`<div class="mini"><b>Esta mañana</b><ul class="lst">${P.noticias.map(n=>"<li>"+esc(n)+"</li>").join("")}</ul></div>`;
   }else if(P&&P.error)L+=`<div class="box warn"><span class="label">Sesgo pre-NY</span><span>No se pudo generar hoy (${esc(P.generado)}). Mira los avisos al pie de la página.</span></div>`;
-  else L+=`<div class="box"><span class="label">Sesgo pre-NY</span><span>${I.cerrada?"Hoy no se generó.":"Se genera hacia las 14:00, antes de los datos de las 14:30, con lo que haya hecho Londres y las noticias de la mañana."}</span></div>`;
+  else L+=`<div class="box"><span class="label">Sesgo pre-NY</span><span>${I.cerrada?"Hoy no se generó.":`Se genera antes de los datos de las ${HS().datos}, con lo que haya hecho Londres y las noticias de la mañana.`}</span></div>`;
   if(I.resultado){const r=I.resultado,p=P&&!P.error&&P.eurusd?P.eurusd.sesgo:null,mv=r.EURUSD;
     const ok=p&&p!=="neutral"&&mv!=null&&mv!==0?((p==="alcista")===(mv>0)):null;
     L+=`<div class="box"><span class="label">Resultado de la sesión (desde la foto pre-NY hasta el cierre)</span><span>EUR/USD <b class="${cl(r.EURUSD_pips)}">${pipsTxt(r.EURUSD_pips)}</b> (${sgn(r.EURUSD,2," %")})${r.USDJPY!=null?` · USD/JPY <b class="${cl(r.USDJPY)}">${sgn(r.USDJPY,2," %")}</b>`:""}${r.SPX!=null?` · S&P 500 <b class="${cl(r.SPX)}">${sgn(r.SPX,2," %")}</b>`:""}</span>${ok===null?"":`<span>Sesgo de la IA: ${ok?'<span class="ok">acertó ✓</span>':'<span class="ko">falló ✗</span>'}${P.tardio?" (tardío, no cuenta)":""}</span>`}</div>`}
@@ -579,7 +583,7 @@ function valid(){
 const MSES=[["ia_eurusd"],["reglas_eurusd"],["londres_eurusd"],["contra_londres_eurusd"],["reaccion"],["ia_usdjpy"],["reglas_usdjpy"],["ia_spx"],["reglas_spx"]];
 function validSesion(VV){
   const T=(VV||{}).sesion||{},n=(VV||{}).n_sesion||0;
-  $("#valSub").textContent=`Desde la foto pre-NY (≈14:00 Madrid, antes de los datos) hasta el cierre de Nueva York. Solo en vivo: ${n} sesión(es) medidas. La IA tiene que ganar a las referencias sencillas para servir de algo.`;
+  $("#valSub").textContent=`Desde la foto pre-NY (antes de los datos de las ${HS().datos}) hasta el cierre de Nueva York. Solo en vivo: ${n} sesión(es) medidas. La IA tiene que ganar a las referencias sencillas para servir de algo.`;
   if(!Object.values(T).some(x=>x&&x.periodos)){$("#valid").innerHTML=`<div class="empty">Las primeras sesiones aparecerán tras el primer cierre con sesgo pre-NY. Para tener una idea fiable hacen falta unas 40 sesiones (2 meses).</div>`;return}
   let h=`<div class="vwrap"><table class="vt"><thead><tr><th>Método</th><th>Señales</th><th>Acierto</th><th>Azar</th><th>Ventaja</th><th>Mov. medio si alcista</th><th>si bajista</th><th>Convicción alta</th></tr></thead><tbody>`;
   MSES.forEach(([k])=>{const x=T[k];if(!x)return;
