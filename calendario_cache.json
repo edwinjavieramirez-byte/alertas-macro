@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-26T12:25:25.538081+00:00",
+ "descargado": "2026-10-26T14:30:49.599175+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -62,7 +62,7 @@
    "country": "EUR",
    "date": "2026-10-27T04:00:00-04:00",
    "impact": "Low",
-   "forecast": "",
+   "forecast": "9.8%",
    "previous": "9.9%"
   },
   {
@@ -126,7 +126,7 @@
    "country": "USD",
    "date": "2026-10-27T10:00:00-04:00",
    "impact": "Medium",
-   "forecast": "80.5",
+   "forecast": "80.7",
    "previous": "81.9"
   },
   {
@@ -484,7 +484,7 @@
   {
    "title": "Gov Council Member Vincent Speaks",
    "country": "CAD",
-   "date": "2026-10-29T10:50:00-04:00",
+   "date": "2026-10-29T11:59:00-04:00",
    "impact": "Low",
    "forecast": "",
    "previous": ""
