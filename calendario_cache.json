@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-26T18:35:25.727985+00:00",
+ "descargado": "2026-10-26T20:40:31.618340+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -62,7 +62,7 @@
    "country": "EUR",
    "date": "2026-10-27T04:00:00-04:00",
    "impact": "Low",
-   "forecast": "9.8%",
+   "forecast": "9.9%",
    "previous": "9.9%"
   },
   {
@@ -70,7 +70,7 @@
    "country": "EUR",
    "date": "2026-10-27T05:00:00-04:00",
    "impact": "Low",
-   "forecast": "3.6%",
+   "forecast": "3.5%",
    "previous": "3.5%"
   },
   {
@@ -102,7 +102,7 @@
    "country": "USD",
    "date": "2026-10-27T08:30:00-04:00",
    "impact": "Low",
-   "forecast": "1.8%",
+   "forecast": "2.0%",
    "previous": "0.0%"
   },
   {
@@ -110,7 +110,7 @@
    "country": "USD",
    "date": "2026-10-27T09:00:00-04:00",
    "impact": "Low",
-   "forecast": "0.1%",
+   "forecast": "0.2%",
    "previous": "0.3%"
   },
   {
@@ -118,7 +118,7 @@
    "country": "USD",
    "date": "2026-10-27T09:00:00-04:00",
    "impact": "Low",
-   "forecast": "2.7%",
+   "forecast": "2.6%",
    "previous": "2.5%"
   },
   {
@@ -126,7 +126,7 @@
    "country": "USD",
    "date": "2026-10-27T10:00:00-04:00",
    "impact": "Medium",
-   "forecast": "80.7",
+   "forecast": "81.2",
    "previous": "81.9"
   },
   {
@@ -134,7 +134,7 @@
    "country": "USD",
    "date": "2026-10-27T10:00:00-04:00",
    "impact": "Low",
-   "forecast": "649K",
+   "forecast": "651K",
    "previous": "684K"
   },
   {
@@ -142,7 +142,7 @@
    "country": "USD",
    "date": "2026-10-27T10:00:00-04:00",
    "impact": "Low",
-   "forecast": "1",
+   "forecast": "0",
    "previous": "-2"
   },
   {
@@ -399,7 +399,7 @@
    "date": "2026-10-29T05:33:00-04:00",
    "impact": "Low",
    "forecast": "",
-   "previous": ""
+   "previous": "4.58|1.6"
   },
   {
    "title": "Advance GDP q/q",
