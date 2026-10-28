@@ -83,19 +83,19 @@
     "🔴🇺🇸 19:30 · USD · FOMC Press Conference (previsto — · anterior —)"
    ],
    "foto": {
-    "US2Y": 4.776,
+    "US2Y": 4.782,
     "US10Y": 5.045,
-    "DE10Y": 3.3859,
+    "DE10Y": 3.3843,
     "JP10Y": 2.827,
-    "DXY": 102.366,
-    "EURUSD": 1.1131,
-    "USDJPY": 158.29,
+    "DXY": 102.398,
+    "EURUSD": 1.1128,
+    "USDJPY": 158.31,
     "GER40": 25704.02,
-    "VIX": 17.41,
-    "SPF": 7765.25,
-    "NQF": 29820.75,
-    "WTI": 103.07,
-    "ORO": 4045.4
+    "VIX": 17.35,
+    "SPF": 7762.75,
+    "NQF": 29813.0,
+    "WTI": 103.02,
+    "ORO": 4045.5
    },
    "enviada": false
   }
