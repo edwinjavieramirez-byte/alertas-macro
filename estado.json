@@ -15,7 +15,9 @@
   "USD|Core Retail Sales m/m|2026-10-15T08:30:00-04:00",
   "USD|PPI m/m|2026-10-15T08:30:00-04:00",
   "USD|Retail Sales m/m|2026-10-15T08:30:00-04:00",
-  "USD|Fed Chairman Warsh Speaks|2026-10-15T23:30:00-04:00"
+  "USD|Fed Chairman Warsh Speaks|2026-10-15T23:30:00-04:00",
+  "USD|Federal Funds Rate|2026-10-28T14:00:00-04:00",
+  "USD|FOMC Statement|2026-10-28T14:00:00-04:00"
  ],
  "resumen_enviado": "2026-10-28",
  "mercado": {
@@ -50,5 +52,29 @@
  },
  "preny_enviado": "2026-10-28",
  "prefra_enviado": "2026-10-28",
- "reacciones": {}
+ "reacciones": {
+  "2026-10-28T18:00:00+00:00": {
+   "hora": "2026-10-28T18:00:00+00:00",
+   "eventos": [
+    "🔴🇺🇸 19:00 · USD · Federal Funds Rate (previsto 4.00% · anterior 4.00%)",
+    "🔴🇺🇸 19:00 · USD · FOMC Statement (previsto — · anterior —)"
+   ],
+   "foto": {
+    "US2Y": 4.768,
+    "US10Y": 5.022,
+    "DE10Y": 3.3754,
+    "JP10Y": 2.827,
+    "DXY": 102.31,
+    "EURUSD": 1.1139,
+    "USDJPY": 158.24,
+    "GER40": 25704.02,
+    "VIX": 17.34,
+    "SPF": 7770.5,
+    "NQF": 29834.75,
+    "WTI": 102.76,
+    "ORO": 4053.5
+   },
+   "enviada": false
+  }
+ }
 }
