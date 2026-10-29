@@ -18,7 +18,9 @@
   "USD|Fed Chairman Warsh Speaks|2026-10-15T23:30:00-04:00",
   "USD|Federal Funds Rate|2026-10-28T14:00:00-04:00",
   "USD|FOMC Statement|2026-10-28T14:00:00-04:00",
-  "USD|FOMC Press Conference|2026-10-28T14:30:00-04:00"
+  "USD|FOMC Press Conference|2026-10-28T14:30:00-04:00",
+  "USD|Advance GDP q/q|2026-10-29T08:30:00-04:00",
+  "USD|Core PCE Price Index m/m|2026-10-29T08:30:00-04:00"
  ],
  "resumen_enviado": "2026-10-29",
  "mercado": {
@@ -53,5 +55,29 @@
  },
  "preny_enviado": "2026-10-28",
  "prefra_enviado": "2026-10-29",
- "reacciones": {}
+ "reacciones": {
+  "2026-10-29T12:30:00+00:00": {
+   "hora": "2026-10-29T12:30:00+00:00",
+   "eventos": [
+    "🔴🇺🇸 13:30 · USD · Advance GDP q/q (previsto 3.2% · anterior 1.5%)",
+    "🔴🇺🇸 13:30 · USD · Core PCE Price Index m/m (previsto 0.3% · anterior 0.2%)"
+   ],
+   "foto": {
+    "US2Y": 4.712,
+    "US10Y": 5.026,
+    "DE10Y": 3.3801,
+    "JP10Y": 2.861,
+    "DXY": 102.23,
+    "EURUSD": 1.1137,
+    "USDJPY": 158.05,
+    "GER40": 25882.23,
+    "VIX": 17.29,
+    "SPF": 7748.25,
+    "NQF": 29605.5,
+    "WTI": 101.94,
+    "ORO": 4030.3
+   },
+   "enviada": false
+  }
+ }
 }
