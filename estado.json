@@ -54,29 +54,6 @@
  "preny_enviado": "2026-10-28",
  "prefra_enviado": "2026-10-28",
  "reacciones": {
-  "2026-10-28T18:00:00+00:00": {
-   "hora": "2026-10-28T18:00:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 19:00 · USD · Federal Funds Rate (previsto 4.00% · anterior 4.00%)",
-    "🔴🇺🇸 19:00 · USD · FOMC Statement (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.77,
-    "US10Y": 5.022,
-    "DE10Y": 3.3719,
-    "JP10Y": 2.827,
-    "DXY": 102.341,
-    "EURUSD": 1.1135,
-    "USDJPY": 158.27,
-    "GER40": 25704.02,
-    "VIX": 17.2,
-    "SPF": 7769.75,
-    "NQF": 29839.0,
-    "WTI": 102.87,
-    "ORO": 4050.6
-   },
-   "enviada": true
-  },
   "2026-10-28T18:30:00+00:00": {
    "hora": "2026-10-28T18:30:00+00:00",
    "eventos": [
