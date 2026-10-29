@@ -22,7 +22,8 @@
   "USD|Advance GDP q/q|2026-10-29T08:30:00-04:00",
   "USD|Core PCE Price Index m/m|2026-10-29T08:30:00-04:00",
   "EUR|Main Refinancing Rate|2026-10-29T09:15:00-04:00",
-  "EUR|Monetary Policy Statement|2026-10-29T09:15:00-04:00"
+  "EUR|Monetary Policy Statement|2026-10-29T09:15:00-04:00",
+  "EUR|ECB Press Conference|2026-10-29T09:45:00-04:00"
  ],
  "resumen_enviado": "2026-10-29",
  "mercado": {
@@ -101,6 +102,28 @@
     "NQF": 29686.25,
     "WTI": 101.11,
     "ORO": 4034.2
+   },
+   "enviada": true
+  },
+  "2026-10-29T13:45:00+00:00": {
+   "hora": "2026-10-29T13:45:00+00:00",
+   "eventos": [
+    "🔴🇪🇺 14:45 · EUR · ECB Press Conference (previsto — · anterior —)"
+   ],
+   "foto": {
+    "US2Y": 4.683,
+    "US10Y": 4.991,
+    "DE10Y": 3.3383,
+    "JP10Y": 2.839,
+    "DXY": 102.305,
+    "EURUSD": 1.1124,
+    "USDJPY": 158.02,
+    "GER40": 26031.17,
+    "VIX": 16.99,
+    "SPF": 7758.5,
+    "NQF": 29686.25,
+    "WTI": 100.4,
+    "ORO": 4033.2
    },
    "enviada": false
   }
