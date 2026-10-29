@@ -59,29 +59,6 @@
  "preny_enviado": "2026-10-29",
  "prefra_enviado": "2026-10-29",
  "reacciones": {
-  "2026-10-29T13:15:00+00:00": {
-   "hora": "2026-10-29T13:15:00+00:00",
-   "eventos": [
-    "🔴🇪🇺 14:15 · EUR · Main Refinancing Rate (previsto 2.65% · anterior 2.65%)",
-    "🔴🇪🇺 14:15 · EUR · Monetary Policy Statement (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.687,
-    "US10Y": 5.001,
-    "DE10Y": 3.3522,
-    "JP10Y": 2.844,
-    "DXY": 102.279,
-    "EURUSD": 1.113,
-    "USDJPY": 158.03,
-    "GER40": 26006.15,
-    "VIX": 16.91,
-    "SPF": 7760.75,
-    "NQF": 29686.25,
-    "WTI": 101.11,
-    "ORO": 4034.2
-   },
-   "enviada": true
-  },
   "2026-10-29T13:45:00+00:00": {
    "hora": "2026-10-29T13:45:00+00:00",
    "eventos": [
