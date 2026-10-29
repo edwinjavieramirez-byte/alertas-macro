@@ -58,28 +58,5 @@
  },
  "preny_enviado": "2026-10-29",
  "prefra_enviado": "2026-10-29",
- "reacciones": {
-  "2026-10-29T13:45:00+00:00": {
-   "hora": "2026-10-29T13:45:00+00:00",
-   "eventos": [
-    "🔴🇪🇺 14:45 · EUR · ECB Press Conference (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.646,
-    "US10Y": 4.966,
-    "DE10Y": 3.3222,
-    "JP10Y": 2.83,
-    "DXY": 102.283,
-    "EURUSD": 1.1124,
-    "USDJPY": 157.73,
-    "GER40": 26021.9,
-    "VIX": 17.2,
-    "SPF": 7740.75,
-    "NQF": 29565.5,
-    "WTI": 100.42,
-    "ORO": 4036.0
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
