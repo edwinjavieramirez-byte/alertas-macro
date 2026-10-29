@@ -53,28 +53,5 @@
  },
  "preny_enviado": "2026-10-28",
  "prefra_enviado": "2026-10-28",
- "reacciones": {
-  "2026-10-28T18:30:00+00:00": {
-   "hora": "2026-10-28T18:30:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 19:30 · USD · FOMC Press Conference (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.782,
-    "US10Y": 5.045,
-    "DE10Y": 3.3843,
-    "JP10Y": 2.827,
-    "DXY": 102.398,
-    "EURUSD": 1.1128,
-    "USDJPY": 158.31,
-    "GER40": 25704.02,
-    "VIX": 17.35,
-    "SPF": 7762.75,
-    "NQF": 29813.0,
-    "WTI": 103.02,
-    "ORO": 4045.5
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
