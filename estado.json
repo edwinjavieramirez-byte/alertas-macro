@@ -20,7 +20,9 @@
   "USD|FOMC Statement|2026-10-28T14:00:00-04:00",
   "USD|FOMC Press Conference|2026-10-28T14:30:00-04:00",
   "USD|Advance GDP q/q|2026-10-29T08:30:00-04:00",
-  "USD|Core PCE Price Index m/m|2026-10-29T08:30:00-04:00"
+  "USD|Core PCE Price Index m/m|2026-10-29T08:30:00-04:00",
+  "EUR|Main Refinancing Rate|2026-10-29T09:15:00-04:00",
+  "EUR|Monetary Policy Statement|2026-10-29T09:15:00-04:00"
  ],
  "resumen_enviado": "2026-10-29",
  "mercado": {
@@ -53,7 +55,7 @@
    "USDJPY@160.0": "abajo"
   }
  },
- "preny_enviado": "2026-10-28",
+ "preny_enviado": "2026-10-29",
  "prefra_enviado": "2026-10-29",
  "reacciones": {
   "2026-10-29T12:30:00+00:00": {
@@ -78,6 +80,29 @@
     "ORO": 4041.0
    },
    "enviada": true
+  },
+  "2026-10-29T13:15:00+00:00": {
+   "hora": "2026-10-29T13:15:00+00:00",
+   "eventos": [
+    "🔴🇪🇺 14:15 · EUR · Main Refinancing Rate (previsto 2.65% · anterior 2.65%)",
+    "🔴🇪🇺 14:15 · EUR · Monetary Policy Statement (previsto — · anterior —)"
+   ],
+   "foto": {
+    "US2Y": 4.691,
+    "US10Y": 5.003,
+    "DE10Y": 3.3551,
+    "JP10Y": 2.843,
+    "DXY": 102.289,
+    "EURUSD": 1.1128,
+    "USDJPY": 158.05,
+    "GER40": 25984.43,
+    "VIX": 16.92,
+    "SPF": 7751.25,
+    "NQF": 29617.0,
+    "WTI": 101.27,
+    "ORO": 4034.0
+   },
+   "enviada": false
   }
  }
 }
