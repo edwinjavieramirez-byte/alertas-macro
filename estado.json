@@ -59,29 +59,6 @@
  "preny_enviado": "2026-10-29",
  "prefra_enviado": "2026-10-29",
  "reacciones": {
-  "2026-10-29T12:30:00+00:00": {
-   "hora": "2026-10-29T12:30:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 13:30 · USD · Advance GDP q/q (previsto 3.2% · anterior 1.5%)",
-    "🔴🇺🇸 13:30 · USD · Core PCE Price Index m/m (previsto 0.3% · anterior 0.2%)"
-   ],
-   "foto": {
-    "US2Y": 4.714,
-    "US10Y": 5.024,
-    "DE10Y": 3.3772,
-    "JP10Y": 2.86,
-    "DXY": 102.215,
-    "EURUSD": 1.1139,
-    "USDJPY": 158.05,
-    "GER40": 25907.5,
-    "VIX": 17.17,
-    "SPF": 7749.0,
-    "NQF": 29604.75,
-    "WTI": 101.99,
-    "ORO": 4041.0
-   },
-   "enviada": true
-  },
   "2026-10-29T13:15:00+00:00": {
    "hora": "2026-10-29T13:15:00+00:00",
    "eventos": [
