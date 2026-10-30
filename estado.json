@@ -63,26 +63,6 @@
  "preny_enviado": "2026-10-29",
  "prefra_enviado": "2026-10-30",
  "reacciones": {
-  "2026-10-30T02:30:00+00:00": {
-   "hora": "2026-10-30T02:30:00+00:00",
-   "eventos": [
-    "🔴🇯🇵 03:30 · JPY · BOJ Policy Rate (previsto <1.25% · anterior <1.25%)",
-    "🔴🇯🇵 03:30 · JPY · Monetary Policy Statement (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.567,
-    "US10Y": 4.912,
-    "JP10Y": 2.787,
-    "DXY": 101.739,
-    "EURUSD": 1.1196,
-    "USDJPY": 157.45,
-    "SPF": 7672.5,
-    "NQF": 28882.25,
-    "WTI": 104.18,
-    "ORO": 4022.5
-   },
-   "enviada": true
-  },
   "2026-10-30T02:31:00+00:00": {
    "hora": "2026-10-30T02:31:00+00:00",
    "eventos": [
