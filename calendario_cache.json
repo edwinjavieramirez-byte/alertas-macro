@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-30T02:35:24.343192+00:00",
+ "descargado": "2026-10-30T04:35:27.858655+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -554,9 +554,17 @@
    "previous": "0.6%"
   },
   {
+   "title": "BOJ Outlook Report",
+   "country": "JPY",
+   "date": "2026-10-29T23:02:00-04:00",
+   "impact": "High",
+   "forecast": "",
+   "previous": ""
+  },
+  {
    "title": "BOJ Policy Rate",
    "country": "JPY",
-   "date": "2026-10-29T22:30:00-04:00",
+   "date": "2026-10-29T23:02:00-04:00",
    "impact": "High",
    "forecast": "<1.25%",
    "previous": "<1.25%"
@@ -564,15 +572,7 @@
   {
    "title": "Monetary Policy Statement",
    "country": "JPY",
-   "date": "2026-10-29T22:30:00-04:00",
-   "impact": "High",
-   "forecast": "",
-   "previous": ""
-  },
-  {
-   "title": "BOJ Outlook Report",
-   "country": "JPY",
-   "date": "2026-10-29T22:31:00-04:00",
+   "date": "2026-10-29T23:02:00-04:00",
    "impact": "High",
    "forecast": "",
    "previous": ""
