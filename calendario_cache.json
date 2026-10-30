@@ -1,5 +1,5 @@
 {
- "descargado": "2026-10-30T06:40:33.754588+00:00",
+ "descargado": "2026-10-30T08:45:31.634457+00:00",
  "eventos": [
   {
    "title": "Bank Holiday",
@@ -586,14 +586,6 @@
    "previous": "6.1%"
   },
   {
-   "title": "BOJ Press Conference",
-   "country": "JPY",
-   "date": "2026-10-30T01:30:00-04:00",
-   "impact": "High",
-   "forecast": "",
-   "previous": ""
-  },
-  {
    "title": "French Consumer Spending m/m",
    "country": "EUR",
    "date": "2026-10-30T02:30:00-04:00",
@@ -608,6 +600,14 @@
    "impact": "Low",
    "forecast": "0.1%",
    "previous": "0.2%"
+  },
+  {
+   "title": "BOJ Press Conference",
+   "country": "JPY",
+   "date": "2026-10-30T02:30:00-04:00",
+   "impact": "High",
+   "forecast": "",
+   "previous": ""
   },
   {
    "title": "German Import Prices m/m",
