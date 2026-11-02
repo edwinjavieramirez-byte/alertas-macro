@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-02T00:10:37.699240+00:00",
+ "descargado": "2026-11-02T02:15:35.379271+00:00",
  "eventos": [
   {
    "title": "Daylight Saving Time Shift",
@@ -40,14 +40,6 @@
    "impact": "Low",
    "forecast": "53.3",
    "previous": "53.3"
-  },
-  {
-   "title": "ANZ Job Advertisements m/m",
-   "country": "AUD",
-   "date": "2026-11-01T19:45:00-05:00",
-   "impact": "Low",
-   "forecast": "",
-   "previous": "2.2%"
   },
   {
    "title": "RatingDog Manufacturing PMI",
