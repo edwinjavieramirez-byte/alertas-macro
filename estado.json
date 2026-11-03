@@ -63,27 +63,5 @@
  },
  "preny_enviado": "2026-11-03",
  "prefra_enviado": "2026-11-03",
- "reacciones": {
-  "2026-11-03T15:16:00+00:00": {
-   "hora": "2026-11-03T15:16:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 16:16 · USD · Congressional Elections (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.633,
-    "US10Y": 4.964,
-    "DE10Y": 3.3258,
-    "DXY": 101.886,
-    "EURUSD": 1.1181,
-    "USDJPY": 158.47,
-    "GER40": 25940.88,
-    "VIX": 20.68,
-    "SPF": 7584.5,
-    "NQF": 28275.0,
-    "WTI": 95.77,
-    "ORO": 3949.1
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
