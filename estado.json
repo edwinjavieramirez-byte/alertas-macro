@@ -27,7 +27,8 @@
   "JPY|BOJ Policy Rate|2026-10-29T22:30:00-04:00",
   "JPY|Monetary Policy Statement|2026-10-29T22:30:00-04:00",
   "JPY|BOJ Outlook Report|2026-10-29T22:31:00-04:00",
-  "JPY|BOJ Press Conference|2026-10-30T01:30:00-04:00"
+  "JPY|BOJ Press Conference|2026-10-30T01:30:00-04:00",
+  "USD|Congressional Elections|2026-11-03T10:16:00-05:00"
  ],
  "resumen_enviado": "2026-11-03",
  "mercado": {
@@ -62,5 +63,27 @@
  },
  "preny_enviado": "2026-11-03",
  "prefra_enviado": "2026-11-03",
- "reacciones": {}
+ "reacciones": {
+  "2026-11-03T15:16:00+00:00": {
+   "hora": "2026-11-03T15:16:00+00:00",
+   "eventos": [
+    "🔴🇺🇸 16:16 · USD · Congressional Elections (previsto — · anterior —)"
+   ],
+   "foto": {
+    "US2Y": 4.616,
+    "US10Y": 4.95,
+    "DE10Y": 3.3149,
+    "DXY": 101.788,
+    "EURUSD": 1.1194,
+    "USDJPY": 158.33,
+    "GER40": 25926.54,
+    "VIX": 21.02,
+    "SPF": 7591.75,
+    "NQF": 28315.75,
+    "WTI": 95.85,
+    "ORO": 3956.3
+   },
+   "enviada": false
+  }
+ }
 }
