@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-03T15:20:36.865388+00:00",
+ "descargado": "2026-11-03T17:25:30.322211+00:00",
  "eventos": [
   {
    "title": "Daylight Saving Time Shift",
@@ -300,7 +300,7 @@
   {
    "title": "GDT Price Index",
    "country": "NZD",
-   "date": "2026-11-03T10:51:00-05:00",
+   "date": "2026-11-03T10:27:00-05:00",
    "impact": "Low",
    "forecast": "",
    "previous": "2.5%"
