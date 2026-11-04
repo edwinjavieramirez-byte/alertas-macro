@@ -34,11 +34,11 @@
  "mercado": {
   "escalones": {
    "US2Y": {
-    "base": 4.614,
+    "base": 4.581,
     "n": 0
    },
    "US10Y": {
-    "base": 4.95,
+    "base": 4.892,
     "n": 0
    },
    "JP10Y": {
