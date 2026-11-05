@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-05T10:05:26.064701+00:00",
+ "descargado": "2026-11-05T12:10:32.854764+00:00",
  "eventos": [
   {
    "title": "Daylight Saving Time Shift",
@@ -578,17 +578,9 @@
    "previous": "46.1"
   },
   {
-   "title": "PPI m/m",
-   "country": "EUR",
-   "date": "2026-11-05T05:00:00-05:00",
-   "impact": "Low",
-   "forecast": "2.5%",
-   "previous": "1.9%"
-  },
-  {
    "title": "Spanish 10-y Bond Auction",
    "country": "EUR",
-   "date": "2026-11-05T05:03:00-05:00",
+   "date": "2026-11-05T04:39:00-05:00",
    "impact": "Low",
    "forecast": "",
    "previous": "4.18|1.6"
@@ -596,10 +588,18 @@
   {
    "title": "French 10-y Bond Auction",
    "country": "EUR",
-   "date": "2026-11-05T05:18:00-05:00",
+   "date": "2026-11-05T04:55:00-05:00",
    "impact": "Low",
    "forecast": "",
    "previous": "4.93|2.0"
+  },
+  {
+   "title": "PPI m/m",
+   "country": "EUR",
+   "date": "2026-11-05T05:00:00-05:00",
+   "impact": "Low",
+   "forecast": "2.5%",
+   "previous": "1.9%"
   },
   {
    "title": "Challenger Job Cuts y/y",
