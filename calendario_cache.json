@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-06T12:45:34.428561+00:00",
+ "descargado": "2026-11-06T14:45:35.490042+00:00",
  "eventos": [
   {
    "title": "Daylight Saving Time Shift",
@@ -901,6 +901,14 @@
    "title": "FOMC Member Bowman Speaks",
    "country": "USD",
    "date": "2026-11-06T12:15:00-05:00",
+   "impact": "Low",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "FOMC Member Daly Speaks",
+   "country": "USD",
+   "date": "2026-11-06T13:00:00-05:00",
    "impact": "Low",
    "forecast": "",
    "previous": ""
