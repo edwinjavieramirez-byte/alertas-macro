@@ -31,7 +31,8 @@
   "USD|Congressional Elections|2026-11-03T10:16:00-05:00",
   "USD|Average Hourly Earnings m/m|2026-11-06T08:30:00-05:00",
   "USD|Non-Farm Employment Change|2026-11-06T08:30:00-05:00",
-  "USD|Unemployment Rate|2026-11-06T08:30:00-05:00"
+  "USD|Unemployment Rate|2026-11-06T08:30:00-05:00",
+  "JPY|BOJ Gov Ueda Speaks|2026-11-06T11:00:00-05:00"
  ],
  "resumen_enviado": "2026-11-06",
  "mercado": {
@@ -90,6 +91,28 @@
     "ORO": 4064.8
    },
    "enviada": true
+  },
+  "2026-11-06T16:00:00+00:00": {
+   "hora": "2026-11-06T16:00:00+00:00",
+   "eventos": [
+    "🔴🇯🇵 17:00 · JPY · BOJ Gov Ueda Speaks (previsto — · anterior —)"
+   ],
+   "foto": {
+    "US2Y": 4.526,
+    "US10Y": 4.855,
+    "DE10Y": 3.2538,
+    "JP10Y": 2.678,
+    "DXY": 102.18,
+    "EURUSD": 1.115,
+    "USDJPY": 158.26,
+    "GER40": 25785.88,
+    "VIX": 24.77,
+    "SPF": 7422.5,
+    "NQF": 27090.0,
+    "WTI": 90.21,
+    "ORO": 4056.2
+   },
+   "enviada": false
   }
  }
 }
