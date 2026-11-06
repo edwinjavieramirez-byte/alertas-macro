@@ -28,7 +28,10 @@
   "JPY|Monetary Policy Statement|2026-10-29T22:30:00-04:00",
   "JPY|BOJ Outlook Report|2026-10-29T22:31:00-04:00",
   "JPY|BOJ Press Conference|2026-10-30T01:30:00-04:00",
-  "USD|Congressional Elections|2026-11-03T10:16:00-05:00"
+  "USD|Congressional Elections|2026-11-03T10:16:00-05:00",
+  "USD|Average Hourly Earnings m/m|2026-11-06T08:30:00-05:00",
+  "USD|Non-Farm Employment Change|2026-11-06T08:30:00-05:00",
+  "USD|Unemployment Rate|2026-11-06T08:30:00-05:00"
  ],
  "resumen_enviado": "2026-11-06",
  "mercado": {
@@ -63,5 +66,30 @@
  },
  "preny_enviado": "2026-11-05",
  "prefra_enviado": "2026-11-06",
- "reacciones": {}
+ "reacciones": {
+  "2026-11-06T13:30:00+00:00": {
+   "hora": "2026-11-06T13:30:00+00:00",
+   "eventos": [
+    "🔴🇺🇸 14:30 · USD · Average Hourly Earnings m/m (previsto 0.3% · anterior 0.1%)",
+    "🔴🇺🇸 14:30 · USD · Non-Farm Employment Change (previsto 65K · anterior 29K)",
+    "🔴🇺🇸 14:30 · USD · Unemployment Rate (previsto 4.2% · anterior 4.2%)"
+   ],
+   "foto": {
+    "US2Y": 4.499,
+    "US10Y": 4.868,
+    "DE10Y": 3.2606,
+    "JP10Y": 2.65,
+    "DXY": 102.055,
+    "EURUSD": 1.1164,
+    "USDJPY": 158.3,
+    "GER40": 25698.2,
+    "VIX": 27.52,
+    "SPF": 7386.5,
+    "NQF": 27098.5,
+    "WTI": 90.73,
+    "ORO": 4070.9
+   },
+   "enviada": false
+  }
+ }
 }
