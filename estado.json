@@ -67,28 +67,5 @@
  },
  "preny_enviado": "2026-11-06",
  "prefra_enviado": "2026-11-06",
- "reacciones": {
-  "2026-11-06T16:00:00+00:00": {
-   "hora": "2026-11-06T16:00:00+00:00",
-   "eventos": [
-    "🔴🇯🇵 17:00 · JPY · BOJ Gov Ueda Speaks (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.526,
-    "US10Y": 4.857,
-    "DE10Y": 3.251,
-    "JP10Y": 2.675,
-    "DXY": 102.182,
-    "EURUSD": 1.115,
-    "USDJPY": 158.29,
-    "GER40": 25725.2,
-    "VIX": 24.36,
-    "SPF": 7432.25,
-    "NQF": 27156.0,
-    "WTI": 90.29,
-    "ORO": 4058.7
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
