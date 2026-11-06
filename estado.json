@@ -68,30 +68,6 @@
  "preny_enviado": "2026-11-06",
  "prefra_enviado": "2026-11-06",
  "reacciones": {
-  "2026-11-06T13:30:00+00:00": {
-   "hora": "2026-11-06T13:30:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 14:30 · USD · Average Hourly Earnings m/m (previsto 0.3% · anterior 0.1%)",
-    "🔴🇺🇸 14:30 · USD · Non-Farm Employment Change (previsto 65K · anterior 29K)",
-    "🔴🇺🇸 14:30 · USD · Unemployment Rate (previsto 4.2% · anterior 4.2%)"
-   ],
-   "foto": {
-    "US2Y": 4.505,
-    "US10Y": 4.874,
-    "DE10Y": 3.261,
-    "JP10Y": 2.648,
-    "DXY": 102.066,
-    "EURUSD": 1.1162,
-    "USDJPY": 158.32,
-    "GER40": 25679.69,
-    "VIX": 27.08,
-    "SPF": 7388.75,
-    "NQF": 27101.25,
-    "WTI": 90.88,
-    "ORO": 4064.8
-   },
-   "enviada": true
-  },
   "2026-11-06T16:00:00+00:00": {
    "hora": "2026-11-06T16:00:00+00:00",
    "eventos": [
