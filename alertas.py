@@ -1,5 +1,5 @@
 """
-Agente de alertas macro: EUR/USD, USD/JPY, GER 40 e índices USA.  (versión 4)
+Agente de alertas macro: EUR/USD, USD/JPY, GER 40 e índices USA.  (versión 4.1)
 
 Qué hace cada vez que se ejecuta (cada 5 min):
   1. Calendario económico (Forex Factory) de USD, EUR y JPY.
@@ -46,6 +46,10 @@ TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL") or "claude-sonnet-5-5"
+# Los modelos actuales "piensan" antes de escribir y ese razonamiento gasta del mismo límite de tokens
+# que el texto. Este margen extra evita que el análisis llegue cortado o vacío.
+MARGEN_PENSAR = int(os.getenv("CLAUDE_MARGEN_PENSAR") or 8000)
+CLAUDE_EFFORT = os.getenv("CLAUDE_EFFORT") or "medium"   # cuánto razona Claude: low / medium / high
 
 DIVISAS = [d.strip() for d in (os.getenv("DIVISAS") or "USD,EUR,JPY").split(",")]
 # Impactos que generan alerta 15 min antes (y reacción al dato)
@@ -503,27 +507,56 @@ LECTURA DE LOS DATOS
 Texto plano, sin markdown, sin asteriscos ni almohadillas. Frases cortas. Español."""
 
 
+def _recortar_frase(texto):
+    """Si el texto quedó cortado a media palabra, lo deja en la última frase completa."""
+    corte = max(texto.rfind(". "), texto.rfind(".\n"), texto.rfind("\n"))
+    if corte > len(texto) * 0.5:
+        texto = texto[:corte + 1]
+    return texto.rstrip() + " …"
+
+
 def preguntar_claude(prompt, max_tokens=900):
+    """max_tokens: tokens para el texto. Se añade MARGEN_PENSAR para el razonamiento interno."""
     if not ANTHROPIC_API_KEY:
         return None
+    cuerpo = {
+        "model": CLAUDE_MODEL,
+        "max_tokens": max_tokens + MARGEN_PENSAR,
+        "system": PROMPT_SISTEMA,
+        "messages": [{"role": "user", "content": prompt}],
+        "output_config": {"effort": CLAUDE_EFFORT},
+    }
+    cabeceras = {
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+    }
     try:
-        r = requests.post(
-            "https://api.anthropic.com/v1/messages",
-            headers={
-                "x-api-key": ANTHROPIC_API_KEY,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json",
-            },
-            json={
-                "model": CLAUDE_MODEL,
-                "max_tokens": max_tokens,
-                "system": PROMPT_SISTEMA,
-                "messages": [{"role": "user", "content": prompt}],
-            },
-            timeout=90,
-        )
-        r.raise_for_status()
-        return "".join(b.get("text", "") for b in r.json()["content"]).strip()
+        r = requests.post("https://api.anthropic.com/v1/messages", headers=cabeceras, json=cuerpo, timeout=150)
+        if r.status_code == 400 and "output_config" in cuerpo:
+            # Modelo antiguo que no admite "effort": se repite la petición sin ese ajuste
+            print(f"AVISO: el modelo rechazó el ajuste de razonamiento ({r.text[:200]}). Reintento sin él.")
+            del cuerpo["output_config"]
+            r = requests.post("https://api.anthropic.com/v1/messages", headers=cabeceras, json=cuerpo, timeout=150)
+        if not r.ok:
+            print(f"AVISO: Claude respondió {r.status_code}: {r.text[:300]}. Envío el mensaje sin análisis.")
+            return None
+        resp = r.json()
+        # Solo los bloques de texto: los de razonamiento ("thinking") no se muestran
+        texto = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text").strip()
+        motivo = resp.get("stop_reason")
+        uso = resp.get("usage", {})
+        print(f"Claude: fin={motivo}, tokens salida={uso.get('output_tokens')}, longitud texto={len(texto)}")
+        if motivo == "refusal":
+            print("AVISO: Claude declinó responder. Envío el mensaje sin análisis.")
+            return None
+        if not texto:
+            print("AVISO: Claude no devolvió texto. Envío el mensaje sin análisis.")
+            return None
+        if motivo == "max_tokens":
+            print("AVISO: el análisis llegó al límite de tokens; lo recorto en la última frase completa.")
+            texto = _recortar_frase(texto)
+        return texto
     except Exception as e:
         print(f"AVISO: fallo al llamar a Claude ({e}). Envío el mensaje sin análisis.")
         return None
