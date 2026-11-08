@@ -4,7 +4,7 @@ Agenda macro semanal de Edwin  ·  genera docs/datos.json para la página web (G
 Se ejecuta desde GitHub Actions (.github/workflows/agenda.yml) en tres modos (variable MODO):
   - "completo" (domingo por la tarde, a mano o al cambiar el script): calendario, precios, sesgo y,
     si falta, la tesis y los escenarios de la semana                                       -> Claude Sonnet
-  - "rapido" (L-V cada 15 minutos en horario de datos): fotos del mercado a horas fijas de Nueva York y
+  - "rapido" (L-V cada 5 minutos en horario de datos, lanzado por cron-job.org): fotos del mercado a horas fijas de Nueva York y
     alrededor de cada dato de impacto alto (sin coste), el sesgo pre-NY una vez al día antes de los datos
     de las 8:30 NY (-> Claude Sonnet) y el resultado real de los datos ya publicados (-> Claude Haiku).
     Si no le toca nada, sale sin tocar nada (no llama a la API y no hace commit).
@@ -72,10 +72,13 @@ def _num_env(nombre, defecto):
 JPY_INTERVENCION = _num_env("AGENDA_JPY_INTERVENCION", 158.0)
 JPY_SUBIDA_RAPIDA = 2.5          # % en la semana
 
-# Búsqueda del dato real: el intento n se hace pasados ESPERAS_MIN[n] minutos desde la publicación
-# (la cifra tarda unos minutos en aparecer en la web) y nunca dos intentos con menos de 12 minutos.
-ESPERAS_MIN = [5, 20, 45, 90, 180]
-MIN_ENTRE_INTENTOS = 12
+# Búsqueda del dato real: el intento n se hace pasados ESPERAS_MIN[n] minutos desde la publicación.
+# cron-job.org lanza el modo rápido cada 5 minutos (en el minuto 2, 7, 12...), así que el primer intento
+# llega unos 2-3 minutos después del dato y, si aún no está en la web, se repite cada 5 minutos durante
+# un cuarto de hora; los tres últimos son de respaldo por si la fuente tarda. Nunca dos intentos con menos
+# de 3 minutos (por si coinciden con una ejecución de respaldo de GitHub).
+ESPERAS_MIN = [2, 7, 12, 17, 45, 90, 180]
+MIN_ENTRE_INTENTOS = 3
 
 TZ = ZoneInfo("Europe/Madrid")
 NY = ZoneInfo("America/New_York")
@@ -1825,7 +1828,7 @@ def intradia_para_pagina(intr, ahora):
 
 # ----------------------------------------------------------------- modos rápido y cierre
 def modo_rapido(datos_prev, ahora, lunes):
-    """Cada 15 minutos (L-V). Solo escribe (y por tanto solo hay commit) si ha hecho algo:
+    """Cada 5 minutos (L-V). Solo escribe (y por tanto solo hay commit) si ha hecho algo:
       - fotos del mercado a las horas fijas y alrededor de cada dato de impacto alto (sin coste de API);
       - el sesgo pre-NY con IA, una vez al día, justo antes de los datos de Nueva York;
       - el resultado real de los datos de impacto alto ya publicados."""
