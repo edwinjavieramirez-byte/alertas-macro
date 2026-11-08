@@ -2,8 +2,20 @@ name: Agenda macro
 
 on:
   # Pruebas y actualizaciones a mano: Actions → "Agenda macro" → Run workflow
+  # cron-job.org también la lanza por aquí, indicando el modo: rapido cada 5 minutos (para buscar
+  # cada dato 2-3 minutos después de publicarse) y cierre. GitHub se salta muchas de las ejecuciones
+  # programadas de abajo; se quedan como respaldo.
   workflow_dispatch:
     inputs:
+      modo:
+        description: "Qué hacer: completo (todo), rapido (fotos y datos) o cierre (cierre de NY)"
+        required: false
+        default: "completo"
+        type: choice
+        options:
+          - completo
+          - rapido
+          - cierre
       forzar_semanal:
         description: "Rehacer tesis y escenarios de la semana (1 = sí)"
         required: false
@@ -18,7 +30,7 @@ on:
     # Horas en UTC (Madrid = UTC+2 en verano, UTC+1 en invierno). GitHub no ajusta el cambio de hora.
     # Si cambias alguna de estas líneas, cambia también la misma línea en "MODO" más abajo.
     - cron: "0 16 * * 0"                # domingo 18:00 Madrid (17:00 en invierno): monta la semana nueva
-    - cron: "5,20,35,50 6-20 * * 1-5"   # L-V cada 15 min: resultado real de cada dato de impacto alto
+    - cron: "5,20,35,50 6-20 * * 1-5"   # L-V cada 15 min (respaldo de cron-job.org, que la lanza cada 5)
     - cron: "15 20,21 * * 1-5"          # L-V cierre de Nueva York: el script solo ejecuta la que cae
                                         # después de las 16:00 de Nueva York (verano e invierno)
 
@@ -52,8 +64,9 @@ jobs:
           AGENDA_JPY_INTERVENCION: ${{ vars.AGENDA_JPY_INTERVENCION }}
           FORZAR_SEMANAL: ${{ github.event.inputs.forzar_semanal }}
           # rapido = solo resultados de datos recién publicados · cierre = precios y resumen del día ·
-          # completo = todo (domingo, a mano o al cambiar el script)
-          MODO: ${{ github.event.schedule == '5,20,35,50 6-20 * * 1-5' && 'rapido' || (github.event.schedule == '15 20,21 * * 1-5' && 'cierre' || 'completo') }}
+          # completo = todo (domingo, a mano o al cambiar el script). Si la ejecución trae un modo
+          # (cron-job.org o a mano), manda ese; si no, se deduce de la línea de horario que la lanzó.
+          MODO: ${{ github.event.inputs.modo || github.event.schedule == '5,20,35,50 6-20 * * 1-5' && 'rapido' || (github.event.schedule == '15 20,21 * * 1-5' && 'cierre' || 'completo') }}
         run: python agenda/agenda.py
 
       - name: Guardar datos
