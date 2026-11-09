@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-09T08:25:25.027493+00:00",
+ "descargado": "2026-11-09T10:30:45.747359+00:00",
  "eventos": [
   {
    "title": "RBA Assist Gov Hunter Speaks",
@@ -40,22 +40,6 @@
    "impact": "Low",
    "forecast": "19.2B",
    "previous": "19.5B"
-  },
-  {
-   "title": "M2 Money Supply y/y",
-   "country": "CNY",
-   "date": "2026-11-09T04:03:00-05:00",
-   "impact": "Low",
-   "forecast": "7.3%",
-   "previous": "7.2%"
-  },
-  {
-   "title": "New Loans",
-   "country": "CNY",
-   "date": "2026-11-09T04:03:00-05:00",
-   "impact": "Low",
-   "forecast": "80B",
-   "previous": "1080B"
   },
   {
    "title": "Sentix Investor Confidence",
@@ -224,6 +208,22 @@
    "impact": "Medium",
    "forecast": "",
    "previous": ""
+  },
+  {
+   "title": "M2 Money Supply y/y",
+   "country": "CNY",
+   "date": "2026-11-10T04:03:00-05:00",
+   "impact": "Low",
+   "forecast": "7.3%",
+   "previous": "7.2%"
+  },
+  {
+   "title": "New Loans",
+   "country": "CNY",
+   "date": "2026-11-10T04:03:00-05:00",
+   "impact": "Low",
+   "forecast": "80B",
+   "previous": "1080B"
   },
   {
    "title": "NFIB Small Business Index",
