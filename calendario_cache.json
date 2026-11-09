@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-09T16:35:25.887472+00:00",
+ "descargado": "2026-11-09T18:40:32.654258+00:00",
  "eventos": [
   {
    "title": "RBA Assist Gov Hunter Speaks",
@@ -400,6 +400,14 @@
    "impact": "Low",
    "forecast": "0.7%",
    "previous": "-1.3%"
+  },
+  {
+   "title": "ECB President Lagarde Speaks",
+   "country": "EUR",
+   "date": "2026-11-11T04:45:00-05:00",
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
   },
   {
    "title": "German 30-y Bond Auction",
