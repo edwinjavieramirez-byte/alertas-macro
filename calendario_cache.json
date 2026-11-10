@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-10T11:05:28.583690+00:00",
+ "descargado": "2026-11-10T13:10:33.450129+00:00",
  "eventos": [
   {
    "title": "RBA Assist Gov Hunter Speaks",
@@ -226,20 +226,20 @@
    "previous": ""
   },
   {
+   "title": "30-y Bond Auction",
+   "country": "GBP",
+   "date": "2026-11-10T05:02:00-05:00",
+   "impact": "Low",
+   "forecast": "",
+   "previous": "5.52|3.8"
+  },
+  {
    "title": "NFIB Small Business Index",
    "country": "USD",
    "date": "2026-11-10T06:00:00-05:00",
    "impact": "Low",
    "forecast": "98.0",
    "previous": "97.9"
-  },
-  {
-   "title": "30-y Bond Auction",
-   "country": "GBP",
-   "date": "2026-11-10T06:32:00-05:00",
-   "impact": "Low",
-   "forecast": "",
-   "previous": "5.52|3.8"
   },
   {
    "title": "MPC Member Lombardelli Speaks",
