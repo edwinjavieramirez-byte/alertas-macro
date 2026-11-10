@@ -32,7 +32,9 @@
   "USD|Average Hourly Earnings m/m|2026-11-06T08:30:00-05:00",
   "USD|Non-Farm Employment Change|2026-11-06T08:30:00-05:00",
   "USD|Unemployment Rate|2026-11-06T08:30:00-05:00",
-  "JPY|BOJ Gov Ueda Speaks|2026-11-06T11:00:00-05:00"
+  "JPY|BOJ Gov Ueda Speaks|2026-11-06T11:00:00-05:00",
+  "USD|Core CPI m/m|2026-11-10T08:30:00-05:00",
+  "USD|CPI m/m|2026-11-10T08:30:00-05:00"
  ],
  "resumen_enviado": "2026-11-10",
  "mercado": {
@@ -67,5 +69,29 @@
  },
  "preny_enviado": "2026-11-09",
  "prefra_enviado": "2026-11-10",
- "reacciones": {}
+ "reacciones": {
+  "2026-11-10T13:30:00+00:00": {
+   "hora": "2026-11-10T13:30:00+00:00",
+   "eventos": [
+    "🔴🇺🇸 14:30 · USD · Core CPI m/m (previsto 0.2% · anterior 0.3%)",
+    "🔴🇺🇸 14:30 · USD · CPI m/m (previsto 0.3% · anterior 0.6%)"
+   ],
+   "foto": {
+    "US2Y": 4.633,
+    "US10Y": 4.901,
+    "DE10Y": 3.2416,
+    "JP10Y": 2.7,
+    "DXY": 101.794,
+    "EURUSD": 1.1211,
+    "USDJPY": 158.21,
+    "GER40": 26578.51,
+    "VIX": 20.25,
+    "SPF": 7577.25,
+    "NQF": 27908.0,
+    "WTI": 84.98,
+    "ORO": 4082.7
+   },
+   "enviada": false
+  }
+ }
 }
