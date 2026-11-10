@@ -69,29 +69,5 @@
  },
  "preny_enviado": "2026-11-10",
  "prefra_enviado": "2026-11-10",
- "reacciones": {
-  "2026-11-10T13:30:00+00:00": {
-   "hora": "2026-11-10T13:30:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 14:30 · USD · Core CPI m/m (previsto 0.2% · anterior 0.3%)",
-    "🔴🇺🇸 14:30 · USD · CPI m/m (previsto 0.3% · anterior 0.6%)"
-   ],
-   "foto": {
-    "US2Y": 4.635,
-    "US10Y": 4.907,
-    "DE10Y": 3.2401,
-    "JP10Y": 2.7,
-    "DXY": 101.802,
-    "EURUSD": 1.121,
-    "USDJPY": 158.21,
-    "GER40": 26578.26,
-    "VIX": 20.12,
-    "SPF": 7570.5,
-    "NQF": 27874.0,
-    "WTI": 84.68,
-    "ORO": 4084.5
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
