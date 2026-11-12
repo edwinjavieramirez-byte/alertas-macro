@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-12T16:22:21.200469+00:00",
+ "descargado": "2026-11-12T18:25:25.486300+00:00",
  "eventos": [
   {
    "title": "RBA Assist Gov Hunter Speaks",
@@ -586,14 +586,6 @@
    "previous": "-0.3%"
   },
   {
-   "title": "Mortgage Delinquencies",
-   "country": "USD",
-   "date": "2026-11-12T11:14:00-05:00",
-   "impact": "Low",
-   "forecast": "",
-   "previous": "4.37%"
-  },
-  {
    "title": "FOMC Member Goolsbee Speaks",
    "country": "USD",
    "date": "2026-11-12T11:15:00-05:00",
@@ -616,6 +608,14 @@
    "impact": "Low",
    "forecast": "",
    "previous": ""
+  },
+  {
+   "title": "Mortgage Delinquencies",
+   "country": "USD",
+   "date": "2026-11-12T12:59:00-05:00",
+   "impact": "Low",
+   "forecast": "",
+   "previous": "4.37%"
   },
   {
    "title": "30-y Bond Auction",
