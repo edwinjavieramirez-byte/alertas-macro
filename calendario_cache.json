@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-13T21:15:30.353452+00:00",
+ "descargado": "2026-11-13T23:15:40.546462+00:00",
  "eventos": [
   {
    "title": "RBA Assist Gov Hunter Speaks",
@@ -821,6 +821,14 @@
    "title": "FOMC Member Daly Speaks",
    "country": "USD",
    "date": "2026-11-13T12:00:00-05:00",
+   "impact": "Low",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "FOMC Financial Stability Report",
+   "country": "USD",
+   "date": "2026-11-13T16:00:00-05:00",
    "impact": "Low",
    "forecast": "",
    "previous": ""
