@@ -71,29 +71,5 @@
  },
  "preny_enviado": "2026-11-13",
  "prefra_enviado": "2026-11-13",
- "reacciones": {
-  "2026-11-13T13:30:00+00:00": {
-   "hora": "2026-11-13T13:30:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 14:30 · USD · Core PPI m/m (previsto 0.3% · anterior 0.7%)",
-    "🔴🇺🇸 14:30 · USD · PPI m/m (previsto 0.4% · anterior 1.3%)"
-   ],
-   "foto": {
-    "US2Y": 4.861,
-    "US10Y": 5.141,
-    "DE10Y": 3.3818,
-    "JP10Y": 2.889,
-    "DXY": 103.234,
-    "EURUSD": 1.1051,
-    "USDJPY": 159.92,
-    "GER40": 26748.42,
-    "VIX": 18.2,
-    "SPF": 7638.5,
-    "NQF": 28411.5,
-    "WTI": 88.48,
-    "ORO": 3891.0
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
