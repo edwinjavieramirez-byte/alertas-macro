@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-16T00:20:34.837460+00:00",
+ "descargado": "2026-11-16T02:20:43.158800+00:00",
  "eventos": [
   {
    "title": "BusinessNZ Services Index",
@@ -174,6 +174,14 @@
    "country": "USD",
    "date": "2026-11-16T12:00:00-05:00",
    "impact": "High",
+   "forecast": "",
+   "previous": ""
+  },
+  {
+   "title": "FOMC Member Hammack Speaks",
+   "country": "USD",
+   "date": "2026-11-16T14:15:00-05:00",
+   "impact": "Low",
    "forecast": "",
    "previous": ""
   },
@@ -501,7 +509,7 @@
    "title": "BOE Gov Bailey Speaks",
    "country": "GBP",
    "date": "2026-11-18T02:30:00-05:00",
-   "impact": "High",
+   "impact": "Medium",
    "forecast": "",
    "previous": ""
   },
@@ -901,7 +909,7 @@
    "title": "FOMC Member Waller Speaks",
    "country": "USD",
    "date": "2026-11-20T08:25:00-05:00",
-   "impact": "Medium",
+   "impact": "Low",
    "forecast": "",
    "previous": ""
   },
