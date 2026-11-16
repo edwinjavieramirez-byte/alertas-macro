@@ -36,7 +36,8 @@
   "USD|Core CPI m/m|2026-11-10T08:30:00-05:00",
   "USD|CPI m/m|2026-11-10T08:30:00-05:00",
   "USD|Core PPI m/m|2026-11-13T08:30:00-05:00",
-  "USD|PPI m/m|2026-11-13T08:30:00-05:00"
+  "USD|PPI m/m|2026-11-13T08:30:00-05:00",
+  "USD|Fed Chairman Warsh Speaks|2026-11-16T12:00:00-05:00"
  ],
  "resumen_enviado": "2026-11-16",
  "mercado": {
@@ -71,5 +72,28 @@
  },
  "preny_enviado": "2026-11-16",
  "prefra_enviado": "2026-11-16",
- "reacciones": {}
+ "reacciones": {
+  "2026-11-16T17:00:00+00:00": {
+   "hora": "2026-11-16T17:00:00+00:00",
+   "eventos": [
+    "🔴🇺🇸 18:00 · USD · Fed Chairman Warsh Speaks (previsto — · anterior —)"
+   ],
+   "foto": {
+    "US2Y": 4.855,
+    "US10Y": 5.143,
+    "DE10Y": 3.3877,
+    "JP10Y": 2.891,
+    "DXY": 103.535,
+    "EURUSD": 1.1008,
+    "USDJPY": 159.64,
+    "GER40": 26630.05,
+    "VIX": 21.09,
+    "SPF": 7506.25,
+    "NQF": 27599.0,
+    "WTI": 86.57,
+    "ORO": 3859.9
+   },
+   "enviada": false
+  }
+ }
 }
