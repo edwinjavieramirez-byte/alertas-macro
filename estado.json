@@ -72,28 +72,5 @@
  },
  "preny_enviado": "2026-11-16",
  "prefra_enviado": "2026-11-16",
- "reacciones": {
-  "2026-11-16T17:00:00+00:00": {
-   "hora": "2026-11-16T17:00:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 18:00 · USD · Fed Chairman Warsh Speaks (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.859,
-    "US10Y": 5.145,
-    "DE10Y": 3.3883,
-    "JP10Y": 2.891,
-    "DXY": 103.542,
-    "EURUSD": 1.1007,
-    "USDJPY": 159.64,
-    "GER40": 26630.05,
-    "VIX": 21.21,
-    "SPF": 7501.5,
-    "NQF": 27555.75,
-    "WTI": 86.57,
-    "ORO": 3861.9
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
