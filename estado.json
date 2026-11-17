@@ -74,29 +74,5 @@
  },
  "preny_enviado": "2026-11-17",
  "prefra_enviado": "2026-11-17",
- "reacciones": {
-  "2026-11-17T13:30:00+00:00": {
-   "hora": "2026-11-17T13:30:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 14:30 · USD · Core Retail Sales m/m (previsto 0.4% · anterior 0.9%)",
-    "🔴🇺🇸 14:30 · USD · Retail Sales m/m (previsto 0.1% · anterior 0.8%)"
-   ],
-   "foto": {
-    "US2Y": 4.825,
-    "US10Y": 5.123,
-    "DE10Y": 3.3763,
-    "JP10Y": 2.878,
-    "DXY": 103.642,
-    "EURUSD": 1.0985,
-    "USDJPY": 159.32,
-    "GER40": 26336.63,
-    "VIX": 22.95,
-    "SPF": 7439.0,
-    "NQF": 27401.75,
-    "WTI": 86.39,
-    "ORO": 3858.6
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
