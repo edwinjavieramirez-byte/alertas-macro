@@ -75,27 +75,5 @@
  },
  "preny_enviado": "2026-11-18",
  "prefra_enviado": "2026-11-18",
- "reacciones": {
-  "2026-11-18T19:00:00+00:00": {
-   "hora": "2026-11-18T19:00:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 20:00 · USD · FOMC Meeting Minutes (previsto — · anterior —)"
-   ],
-   "foto": {
-    "US2Y": 4.789,
-    "US10Y": 5.062,
-    "DE10Y": 3.374,
-    "JP10Y": 2.867,
-    "DXY": 103.773,
-    "EURUSD": 1.0976,
-    "USDJPY": 159.34,
-    "VIX": 23.58,
-    "SPF": 7372.25,
-    "NQF": 27283.0,
-    "WTI": 82.58,
-    "ORO": 3742.7
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
