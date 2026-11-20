@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-20T11:15:47.722048+00:00",
+ "descargado": "2026-11-20T13:20:36.710539+00:00",
  "eventos": [
   {
    "title": "BusinessNZ Services Index",
@@ -272,6 +272,14 @@
    "impact": "Low",
    "forecast": "25.4K",
    "previous": "30.3K"
+  },
+  {
+   "title": "HMRC Payrolls Change",
+   "country": "GBP",
+   "date": "2026-11-17T02:00:00-05:00",
+   "impact": "Low",
+   "forecast": "9K",
+   "previous": "13K"
   },
   {
    "title": "Unemployment Rate",
