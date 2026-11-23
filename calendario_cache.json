@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-23T17:01:10.875136+00:00",
+ "descargado": "2026-11-23T19:05:26.995971+00:00",
  "eventos": [
   {
    "title": "Core Retail Sales q/q",
@@ -354,14 +354,6 @@
    "previous": "2.3%"
   },
   {
-   "title": "Unemployment Claims",
-   "country": "USD",
-   "date": "2026-11-25T08:30:00-05:00",
-   "impact": "Medium",
-   "forecast": "201K",
-   "previous": "203K"
-  },
-  {
    "title": "Core Durable Goods Orders m/m",
    "country": "USD",
    "date": "2026-11-25T08:30:00-05:00",
@@ -392,6 +384,14 @@
    "impact": "Low",
    "forecast": "0.4%",
    "previous": "0.5%"
+  },
+  {
+   "title": "Unemployment Claims",
+   "country": "USD",
+   "date": "2026-11-25T08:30:00-05:00",
+   "impact": "Low",
+   "forecast": "201K",
+   "previous": "203K"
   },
   {
    "title": "New Home Sales",
