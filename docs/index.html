@@ -6,51 +6,45 @@
 <title>Agenda Macro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script>try{var t=localStorage.getItem("agenda-macro.estilo");if(t==="onix"||t==="marino"||t==="perla")document.documentElement.setAttribute("data-estilo",t)}catch(e){}</script>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,500;6..96,600&family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap">
+<script>try{var t=localStorage.getItem("agenda-macro.estilo");if(t==="grafito"||t==="pizarra"||t==="niebla")document.documentElement.setAttribute("data-estilo",t)}catch(e){}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-/* Mismo sistema visual que la Bitácora de Trading: tres estilos (Ónix y oro · Marino y champán · Perla y verde inglés),
-   cabecera con filete dorado, franja de resumen tipo libro mayor y paneles. */
-:root{--sans:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;--r:14px;--r-sm:9px}
-:root,:root[data-estilo="onix"]{
+/* Tres estilos en grises con un solo color de acento (Grafito · Pizarra · Niebla) y tipografía Inter.
+   Cabecera con filete de color, franja de resumen del sesgo y paneles. */
+:root{--sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;--r:16px;--r-sm:10px;
+  --display:var(--sans);--dw:600;--dt:-.02em;
+  --h1:24px;--h2:20px;--h3:16px;--kv:32px;--kv2:23px;
+  --rule:linear-gradient(90deg,var(--accent),var(--accent-2) 35%,transparent)}
+:root,:root[data-estilo="grafito"]{
   color-scheme:dark;
-  --bg:#12110f;--surface:#1b1a17;--surface-2:#22201c;--raised:#2a2722;
-  --ink:#efe9dd;--ink-2:#bfb6a6;--muted:#8c8475;--line:#2d2a25;--line-strong:#433e35;
-  --accent:#c9a85c;--accent-2:#e6cf98;--accent-ink:#17120a;--accent-soft:rgba(201,168,92,.13);
-  --pos:#5aae88;--neg:#cf6a5f;--pos-t:#8acdab;--neg-t:#ee978c;--pos-bg:rgba(90,174,136,.12);--neg-bg:rgba(207,106,95,.13);
-  --warn-t:#e5c27a;--warn-bg:rgba(229,194,122,.12);--info-t:#a3bfe6;--info-bg:rgba(100,140,200,.15);
-  --display:"Cormorant Garamond",Georgia,"Times New Roman",serif;--dw:600;--dt:.005em;
-  --h1:31px;--h2:26px;--h3:19px;--kv:38px;--kv2:27px;
-  --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 14px 40px -18px rgba(0,0,0,.6);
-  --rule:linear-gradient(90deg,transparent,var(--accent) 18%,var(--accent-2) 50%,var(--accent) 82%,transparent);
+  --bg:#18191c;--surface:#212327;--surface-2:#292b30;--raised:#2f3237;
+  --ink:#e6e7ea;--ink-2:#b4b7bd;--muted:#8e9198;--line:#2e3035;--line-strong:#43464d;
+  --accent:#5b8cff;--accent-2:#8fb0ff;--accent-ink:#0d1b3d;--accent-soft:rgba(91,140,255,.14);
+  --pos:#4fd1a1;--neg:#ff7d7d;--pos-t:#6fe0b5;--neg-t:#ff9a9a;--pos-bg:rgba(79,209,161,.12);--neg-bg:rgba(255,125,125,.13);
+  --warn-t:#f0c46b;--warn-bg:rgba(240,196,107,.12);--info-t:#9db8ff;--info-bg:rgba(91,140,255,.15);
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 12px 30px -18px rgba(0,0,0,.55);
 }
-:root[data-estilo="marino"]{
+:root[data-estilo="pizarra"]{
   color-scheme:dark;
-  --bg:#0a1427;--surface:#112039;--surface-2:#172844;--raised:#1c2f50;
-  --ink:#eef2f8;--ink-2:#b9c4d8;--muted:#8594b0;--line:#1f3256;--line-strong:#30497a;
-  --accent:#d8bf8f;--accent-2:#f1e2c2;--accent-ink:#1a1408;--accent-soft:rgba(216,191,143,.13);
-  --pos:#4dbb94;--neg:#e07a72;--pos-t:#83d6b6;--neg-t:#f4a39b;--pos-bg:rgba(77,187,148,.12);--neg-bg:rgba(224,122,114,.13);
-  --warn-t:#ecca86;--warn-bg:rgba(236,202,134,.12);--info-t:#9cc3f0;--info-bg:rgba(90,150,220,.16);
-  --display:"Bodoni Moda",Didot,"Bodoni 72",Georgia,serif;--dw:500;--dt:0;
-  --h1:27px;--h2:22px;--h3:17px;--kv:33px;--kv2:24px;
-  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 14px 40px -18px rgba(0,0,0,.65);
-  --rule:linear-gradient(90deg,transparent,var(--accent) 18%,var(--accent-2) 50%,var(--accent) 82%,transparent);
+  --bg:#2a2e34;--surface:#33383f;--surface-2:#3c4249;--raised:#434950;
+  --ink:#eef0f2;--ink-2:#c6cad0;--muted:#a6abb3;--line:#444a52;--line-strong:#5a616b;
+  --accent:#ff9b54;--accent-2:#ffb27a;--accent-ink:#3d1d05;--accent-soft:rgba(255,155,84,.10);
+  --pos:#6fe0b0;--neg:#ff8c8c;--pos-t:#8ce8c0;--neg-t:#ffa6a6;--pos-bg:rgba(111,224,176,.13);--neg-bg:rgba(255,140,140,.14);
+  --warn-t:#f5d06b;--warn-bg:rgba(245,208,107,.13);--info-t:#a9c6ff;--info-bg:rgba(120,160,240,.18);
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 30px -18px rgba(0,0,0,.5);
 }
-:root[data-estilo="perla"]{
+:root[data-estilo="niebla"]{
   color-scheme:light;
-  --bg:#e8eae8;--surface:#fbfbf9;--surface-2:#f1f2f0;--raised:#ffffff;
-  --ink:#13201a;--ink-2:#44514a;--muted:#6f7a74;--line:#dde1dd;--line-strong:#c2c8c3;
-  --accent:#1d4a3a;--accent-2:#a8843e;--accent-ink:#f5f2e8;--accent-soft:rgba(29,74,58,.08);
-  --pos:#1f7a52;--neg:#b23c3c;--pos-t:#17663f;--neg-t:#a02f2f;--pos-bg:rgba(31,122,82,.08);--neg-bg:rgba(178,60,60,.08);
+  --bg:#e6e7ea;--surface:#f6f6f8;--surface-2:#eeeff2;--raised:#ffffff;
+  --ink:#1f2329;--ink-2:#474d56;--muted:#646a73;--line:#d9dbe0;--line-strong:#c2c5cc;
+  --accent:#5a4bd1;--accent-2:#8b7ff0;--accent-ink:#ffffff;--accent-soft:rgba(90,75,209,.09);
+  --pos:#14845a;--neg:#cc3d4d;--pos-t:#0f6f4b;--neg-t:#b3303f;--pos-bg:rgba(20,132,90,.09);--neg-bg:rgba(204,61,77,.08);
   --warn-t:#8a5a00;--warn-bg:#f6ecd6;--info-t:#1d5aa6;--info-bg:#e3ecf8;
-  --display:"Manrope",system-ui,sans-serif;--dw:700;--dt:-.025em;
-  --h1:23px;--h2:19px;--h3:15.5px;--kv:30px;--kv2:22px;
-  --shadow:0 1px 2px rgba(19,32,26,.05),0 12px 32px -20px rgba(19,32,26,.25);
-  --rule:linear-gradient(90deg,var(--accent-2),var(--accent-2) 30%,transparent);
+  --shadow:0 1px 2px rgba(31,35,41,.05),0 10px 28px -20px rgba(31,35,41,.25);
 }
 *{box-sizing:border-box}
 html{background:var(--bg)}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;margin:0;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;margin:0;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1280px;margin:0 auto;padding-inline:24px;padding-block:26px 64px;display:flex;flex-direction:column;gap:22px}
 h1,h2,h3{margin:0;text-wrap:balance;font-family:var(--display);font-weight:var(--dw);letter-spacing:var(--dt);line-height:1.15;font-variant-numeric:lining-nums}
 h1{font-size:var(--h1)} h2{font-size:var(--h2)} h3{font-size:var(--h3)}
@@ -66,9 +60,8 @@ a{color:var(--accent)}
 .top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-bottom:18px;position:relative}
 .top::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--rule);opacity:.7}
 .brand{display:flex;align-items:center;gap:14px;min-width:0}
-.mark{width:46px;height:46px;border-radius:50%;border:1px solid var(--accent);display:grid;place-items:center;flex:none;position:relative;color:var(--accent)}
-.mark::before{content:"";position:absolute;inset:3px;border-radius:50%;border:1px solid var(--accent);opacity:.35}
-.mark span{font-family:var(--display);font-weight:var(--dw);font-size:20px;letter-spacing:.02em;line-height:1}
+.mark{width:44px;height:44px;border-radius:13px;background:var(--accent);display:grid;place-items:center;flex:none;color:var(--accent-ink)}
+.mark span{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.02em;line-height:1}
 .brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
 .themes{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .tbtn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-strong);background:var(--surface);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;font-size:13px;color:var(--ink-2)}
@@ -257,9 +250,9 @@ details.help code{font-size:12.5px;background:var(--surface-2);padding:1px 5px;b
     </div>
     <div class="themes" role="radiogroup" aria-label="Estilo visual" id="themes">
       <span class="label">Estilo</span>
-      <button type="button" class="tbtn" role="radio" data-t="onix" aria-checked="false"><i style="background:linear-gradient(135deg,#1b1a17 50%,#c9a85c 50%)"></i>Ónix y oro</button>
-      <button type="button" class="tbtn" role="radio" data-t="marino" aria-checked="false"><i style="background:linear-gradient(135deg,#112039 50%,#d8bf8f 50%)"></i>Marino y champán</button>
-      <button type="button" class="tbtn" role="radio" data-t="perla" aria-checked="false"><i style="background:linear-gradient(135deg,#fbfbf9 50%,#1d4a3a 50%)"></i>Perla y verde inglés</button>
+      <button type="button" class="tbtn" role="radio" data-t="grafito" aria-checked="false"><i style="background:linear-gradient(135deg,#212327 50%,#5b8cff 50%)"></i>Grafito</button>
+      <button type="button" class="tbtn" role="radio" data-t="pizarra" aria-checked="false"><i style="background:linear-gradient(135deg,#33383f 50%,#ff9b54 50%)"></i>Pizarra</button>
+      <button type="button" class="tbtn" role="radio" data-t="niebla" aria-checked="false"><i style="background:linear-gradient(135deg,#f6f6f8 50%,#5a4bd1 50%)"></i>Niebla</button>
     </div>
   </header>
 
@@ -609,10 +602,10 @@ function anterior(){
 }
 
 function fallo(m){$("#semana").textContent="Sin datos";$("#kpis").innerHTML=`<div class="kpi" style="grid-column:1/-1"><span class="s">${esc(m)}</span></div>`}
-/* ---- estilo visual (como en la Bitácora) ---- */
+/* ---- estilo visual: Grafito, Pizarra o Niebla ---- */
 function setEstilo(t){document.documentElement.setAttribute("data-estilo",t);try{localStorage.setItem("agenda-macro.estilo",t)}catch(e){}
   document.querySelectorAll("#themes .tbtn").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.t===t)))}
-setEstilo(document.documentElement.getAttribute("data-estilo")||"onix");
+setEstilo(document.documentElement.getAttribute("data-estilo")||"grafito");
 $("#themes").addEventListener("click",e=>{const b=e.target.closest(".tbtn");if(b)setEstilo(b.dataset.t)});
 if(window.__DATOS__){try{pintar(window.__DATOS__)}catch(e){console.error(e);fallo("No se pudo mostrar la página: "+e.message)}}
 else fetch("datos.json?t="+Date.now()).then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()}).then(d=>{try{pintar(d)}catch(e){console.error(e);fallo("No se pudo mostrar la página: "+e.message)}})
