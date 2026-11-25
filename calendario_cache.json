@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-25T01:40:46.366121+00:00",
+ "descargado": "2026-11-25T03:45:41.398703+00:00",
  "eventos": [
   {
    "title": "Core Retail Sales q/q",
@@ -406,7 +406,7 @@
    "country": "USD",
    "date": "2026-11-25T10:30:00-05:00",
    "impact": "Low",
-   "forecast": "",
+   "forecast": "2.0M",
    "previous": "3.4M"
   },
   {
