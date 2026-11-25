@@ -77,29 +77,5 @@
  },
  "preny_enviado": "2026-11-25",
  "prefra_enviado": "2026-11-25",
- "reacciones": {
-  "2026-11-25T13:30:00+00:00": {
-   "hora": "2026-11-25T13:30:00+00:00",
-   "eventos": [
-    "🔴🇺🇸 14:30 · USD · Core PCE Price Index m/m (previsto 0.3% · anterior 0.3%)",
-    "🔴🇺🇸 14:30 · USD · Prelim GDP q/q (previsto 3.5% · anterior 3.4%)"
-   ],
-   "foto": {
-    "US2Y": 4.608,
-    "US10Y": 4.844,
-    "DE10Y": 3.2221,
-    "JP10Y": 2.61,
-    "DXY": 103.95,
-    "EURUSD": 1.0945,
-    "USDJPY": 159.27,
-    "GER40": 24895.58,
-    "VIX": 30.71,
-    "SPF": 7081.0,
-    "NQF": 25533.5,
-    "WTI": 82.43,
-    "ORO": 3510.3
-   },
-   "enviada": true
-  }
- }
+ "reacciones": {}
 }
