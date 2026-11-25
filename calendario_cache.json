@@ -1,5 +1,5 @@
 {
- "descargado": "2026-11-25T14:01:02.719573+00:00",
+ "descargado": "2026-11-25T16:05:28.503966+00:00",
  "eventos": [
   {
    "title": "Core Retail Sales q/q",
@@ -392,6 +392,14 @@
    "impact": "Low",
    "forecast": "201K",
    "previous": "203K"
+  },
+  {
+   "title": "Monetary Policy Report Hearings",
+   "country": "GBP",
+   "date": "2026-11-25T09:15:00-05:00",
+   "impact": "Medium",
+   "forecast": "",
+   "previous": ""
   },
   {
    "title": "New Home Sales",
