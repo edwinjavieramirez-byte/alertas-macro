@@ -40,7 +40,9 @@
   "USD|Fed Chairman Warsh Speaks|2026-11-16T12:00:00-05:00",
   "USD|Core Retail Sales m/m|2026-11-17T08:30:00-05:00",
   "USD|Retail Sales m/m|2026-11-17T08:30:00-05:00",
-  "USD|FOMC Meeting Minutes|2026-11-18T14:00:00-05:00"
+  "USD|FOMC Meeting Minutes|2026-11-18T14:00:00-05:00",
+  "USD|Core PCE Price Index m/m|2026-11-25T08:30:00-05:00",
+  "USD|Prelim GDP q/q|2026-11-25T08:30:00-05:00"
  ],
  "resumen_enviado": "2026-11-25",
  "mercado": {
@@ -75,5 +77,29 @@
  },
  "preny_enviado": "2026-11-24",
  "prefra_enviado": "2026-11-25",
- "reacciones": {}
+ "reacciones": {
+  "2026-11-25T13:30:00+00:00": {
+   "hora": "2026-11-25T13:30:00+00:00",
+   "eventos": [
+    "🔴🇺🇸 14:30 · USD · Core PCE Price Index m/m (previsto 0.3% · anterior 0.3%)",
+    "🔴🇺🇸 14:30 · USD · Prelim GDP q/q (previsto 3.5% · anterior 3.4%)"
+   ],
+   "foto": {
+    "US2Y": 4.608,
+    "US10Y": 4.848,
+    "DE10Y": 3.2232,
+    "JP10Y": 2.611,
+    "DXY": 103.983,
+    "EURUSD": 1.0941,
+    "USDJPY": 159.27,
+    "GER40": 24925.25,
+    "VIX": 30.93,
+    "SPF": 7079.5,
+    "NQF": 25529.25,
+    "WTI": 82.46,
+    "ORO": 3513.0
+   },
+   "enviada": false
+  }
+ }
 }
